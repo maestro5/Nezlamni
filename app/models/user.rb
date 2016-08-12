@@ -4,5 +4,7 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
-  has_one :account
+  has_one :account, dependent: :destroy
+
+  after_save { self.create_account if self.account.nil? }
 end

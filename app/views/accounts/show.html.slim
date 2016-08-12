@@ -1,0 +1,21 @@
+h1 Моя сторінка
+
+.row
+  .col-lg-3
+    p avatar
+  .col-lg-9
+    p = 'Ім\'я: ' + @account.name
+    p = 'День народження: ' + @account.birthday.to_s
+    p = 'Мета: ' + @account.goal
+    p = 'Бюджет: ' + @account.budget.to_s
+    p = 'Людей: ' + @account.backers.to_s
+    p = 'Зібрано: ' + @account.collected.to_s
+    p = 'Зібрати до: ' + @account.deadline.to_s
+    p = 'Платіжні реквізити: ' + @account.payment_details
+    p = 'Статус: не опубліковано, на перевірці, опубліковано'
+.row
+  .col-lg-12
+    p = 'Опис: ' + @account.overview
+
+= link_to 'Редагувати', edit_account_path(@account), class: 'btn btn-primary'
+= link_to 'Опублікувати', edit_account_path(@account), class: 'btn btn-success'

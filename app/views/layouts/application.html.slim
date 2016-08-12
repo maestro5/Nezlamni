@@ -28,14 +28,17 @@ html lang="en"
           a.navbar-brand href="/"Nezlamni
           .navbar-collapse.collapse.navbar-responsive-collapse
             ul.nav.navbar-nav.navbar-right
-              - unless user_signed_in?
+              - if user_signed_in?
+                li= link_to 'Моя сторінка', account_path(current_user.account) if current_user.account
+                li= link_to 'Вийти', destroy_user_session_path, method: :delete
+              - else
                 li= link_to 'Реєстрація', new_user_registration_path
                 li= link_to 'Увійти', new_user_session_path
-              li= link_to 'Вийти', destroy_user_session_path, method: :delete
+              
 
     .container
       .row
-        .col-lg-9
+        .col-lg-12
           = bootstrap_flash
           = yield
  
