@@ -24,9 +24,14 @@ module Nezlamni
     config.active_record.raise_in_transactional_callbacks = true
 
     config.generators do |g|
-      g.test_framework :rspec, :view_specs => false
+      g.test_framework :rspec,
+        fixtures: true,
+        view_spec: false,
+        helper_specs: false,
+        request_specs: false,
+        controller_spec: true
       g.assets = false
       g.helper = false
-    end
+    end    
   end
 end

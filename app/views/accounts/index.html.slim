@@ -1,1 +1,33 @@
-h1 Користувачі
+-if @accounts.any?
+  table.table.table-hover
+    thead
+      tr
+        th Ім'я
+        th Дата народження
+        th Мета
+        th Зібрано %
+        th Дедлайн
+        th
+        th
+        th
+    tbody
+      - @accounts.each do |account|
+        tr class="#{accounts_tr_class(account)}"
+          td = link_to account.name, account_path(account)
+          td = date_format(account.birthday)
+          td = account.goal
+          td = (account.collected / (account.budget - account.collected) * 100).round(2)
+          td = date_format(account.deadline)
+          td
+            = render 'check_btn', obj: account
+            
+          td
+            - if account.visible?
+              = link_to 'Приховувати', '#', class: 'btn btn-danger', method: :post
+            - else
+              = link_to 'Показувати', '#', class: 'btn btn-success', method: :post
+          td
+            - if account.locked?
+              = link_to 'Розблокувати', '#', class: 'btn btn-success', method: :post
+            - else
+              = link_to 'Заблокувати', '#', class: 'btn btn-danger', method: :post

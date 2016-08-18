@@ -27,12 +27,11 @@ ActiveRecord::Schema.define(version: 20160812120440) do
     t.datetime "deadline"
     t.string   "payment_details", default: ""
     t.text     "overview",        default: ""
-    t.boolean  "sended",          default: false
-    t.boolean  "published",       default: false
-    t.boolean  "visible",         default: true
+    t.datetime "prev_updated_at", default: '0001-01-01 00:00:00'
+    t.boolean  "visible",         default: false
     t.boolean  "locked",          default: false
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
+    t.datetime "created_at",      default: '2016-08-18 05:46:29'
+    t.datetime "updated_at",      default: '2016-08-18 05:46:29'
   end
 
   add_index "accounts", ["user_id"], name: "index_accounts_on_user_id", using: :btree

@@ -30,7 +30,9 @@ html lang="en"
             ul.nav.navbar-nav.navbar-right
               - if user_signed_in?
                 li= link_to 'Моя сторінка', account_path(current_user.account) if current_user.account
-                li= link_to 'Вийти', destroy_user_session_path, method: :delete
+                -if current_user.admin?
+                  li= link_to 'Користувачі', accounts_path
+                li= link_to 'Вийти', destroy_user_session_path, method: :delete                
               - else
                 li= link_to 'Реєстрація', new_user_registration_path
                 li= link_to 'Увійти', new_user_session_path

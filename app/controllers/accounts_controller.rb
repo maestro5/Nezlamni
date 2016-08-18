@@ -1,5 +1,6 @@
 class AccountsController < ApplicationController
-  def inex
+  def index
+    @accounts = Account.all
   end
 
   def show
@@ -18,6 +19,12 @@ class AccountsController < ApplicationController
     else
       render 'edit'
     end
+  end
+
+  def publish
+    @account = Account.find(params[:account_id])
+    @account.update_attributes(updated_at: Time.now, prev_updated_at: Time.now)
+    redirect_to accounts_path
   end
 
   def destroy
