@@ -16,9 +16,9 @@
           = f.text_field :name, class: 'form-control'
     .col-lg-6
       .form-group
-        = f.label :birthday, 'День народження', class: 'col-sm-4 control-label'
+        = f.label :birthday_on, 'День народження', class: 'col-sm-4 control-label'
         .col-sm-8
-          = f.date_field :birthday, class: 'form-control'
+          = f.date_field :birthday_on, class: 'form-control'
   br
   .row
     .col-lg-6
@@ -31,9 +31,9 @@
         .col-sm-8
           = f.number_field :budget, min: 0, step: 0.01, class: 'form-control'
       .form-group
-        = f.label :deadline, 'Завершення', class: 'col-sm-4 control-label'
+        = f.label :deadline_on, 'Завершення', class: 'col-sm-4 control-label'
         .col-sm-8
-          = f.date_field :deadline, class: 'form-control'     
+          = f.date_field :deadline_on, class: 'form-control'     
   
     .col-lg-6
       .form-group
@@ -57,7 +57,5 @@
         = f.label :overview, 'Відомості', class: 'col-sm-2 control-label'
         .col-sm-10
           = f.text_area :overview, rows: 11, class: 'form-control'
-  .row
-    .col-lg-12
       .form-group
         = f.submit :'Зберегти', class: 'btn btn-primary'

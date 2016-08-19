@@ -3,7 +3,12 @@ Rails.application.routes.draw do
   devise_for :users
   
   resources :accounts, only: [:index, :show, :edit, :update]  do
-    post 'user_publish' => 'accounts#publish'
+    get 'checked', on: :member
+    resources :products, only: [:new, :create]
   end
 
+  resources :products, except: [:new, :create] do
+    get 'checked', on: :member
+  end
+  
 end

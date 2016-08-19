@@ -57,7 +57,7 @@ feature 'Admin check account', %q{
     birthday = '1987-05-17'
     click_on name
     click_on 'Редагувати'
-    fill_in 'account[birthday]', with: birthday
+    fill_in 'account[birthday_on]', with: birthday
     click_on 'Зберегти'
     
     expect(current_path).to eq account_path user.account

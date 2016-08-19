@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160812120440) do
+ActiveRecord::Schema.define(version: 20160818161531) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -19,22 +19,34 @@ ActiveRecord::Schema.define(version: 20160812120440) do
   create_table "accounts", force: :cascade do |t|
     t.integer  "user_id"
     t.string   "name",            default: ""
-    t.datetime "birthday"
+    t.date     "birthday_on"
     t.string   "goal",            default: ""
     t.decimal  "budget",          default: 0.0
     t.integer  "backers",         default: 0
     t.decimal  "collected",       default: 0.0
-    t.datetime "deadline"
+    t.date     "deadline_on"
     t.string   "payment_details", default: ""
     t.text     "overview",        default: ""
     t.datetime "prev_updated_at", default: '0001-01-01 00:00:00'
     t.boolean  "visible",         default: false
     t.boolean  "locked",          default: false
-    t.datetime "created_at",      default: '2016-08-18 05:46:29'
-    t.datetime "updated_at",      default: '2016-08-18 05:46:29'
+    t.datetime "created_at",      default: '2016-08-19 04:17:29'
+    t.datetime "updated_at",      default: '2016-08-19 04:17:29'
   end
 
   add_index "accounts", ["user_id"], name: "index_accounts_on_user_id", using: :btree
+
+  create_table "products", force: :cascade do |t|
+    t.integer  "account_id"
+    t.string   "title",           default: ""
+    t.text     "description",     default: ""
+    t.datetime "prev_updated_at", default: '0001-01-01 00:00:00'
+    t.boolean  "visible",         default: false
+    t.datetime "created_at",      default: '2016-08-19 05:42:21'
+    t.datetime "updated_at",      default: '2016-08-19 05:42:21'
+  end
+
+  add_index "products", ["account_id"], name: "index_products_on_account_id", using: :btree
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "",    null: false

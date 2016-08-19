@@ -1,0 +1,22 @@
+= form_for [@account, @product], html: { class: 'form-horizontal' } do |f|
+  - if @product.errors.any?
+    #errors
+      h2
+        = pluralize(@product.errors.count, "error")
+        |  prevented this product from saving
+      ul
+        - @product.errors.full_messages.each do |msg|
+          li
+            = msg
+  .row
+    .col-lg-8.col-lg-offset-2
+      .form-group
+        = f.label :title, 'Назва', class: 'col-sm-4 control-label', required: true
+        .col-sm-8
+          = f.text_field :title, class: 'form-control'
+      .form-group
+        = f.label :description, 'Опис', class: 'col-sm-4 control-label'
+        .col-sm-8
+          = f.text_area :description, rows: 5, class: 'form-control'
+      .form-group
+        = f.submit :'Зберегти', class: 'btn btn-primary'

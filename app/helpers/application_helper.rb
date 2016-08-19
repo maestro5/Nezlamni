@@ -16,4 +16,16 @@ module ApplicationHelper
       'danger'
     end
   end
+
+  def products_tr_class(product)
+    return if product.nil?
+
+    if product.prev_updated_at == '0001-01-01'
+      'warning'
+    elsif product.updated_at > product.prev_updated_at
+      'info'
+    elsif !product.visible?
+      'danger'
+    end
+  end
 end

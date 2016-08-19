@@ -4,12 +4,12 @@ class CreateAccounts < ActiveRecord::Migration
       t.belongs_to :user, index: true
 
       t.string :name, default: ''
-      t.datetime :birthday
+      t.date :birthday_on
       t.string :goal, default: ''
       t.decimal :budget, default: 0
       t.integer :backers, default: 0
       t.decimal :collected, default: 0
-      t.datetime :deadline
+      t.date :deadline_on
       t.string :payment_details, default: ''
       t.text :overview, default: ''
       t.datetime :prev_updated_at, default: '0001-01-01'

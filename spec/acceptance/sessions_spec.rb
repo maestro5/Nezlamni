@@ -23,7 +23,7 @@ feature 'User login', %q{
 
   let(:user) { create(:user) }
   
-  scenario 'when user login' do  
+  scenario 'when user login' do
     sign_in user
 
     expect(current_path).to eq root_path
