@@ -2,13 +2,13 @@ class ProductsController < ApplicationController
   before_action :find_account, only: [:new, :create]
   before_action :find_product, only: [:show, :edit, :update, :destroy, :checked]
 
-
   def index
     @products = Product.all
   end
 
   def new
     @product = @account.products.new
+    protection
   end
 
   def create
@@ -24,6 +24,7 @@ class ProductsController < ApplicationController
   end
 
   def edit
+    protection
   end
 
   def update
@@ -35,6 +36,7 @@ class ProductsController < ApplicationController
   end
 
   def destroy
+    protection
     @product.destroy
     redirect_to @product.account
   end
@@ -56,6 +58,10 @@ class ProductsController < ApplicationController
 
   def product_params
     params.require(:product).permit(:title, :description)
+  end
+
+  def protection
+    redirect_to root_path if @product.account.locked? && !current_user.admin?
   end
 
 end

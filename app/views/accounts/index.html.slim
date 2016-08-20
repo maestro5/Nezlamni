@@ -26,6 +26,6 @@
               = link_to 'Показувати', '#', class: 'btn btn-success', method: :post
           td
             - if account.locked?
-              = link_to 'Розблокувати', '#', class: 'btn btn-success', method: :post
+              = link_to 'Розблокувати', locked_account_path(account), class: 'btn btn-success'
             - else
-              = link_to 'Заблокувати', '#', class: 'btn btn-danger', method: :post
+              = link_to 'Заблокувати', locked_account_path(account), class: 'btn btn-danger'

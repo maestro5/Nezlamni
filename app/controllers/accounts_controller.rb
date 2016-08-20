@@ -1,5 +1,5 @@
 class AccountsController < ApplicationController
-  before_action :find_account, only: [:show, :edit, :update, :checked]
+  before_action :find_account, only: [:show, :edit, :update, :checked, :locked]
 
   def index
     @accounts = Account.all
@@ -9,6 +9,7 @@ class AccountsController < ApplicationController
   end
 
   def edit
+    protection
   end
 
   def update
@@ -21,6 +22,11 @@ class AccountsController < ApplicationController
 
   def checked
     @account.update_attributes(updated_at: Time.now, prev_updated_at: Time.now)
+    redirect_to accounts_path
+  end
+
+  def locked
+    @account.toggle!(:locked)
     redirect_to accounts_path
   end
 
@@ -37,4 +43,7 @@ class AccountsController < ApplicationController
       @account = Account.find(params[:id])
     end
 
+    def protection
+      redirect_to root_path if @account.locked? && !current_user.admin?
+    end
 end

@@ -1,7 +1,8 @@
 .row
   .col-lg-3
     = link_to image_tag('no-avatar.jpg', size: '200x200', alt: 'no avatar'), ''
-    = link_to 'Редагувати', edit_account_path(@account), class: 'btn btn-primary'
+    - if current_user.admin? || !@account.locked?
+      = link_to 'Редагувати', edit_account_path(@account), class: 'btn btn-primary', id: 'edit_account'
     = render 'check_btn', obj: @account
   .col-lg-9
     p = 'Ім\'я: ' + @account.name
@@ -28,7 +29,9 @@ br
             h3 = product.title
             p = product.description
             p
-              = link_to 'Редагувати', edit_product_path(product), class: 'btn btn-primary'
-              = link_to 'Видалити', product_path(product), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'
+              - if current_user.admin? || !@account.locked?
+                = link_to 'Редагувати', edit_product_path(product), class: 'btn btn-primary'
+                = link_to 'Видалити', product_path(product), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'
               = render 'products/check_btn', obj: product
-    = link_to 'Додати товар', new_account_product_path(@account), class: 'btn btn-primary'
+    - if current_user.admin? || !@account.locked?
+      = link_to 'Додати товар', new_account_product_path(@account), class: 'btn btn-primary'

@@ -3,7 +3,10 @@ Rails.application.routes.draw do
   devise_for :users
   
   resources :accounts, only: [:index, :show, :edit, :update]  do
-    get 'checked', on: :member
+    member do
+      get 'checked'
+      get 'locked'
+    end
     resources :products, only: [:new, :create]
   end
 

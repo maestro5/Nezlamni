@@ -11,9 +11,9 @@
   .row
     .col-lg-8.col-lg-offset-2
       .form-group
-        = f.label :title, 'Назва', class: 'col-sm-4 control-label', required: true
+        = f.label :title, 'Назва', class: 'col-sm-4 control-label'
         .col-sm-8
-          = f.text_field :title, class: 'form-control'
+          = f.text_field :title, required: true, class: 'form-control' 
       .form-group
         = f.label :description, 'Опис', class: 'col-sm-4 control-label'
         .col-sm-8

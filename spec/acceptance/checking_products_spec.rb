@@ -27,10 +27,13 @@ feature 'Admin checks a product', %q{
     expect(current_path).to eq account_path user.account
     expect(page).to have_content title
     expect(page).to have_content description
-    expect(page).to have_link 'Редагувати'
-    expect(page).to have_link 'Видалити'
-    expect(page).not_to have_link 'Перевірено'
     expect(page).to have_link 'Додати товар'
+
+    within('#product_0') do
+      expect(page).to have_link 'Редагувати'
+      expect(page).to have_link 'Видалити'
+      expect(page).not_to have_link 'Перевірено'
+    end
 
     click_on 'Вийти'
 
