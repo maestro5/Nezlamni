@@ -38,7 +38,7 @@ class ProductsController < ApplicationController
   def destroy
     protection
     @product.destroy
-    redirect_to @product.account
+    redirect_to :back
   end
 
   def checked

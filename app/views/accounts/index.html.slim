@@ -7,9 +7,10 @@
         th Мета
         th Зібрано %
         th Дедлайн
-        th
-        th
-        th
+        th Зміни
+        th Видимість
+        th Редагування
+        th 
     tbody
       - @accounts.each do |account|
         tr class="#{accounts_tr_class(account)}"
@@ -29,3 +30,5 @@
               = link_to 'Розблокувати', locked_account_path(account), class: 'btn btn-success'
             - else
               = link_to 'Заблокувати', locked_account_path(account), class: 'btn btn-danger'
+          td
+            = link_to 'Видалити', account_path(account), method: :delete, data: { confirm: 'Ви впевнені?' }, class: 'btn btn-danger'

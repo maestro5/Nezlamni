@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   root 'pages#home'
   devise_for :users
   
-  resources :accounts, only: [:index, :show, :edit, :update]  do
+  resources :accounts, only: [:index, :show, :edit, :update, :destroy]  do
     member do
       get 'checked'
       get 'locked'

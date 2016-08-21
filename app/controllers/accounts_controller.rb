@@ -1,5 +1,5 @@
 class AccountsController < ApplicationController
-  before_action :find_account, only: [:show, :edit, :update, :checked, :locked]
+  before_action :find_account, only: [:show, :edit, :update, :destroy, :checked, :locked]
 
   def index
     @accounts = Account.all
@@ -20,6 +20,11 @@ class AccountsController < ApplicationController
     end
   end
 
+  def destroy
+    @account.user.destroy
+    redirect_to accounts_path
+  end
+
   def checked
     @account.update_attributes(updated_at: Time.now, prev_updated_at: Time.now)
     redirect_to accounts_path
@@ -28,9 +33,6 @@ class AccountsController < ApplicationController
   def locked
     @account.toggle!(:locked)
     redirect_to accounts_path
-  end
-
-  def destroy
   end
 
   private
