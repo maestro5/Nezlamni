@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   resources :accounts, only: [:index, :show, :edit, :update, :destroy]  do
     member do
       get 'checked'
+      get 'visible'
       get 'locked'
     end
     resources :products, only: [:new, :create]

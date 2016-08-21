@@ -1,5 +1,5 @@
 class AccountsController < ApplicationController
-  before_action :find_account, only: [:show, :edit, :update, :destroy, :checked, :locked]
+  before_action :find_account, except: [:index]
 
   def index
     @accounts = Account.all
@@ -27,6 +27,11 @@ class AccountsController < ApplicationController
 
   def checked
     @account.update_attributes(updated_at: Time.now, prev_updated_at: Time.now)
+    redirect_to accounts_path
+  end
+
+  def visible
+    @account.toggle!(:visible)
     redirect_to accounts_path
   end
 
