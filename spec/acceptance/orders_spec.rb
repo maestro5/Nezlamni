@@ -8,20 +8,13 @@ feature 'Visitor buy', %q{
   let(:user) { create :user }
   let!(:product) { create :product, account: user.account }
 
-  before do  
-    user.account.toggle!(:visible)
-  end
+  before { user.account.toggle!(:visible) }
 
   scenario 'when visitor buys a product' do
     visit root_path
-    find('a.avatar').click
-    
-    expect(current_path).to eq account_path(user.account)
-    expect(page).to have_content product.title
-    expect(page).to have_content product.description
-    expect(page).to have_link 'Купити'
-
+    find('a.avatar').click   
     click_on 'Купити'
+    
     expect(current_path).to eq new_product_order_path(product)
 
     fill_in 'order[address]', with: 'test address'

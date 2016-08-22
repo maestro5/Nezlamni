@@ -1,6 +1,6 @@
 class ProductsController < ApplicationController
   before_action :find_account, only: [:new, :create]
-  before_action :find_product, only: [:show, :edit, :update, :destroy, :checked]
+  before_action :find_product, except: [:index, :new, :create]
 
   def index
     @products = Product.all
@@ -44,6 +44,11 @@ class ProductsController < ApplicationController
   def checked
     @product.update_attributes(updated_at: Time.now, prev_updated_at: Time.now)
     redirect_to :back
+  end
+
+  def visible
+    @product.toggle!(:visible)
+    redirect_to products_path
   end
 
   private

@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   resources :products, except: [:new, :create] do
     member do
       get 'checked'
+      get 'visible'
     end
     resources :orders, only: [:new, :create]
   end

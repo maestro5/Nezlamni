@@ -6,7 +6,7 @@ class CreateProducts < ActiveRecord::Migration
       t.text :description, default: ''
 
       t.datetime :prev_updated_at, default: '0001-01-01'
-      t.boolean :visible, default: false
+      t.boolean :visible, default: true
       t.datetime :created_at, default: Time.now
       t.datetime :updated_at, default: Time.now
     end

@@ -5,8 +5,8 @@
         th Назва
         th Опис
         th Власник
-        th
-        th
+        th Зміни
+        th Видимість
         th
     tbody
       - @products.each do |product|
@@ -18,8 +18,8 @@
           td = render 'check_btn', obj: product  
           td
             - if product.visible?
-              = link_to 'Приховувати', '#', class: 'btn btn-danger'
+              = link_to 'Приховувати', visible_product_path(product), class: 'btn btn-danger'
             - else
-              = link_to 'Показувати', '#', class: 'btn btn-success'
+              = link_to 'Показувати', visible_product_path(product), class: 'btn btn-success'
           td 
             = link_to 'Видалити', product_path(product), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'

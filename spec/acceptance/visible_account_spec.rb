@@ -8,7 +8,7 @@ feature 'Admin switch an user account visible', %q{
   let(:admin_user) { create(:user_admin) }
   let(:user) { create(:user) }
 
-  scenario 'when admin switch an user accaunt visible' do
+  scenario 'when admin switchs an user account visible' do
     user.account.update_attribute(:name, 'user')
 
     visit root_path
@@ -26,5 +26,5 @@ feature 'Admin switch an user account visible', %q{
 
     visit root_path
     expect(page).not_to have_link user.account.name
-  end # when admin switch an user accaunt visible
+  end # when admin switchs an user account visible
 end # Admin switch an user account visible

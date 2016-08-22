@@ -53,9 +53,9 @@ ActiveRecord::Schema.define(version: 20160822050346) do
     t.string   "title",           default: ""
     t.text     "description",     default: ""
     t.datetime "prev_updated_at", default: '0001-01-01 00:00:00'
-    t.boolean  "visible",         default: false
-    t.datetime "created_at",      default: '2016-08-19 05:42:21'
-    t.datetime "updated_at",      default: '2016-08-19 05:42:21'
+    t.boolean  "visible",         default: true
+    t.datetime "created_at",      default: '2016-08-22 16:41:40'
+    t.datetime "updated_at",      default: '2016-08-22 16:41:40'
   end
 
   add_index "products", ["account_id"], name: "index_products_on_account_id", using: :btree
