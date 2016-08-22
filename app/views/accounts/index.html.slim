@@ -5,7 +5,7 @@
         th Ім'я
         th Дата народження
         th Мета
-        th Зібрано %
+        th Зібрано
         th Дедлайн
         th Зміни
         th Видимість
@@ -17,7 +17,7 @@
           td = link_to account.name, account_path(account)
           td = date_format(account.birthday_on)
           td = account.goal
-          td = account.collected_percent
+          td = "#{account.collected_percent} %"
           td = date_format(account.deadline_on)
           td = render 'check_btn', obj: account
           td

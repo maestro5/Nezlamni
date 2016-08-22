@@ -11,8 +11,15 @@ Rails.application.routes.draw do
     resources :products, only: [:new, :create]
   end
 
+  resources :orders, only: [:index, :show] do
+    get 'delivered', on: :member
+  end
+
   resources :products, except: [:new, :create] do
-    get 'checked', on: :member
+    member do
+      get 'checked'
+    end
+    resources :orders, only: [:new, :create]
   end
   
 end

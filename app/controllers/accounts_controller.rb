@@ -1,4 +1,5 @@
 class AccountsController < ApplicationController
+  skip_before_action :authenticate_user!, only: [:show]
   before_action :find_account, except: [:index]
 
   def index

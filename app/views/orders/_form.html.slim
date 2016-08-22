@@ -1,0 +1,25 @@
+= form_for [@product, @order], html: { class: 'form-horizontal' } do |f|
+  - if @order.errors.any?
+    #errors
+      h2
+        = pluralize(@order.errors.count, "error")
+        |  prevented this order from saving
+      ul
+        - @order.errors.full_messages.each do |msg|
+          li
+            = msg
+  .row
+    .col-lg-8.col-lg-offset-2
+      .form-group
+        = f.label :address, 'Адреса', class: 'col-sm-4 control-label'
+        .col-sm-8
+          = f.text_field :address, placeholder: 'адреса або місто та номер складу нової пошти', required: true, class: 'form-control'
+      .form-group
+        = f.label :recipient, 'Одержувач', class: 'col-sm-4 control-label'
+        .col-sm-8
+          = f.text_field :recipient, placeholder: 'ПІБ', class: 'form-control'
+      .form-group
+        = f.label :phone, 'Номер телефону', class: 'col-sm-4 control-label'
+        .col-sm-8
+          = f.text_field :phone, placeholder: 'номер телефону', class: 'form-control'
+  = f.submit :'Оформити', class: 'btn btn-success'

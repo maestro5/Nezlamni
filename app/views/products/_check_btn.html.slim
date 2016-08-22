@@ -1,4 +1,4 @@
-- if current_user.admin?
+- if user_signed_in? && current_user.admin?
   - if obj.updated_at > obj.prev_updated_at
     = link_to 'Перевірено', checked_product_path(obj), class: 'btn btn-success'
   - else

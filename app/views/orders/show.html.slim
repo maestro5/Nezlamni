@@ -1,0 +1,11 @@
+.row
+  .col-lg-12
+    p = "Товар: #{@order.product.title}"
+    p = "Платіжні реквізити: #{@order.product.account.payment_details}"
+    br
+    p = "Одержувач: #{@order.recipient}"
+    p = "Телефон: #{@order.phone}"
+    p = "Адреса: #{@order.address}"
+    br
+    h3 Дякую!
+    p = link_to image_tag('no-avatar.jpg', size: '200x200', alt: 'blank avatar'), account_path(@order.product.account)

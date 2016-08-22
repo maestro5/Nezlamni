@@ -1,0 +1,21 @@
+-if @orders.any?
+  table.table.table-hover
+    thead
+      tr
+        th Товар
+        th Адреса
+        th Одержувач
+        th Телефон
+        th Доставлено
+    tbody
+      - @orders.each do |order|
+        tr class="#{order.delivered? ? 'success' : 'danger'}"
+          td = link_to order.product.title, product_path(order.product)
+          td = order.address
+          td = order.recipient
+          td = order.phone
+          td
+            - if order.delivered?
+              = link_to 'Ні', delivered_order_path(order), class: 'btn btn-danger'
+            - else
+              = link_to 'Так', delivered_order_path(order), class: 'btn btn-success'
