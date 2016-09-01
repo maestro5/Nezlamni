@@ -13,7 +13,7 @@ feature 'Visitor buy', %q{
   scenario 'when visitor buys a product' do
     visit root_path
     find('a.avatar').click   
-    click_on 'Купити'
+    click_on 'Обрати'
     
     expect(current_path).to eq new_product_order_path(product)
 
@@ -42,7 +42,7 @@ feature 'Admin order in delivered', %q{
 
   scenario 'when admin switchs order status in delivered' do
     visit account_path(user.account)
-    expect(page).to have_content 'Людей: 0'
+    expect(page).to have_content '0'
 
     sign_in admin_user
     click_on 'Замовлення'
@@ -58,7 +58,7 @@ feature 'Admin order in delivered', %q{
     expect(page).to have_link 'Ні'
 
     visit account_path(user.account)
-    expect(page).to have_content 'Людей: 1'
+    expect(page).to have_content '1'
     
     click_on 'Замовлення'
     click_on 'Ні'
@@ -66,6 +66,6 @@ feature 'Admin order in delivered', %q{
     expect(page).to have_link 'Так'
 
     visit account_path(user.account)
-    expect(page).to have_content 'Людей: 0'
+    expect(page).to have_content '0'
   end # when admin switchs order status in delivered
 end # Admin order in delivered

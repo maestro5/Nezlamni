@@ -1,10 +1,16 @@
 .row
   .col-lg-3
-    = link_to image_tag('no-avatar.jpg', size: '200x200', alt: 'no avatar'), ''
+    = image_tag @product.avatar_url, width: '250', alt: 'avatar', class: 'img-rounded'
+    = render 'images/gallery_slides', obj: @product
   .col-lg-9
     p = 'Назва: ' + @product.title
     p = 'Опис: ' + @product.description
     p
-      = link_to 'Редагувати', edit_product_path(@product), class: 'btn btn-primary'
-      = link_to 'Видалити', product_path(@product), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'
-      = render 'check_btn', obj: @product
+      - if user_signed_in?
+        = link_to 'Редагувати', edit_product_path(@product), class: 'btn btn-primary'
+        = link_to 'Видалити', product_path(@product), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'
+        = render 'check_btn', obj: @product
+      - else
+        = link_to 'Купити', new_product_order_path(@product), class: 'btn btn-success'
+
+= render 'images/gallery_scripts'

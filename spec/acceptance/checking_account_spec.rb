@@ -9,6 +9,7 @@ feature 'Admin check account', %q{
   let(:user) { create(:user) }
   let(:name) { 'user' }
   let(:goal) { 'Лікування' }
+  let(:budget) { 100000 }
   
   scenario 'when admin checking new or changed account' do    
     # new account
@@ -54,14 +55,13 @@ feature 'Admin check account', %q{
     expect(page).to have_selector 'tr.danger'
 
     # admin change account
-    birthday = '1987-05-17'
     click_on name
     click_on 'Редагувати'
-    fill_in 'account[birthday_on]', with: birthday
+    fill_in 'account[budget]', with: budget
     click_on 'Зберегти'
     
     expect(current_path).to eq account_path user.account
-    expect(page).to have_content birthday
+    expect(page).to have_content budget
     click_on 'Користувачі'
     expect(page).to have_selector 'tr.info'
   end

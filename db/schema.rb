@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160822050346) do
+ActiveRecord::Schema.define(version: 20160825143304) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,9 +32,20 @@ ActiveRecord::Schema.define(version: 20160822050346) do
     t.boolean  "locked",          default: false
     t.datetime "created_at",      default: '2016-08-19 04:17:29'
     t.datetime "updated_at",      default: '2016-08-19 04:17:29'
+    t.string   "avatar_url"
   end
 
   add_index "accounts", ["user_id"], name: "index_accounts_on_user_id", using: :btree
+
+  create_table "images", force: :cascade do |t|
+    t.string   "image"
+    t.integer  "imageable_id"
+    t.string   "imageable_type"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  add_index "images", ["imageable_type", "imageable_id"], name: "index_images_on_imageable_type_and_imageable_id", using: :btree
 
   create_table "orders", force: :cascade do |t|
     t.integer  "product_id"
@@ -56,6 +67,7 @@ ActiveRecord::Schema.define(version: 20160822050346) do
     t.boolean  "visible",         default: true
     t.datetime "created_at",      default: '2016-08-22 16:41:40'
     t.datetime "updated_at",      default: '2016-08-22 16:41:40'
+    t.string   "avatar_url"
   end
 
   add_index "products", ["account_id"], name: "index_products_on_account_id", using: :btree

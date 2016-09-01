@@ -18,7 +18,7 @@ feature 'Admin switch an user product visible', %q{
     expect(current_path).to eq account_path(user.account)
     expect(page).to have_content product.title
     expect(page).to have_content product.description
-    expect(page).to have_link 'Купити'
+    expect(page).to have_link 'Обрати'
 
     sign_in admin_user
     click_on 'Товари'
@@ -36,6 +36,6 @@ feature 'Admin switch an user product visible', %q{
     find('a.avatar').click
     expect(page).not_to have_content product.title
     expect(page).not_to have_content product.description
-    expect(page).not_to have_link 'Купити'
+    expect(page).not_to have_link 'Обрати'
   end # when admin switchs an user product visible
 end # Admin switch an user product visible

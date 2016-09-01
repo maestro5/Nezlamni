@@ -1,1 +1,17 @@
-= render 'form'
+.row
+  .col-lg-12
+    h2 = @product.title
+.row
+  .col-lg-4
+    = render 'products/avatar'
+  .col-lg-4
+    p = @product.description
+  .col-lg-4
+    = render 'images/gallery_slides', obj: @product
+
+br
+.row
+  .col-lg-12
+    = render 'form'
+
+= render 'images/gallery_scripts'

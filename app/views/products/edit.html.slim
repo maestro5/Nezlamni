@@ -1,1 +1,12 @@
-= render 'form'
+.row
+  .col-lg-3
+    = render 'avatar'
+  .col-lg-5
+    = render 'form'
+  .col-lg-4
+    = render 'images/gallery_slides', obj: @product
+    br
+    - @image = @product.images.build
+    = render 'images/form', obj: @product
+
+= render 'images/gallery_scripts'

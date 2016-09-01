@@ -8,6 +8,11 @@ Rails.application.routes.draw do
       get 'visible'
       get 'locked'
     end
+
+    resources :images, only: [:index, :new, :create, :set_avatar] do
+      get 'set_avatar', on: :member
+    end
+
     resources :products, only: [:new, :create]
   end
 
@@ -20,7 +25,13 @@ Rails.application.routes.draw do
       get 'checked'
       get 'visible'
     end
+
+    resources :images, only: [:index, :new, :create, :set_avatar] do
+      get 'set_avatar', on: :member
+    end
+
     resources :orders, only: [:new, :create]
   end
   
+  resources :images, only: [:destroy]
 end

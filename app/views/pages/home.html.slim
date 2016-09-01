@@ -4,11 +4,14 @@
       - next unless account.visible?
       .col-sm-6.col-md-4 id="product_#{index}"
         .thumbnail
-          = link_to image_tag('no-avatar.jpg', alt: 'blank avatar'), account_path(account), class: 'avatar'
+          = link_to image_tag(account.avatar_url, alt: 'blank avatar'), account_path(account), class: 'avatar'
           .caption
             h3
               = link_to account.name, account_path(account)
               = " #{date_format account.birthday_on}"
             p = account.goal
             p = "#{account.budget}, до #{date_format account.deadline_on}"
-            p = "#{account.collected_percent} %"
+            - percent = account.collected_percent
+            .progress
+              .progress-bar.progress-bar-success role='progressbar' aria-valuenow="#{percent}" aria-valuemin="0" aria-valuemax="100" style="width: #{percent}%;"
+                span = "#{percent}%"

@@ -47,9 +47,10 @@ feature 'Admin checks a product', %q{
     click_on 'Перевірено'
 
     click_on 'Товари'
-    expect(page).to have_selector 'tr.danger'
     expect(page).not_to have_selector 'tr.warning'
-
+    expect(page).not_to have_selector 'tr.info'
+    expect(page).not_to have_selector 'tr.danger'
+    
     click_on 'Вийти'
 
     # user updates a product from account
@@ -82,11 +83,12 @@ feature 'Admin checks a product', %q{
     end
 
     click_on 'Товари'
-    expect(page).to have_selector 'tr.danger'
     expect(page).not_to have_selector 'tr.info'
+    expect(page).not_to have_selector 'tr.warning'
+    expect(page).not_to have_selector 'tr.danger'    
   end # when user creates/updates and admin checks a product
 
-  scenario 'when admin creates/updates and admin checks a user product' do
+  scenario 'when admin creates/updates and checks a user product' do
     # admin creates a new user product
     sign_in admin_user
 
@@ -109,8 +111,9 @@ feature 'Admin checks a product', %q{
     expect(page).to have_selector 'tr.warning'
     
     click_on 'Перевірено'
-    expect(page).to have_selector 'tr.danger'
+    expect(page).not_to have_selector 'tr.warning'
     expect(page).not_to have_selector 'tr.info'
+    expect(page).not_to have_selector 'tr.danger'
 
     # admin updates a user product from products list -> pdoruct page
     click_on title
@@ -125,9 +128,11 @@ feature 'Admin checks a product', %q{
     expect(page).to have_content new_description
     expect(page).to have_selector 'tr.info'
     expect(page).not_to have_selector 'tr.danger'
+    expect(page).not_to have_selector 'tr.warning'
 
     click_on 'Перевірено'
-    expect(page).to have_selector 'tr.danger'
     expect(page).not_to have_selector 'tr.info'
-  end # when admin creates/updates and admin checks a user product
+    expect(page).not_to have_selector 'tr.warning'
+    expect(page).not_to have_selector 'tr.danger'
+  end # when admin creates/updates and checks a user product
 end # Admin checks a product

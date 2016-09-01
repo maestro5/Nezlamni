@@ -1,61 +1,118 @@
-= form_for @account, html: { class: 'form-horizontal' } do |f|
-  - if @account.errors.any?
-    #errors
-      h2
-        = pluralize(@account.errors.count, "error")
-        |  prevented this account from saving
-      ul
-        - @account.errors.full_messages.each do |msg|
-          li
-            = msg
-  .row
-    .col-lg-6
-      .form-group
-        = f.label :name, 'Ім\'я', class: 'col-sm-4 control-label'
-        .col-sm-8
-          = f.text_field :name, class: 'form-control'
-    .col-lg-6
-      .form-group
-        = f.label :birthday_on, 'День народження', class: 'col-sm-4 control-label'
-        .col-sm-8
-          = f.date_field :birthday_on, class: 'form-control'
-  br
-  .row
-    .col-lg-6
-      .form-group
-        = f.label :goal, 'Мета', class: 'col-sm-4 control-label'
-        .col-sm-8
-          = f.text_field :goal, placeholder: 'лікування', class: 'form-control'
-      .form-group
-        = f.label :budget, 'Бюджет', class: 'col-sm-4 control-label'
-        .col-sm-8
-          = f.number_field :budget, min: 0, step: 0.01, class: 'form-control'
-      .form-group
-        = f.label :deadline_on, 'Завершення', class: 'col-sm-4 control-label'
-        .col-sm-8
-          = f.date_field :deadline_on, class: 'form-control'     
-  
-    .col-lg-6
-      .form-group
-        = f.label :payment_details, 'Платіжні реквізити', class: 'col-sm-4 control-label'
-        .col-sm-8
-          = f.text_field :payment_details, class: 'form-control'
+/ .row
+/   .col-lg-8
+/     #carousel-example-generic.carousel.slide[data-ride="carousel"]
+/       ol.carousel-indicators
+/         li.active[data-target="#carousel-example-generic" data-slide-to="0"]
+/         li[data-target="#carousel-example-generic" data-slide-to="1"]
+/         li[data-target="#carousel-example-generic" data-slide-to="2"]
+/       .carousel-inner[role="listbox"]
+/         - @account.images.each_with_index do |image, i|
+/           - if i == 0
+/             .item.active
+/               = image_tag image.image_url, alt: 'account image'
+/               .carousel-caption
+/                 = link_to 'delete', image_path(image), method: :delete
+/           - else
+/             .item
+/               = image_tag image.image_url, alt: 'account image'
+/               .carousel-caption
+/                 = link_to 'delete', image_path(image), method: :delete
+/       a.left.carousel-control[href="#carousel-example-generic" role="button" data-slide="prev"]
+/         span[aria-hidden="true"]
+/         span.sr-only
+/           | Previous
+/       a.right.carousel-control[href="#carousel-example-generic" role="button" data-slide="next"]
+/         span[aria-hidden="true"]
+/         span.sr-only
+/           | Next
+    
+  .col-lg-4
+    - @image = @account.images.build
+    = render 'images/form', obj: @account
+    br
+    br
+    = render 'avatar'
+br
+.row
+  .col-lg-8
+    = render 'avatar'
+  .col-lg-1
+  .col-lg-3
+    = render 'images/gallery_slides', obj: @account
+    br
+    - @image = @account.images.build
+    = render 'images/form', obj: @account
+
+br
+.row
+  .col-lg-12
+    = form_for @account, html: { class: 'form-horizontal' } do |f|
+      - if @account.errors.any?
+        #errors
+          h2
+            = pluralize(@account.errors.count, "error")
+            |  prevented this account from saving
+          ul
+            - @account.errors.full_messages.each do |msg|
+              li
+                = msg
+      .row
+        .col-lg-6
+          .form-group
+            = f.label :name, 'Ім\'я', class: 'col-sm-4 control-label'
+            .col-sm-8
+              = f.text_field :name, class: 'form-control'
+        .col-lg-6
+          .form-group
+            = f.label :birthday_on, 'День народження', class: 'col-sm-4 control-label'
+            .col-sm-8
+              = f.date_field :birthday_on, class: 'form-control'
       
-      .form-group
-        = f.label :backers, 'Людей', class: 'col-sm-4 control-label'
-        .col-sm-8
-          = f.number_field :backers, min: 0, class: 'form-control'
-      
-      .form-group
-        = f.label :collected, 'Зібрано', class: 'col-sm-4 control-label'
-        .col-sm-8
-          = f.number_field :collected, min: 0, step: 0.01, class: 'form-control'
-  br  
-  .row
-    .col-lg-12
-      .form-group
-        = f.label :overview, 'Відомості', class: 'col-sm-2 control-label'
-        .col-sm-10
-          = f.text_area :overview, rows: 11, class: 'form-control'
+      .row
+        .col-lg-6  
+          .form-group
+            = f.label :goal, 'Мета', class: 'col-sm-4 control-label'
+            .col-sm-8
+              = f.text_field :goal, placeholder: 'лікування', class: 'form-control'
+          .form-group
+            = f.label :budget, 'Бюджет', class: 'col-sm-4 control-label'
+            .col-sm-8
+              = f.number_field :budget, min: 0, step: 0.01, class: 'form-control'
+          .form-group
+            = f.label :deadline_on, 'Завершення', class: 'col-sm-4 control-label'
+            .col-sm-8
+              = f.date_field :deadline_on, class: 'form-control'
+        .col-lg-6
+          / .form-group
+          /   = f.label :payment_details, 'Номер телефону', class: 'col-sm-4 control-label'
+          /   .col-sm-8
+          /     = f.text_field :payment_details, class: 'form-control'
+          / .form-group
+          /   = f.label :payment_details, 'Контактна особа', class: 'col-sm-4 control-label'
+          /   .col-sm-8
+          /     = f.text_field :payment_details, class: 'form-control'
+          .form-group
+            = f.label :payment_details, 'Платіжні реквізити', class: 'col-sm-4 control-label'
+            .col-sm-8
+              = f.text_field :payment_details, class: 'form-control'
+
+      .row
+        .col-lg-6
+          .form-group
+            = f.label :overview, 'Відомості', class: 'col-sm-4 control-label'
+            .col-sm-8
+              = f.text_area :overview, rows: 11, class: 'form-control'
+        .col-lg-6
+          .form-group
+            = f.label :backers, 'Людей', class: 'col-sm-4 control-label'
+            .col-sm-8
+              = f.number_field :backers, min: 0, class: 'form-control'
+          .form-group
+            = f.label :collected, 'Зібрано', class: 'col-sm-4 control-label'
+            .col-sm-8
+              = f.number_field :collected, min: 0, step: 0.01, class: 'form-control'
+          
       .form-group
         = f.submit :'Зберегти', class: 'btn btn-primary'
+
+= render 'images/gallery_scripts'

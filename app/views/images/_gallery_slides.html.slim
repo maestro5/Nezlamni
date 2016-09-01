@@ -1,0 +1,12 @@
+#blueimp-gallery.blueimp-gallery.blueimp-gallery-controls
+  .slides
+  h3.title
+  a.prev ‹
+  a.next ›
+  a.close ×
+  a.play-pause
+  ol.indicator
+
+#links
+  - obj.images.each do |image|
+    = link_to image_tag(image.image_url, width: '100', alt: 'image'), image.image_url

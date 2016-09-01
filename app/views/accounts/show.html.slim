@@ -1,39 +1,69 @@
 .row
-  .col-lg-3
-    = link_to image_tag('no-avatar.jpg', size: '200x200', alt: 'blank avatar'), ''
-    - if user_signed_in? && (current_user.admin? || !@account.locked?)
-      = link_to 'Редагувати', edit_account_path(@account), class: 'btn btn-primary', id: 'edit_account'
-    = render 'check_btn', obj: @account
-  .col-lg-9
-    p = 'Ім\'я: ' + @account.name
-    p = 'День народження: ' + @account.birthday_on.to_s
-    p = 'Мета: ' + @account.goal
-    p = 'Бюджет: ' + @account.budget.to_s
-    p = 'Людей: ' + @account.backers.to_s
-    p = 'Зібрано: ' + @account.collected.to_s
-    p = 'Зібрати до: ' + @account.deadline_on.to_s
-    p = 'Платіжні реквізити: ' + @account.payment_details
-    p = 'Статус: не опубліковано, на перевірці, опубліковано'
+  - if user_signed_in? && (current_user.admin? || !@account.locked?)
+    .col-lg-6
+      h2
+        = "#{@account.name}, #{@account.age}. #{@account.goal}"
+    .col-lg-6
+      h2.text-right
+        = link_to 'Редагувати', edit_account_path(@account), class: 'btn btn-primary', id: 'edit_account'
+        = render 'check_btn', obj: @account
+  - else
+    .col-lg-12
+      h2.text-center = "#{@account.name}, #{@account.age}. #{@account.goal}"
+
 .row
-  .col-lg-12
-    p = 'Опис: ' + @account.overview
+  .col-lg-8
+    = render 'avatar'
+  .col-lg-1
+  .col-lg-3
+    h2 = @account.backers
+    p людей підтримало
+
+    h2 = @account.collected
+    p = "зібрано, з необхідних #{@account.budget}"
+
+    h2 = time_ago_in_words(@account.deadline_on) unless @account.deadline_on.nil?
+    p днів залишилось щоб зібрати
+    br
+    br
+    br
+    = link_to 'Підтримати цю дитину', '', class: 'btn btn-success btn-lg'
+
+.row
+  .col-lg-8
+    = render 'images/gallery_slides', obj: @account
 
 br
 .row
-  .col-gl-12
+  .col-lg-8
+    ul.nav.nav-tabs
+      li.active role="presentation" = link_to 'Опис', '#'
+      li role="presentation" = link_to 'Новини', '#'
+    br
+    == @account.overview
+  .col-lg-1
+  .col-lg-3
+    h3 Підтримати цю дитину
+    br
+    - if user_signed_in? && (current_user.admin? || !@account.locked?)
+      .thumbnail
+        .caption
+          = link_to 'Додати товар', new_account_product_path(@account), class: 'btn btn-primary'
     - @account.products.each_with_index do |product, index|
       - next unless product.visible?
-      .col-sm-6.col-md-4 id="product_#{index}"
+      . id="product_#{index}"
         .thumbnail
-          img
+          - @product = product
+          = render 'products/avatar'
           .caption
-            h3 = product.title
+            h3 = link_to product.title, new_product_order_path(product)
             p = product.description
             p
               - if user_signed_in? && (current_user.admin? || !@account.locked?)
                 = link_to 'Редагувати', edit_product_path(product), class: 'btn btn-primary'
                 = link_to 'Видалити', product_path(product), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'
               = render 'products/check_btn', obj: product
-              = link_to 'Купити', new_product_order_path(product), class: 'btn btn-success'
-    - if user_signed_in? && (current_user.admin? || !@account.locked?)
-      = link_to 'Додати товар', new_account_product_path(@account), class: 'btn btn-primary'
+              = link_to 'Обрати', new_product_order_path(product), class: 'btn btn-success'
+
+
+= render 'images/gallery_scripts'
