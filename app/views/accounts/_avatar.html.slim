@@ -3,4 +3,4 @@
 - if request.path.include? 'edit'
   = link_to image_tag(avatar_url, alt: 'avatar', class: 'img-rounded'), account_images_path(@account), id: 'avatar'
 - else
-  = link_to image_tag(avatar_url, alt: 'avatar', class: 'img-rounded'), account_path, id: 'avatar'
+  = link_to image_tag(avatar_url, alt: 'avatar', class: 'img-rounded'), account_path(@account), id: 'avatar'
