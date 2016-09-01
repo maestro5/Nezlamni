@@ -24,6 +24,14 @@
 
     h2 = time_ago_in_words(@account.deadline_on) unless @account.deadline_on.nil?
     p днів залишилось щоб зібрати
+
+    br
+    br
+    h3
+      = @account.phone_number
+      br
+      = @account.contact_person
+    p контактна особа
     br
     br
     br

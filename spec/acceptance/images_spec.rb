@@ -23,11 +23,11 @@ feature 'User account and product images', %q{
     expect(page).to have_css("img[src*='test.jpg']")
     
     # avatar
-    within('#avatar') do
+    within('.avatar') do
       expect(page).not_to have_css("img[src*='test.jpg']")  
     end
 
-    find('#avatar').click
+    find('.avatar').click
     expect(current_path).to eq account_images_path(account)
 
     within('#images') do
@@ -36,13 +36,13 @@ feature 'User account and product images', %q{
 
     expect(current_path).to eq edit_account_path(account)
     expect(page).to have_css("img[src*='test.jpg']")
-    within('#avatar') do
+    within('.avatar') do
       expect(page).to have_css("img[src*='test.jpg']")
     end
 
     visit account_path(account)
     expect(page).to have_css("img[src*='test.jpg']")
-    within('#avatar') do
+    within('.avatar') do
       expect(page).to have_css("img[src*='test.jpg']")
     end
 
@@ -65,11 +65,11 @@ feature 'User account and product images', %q{
     expect(page).to have_css("img[src*='test.jpg']")
     
     # avatar
-    within('#product_avatar') do
+    within('.product_avatar') do
       expect(page).not_to have_css("img[src*='test.jpg']")  
     end
 
-    find('#product_avatar').click
+    find('.product_avatar').click
     expect(current_path).to eq product_images_path(product)
 
     within('#images') do
@@ -78,7 +78,7 @@ feature 'User account and product images', %q{
 
     expect(current_path).to eq edit_product_path(product)
     expect(page).to have_css("img[src*='test.jpg']")
-    within('#product_avatar') do
+    within('.product_avatar') do
       expect(page).to have_css("img[src*='test.jpg']")  
     end
 

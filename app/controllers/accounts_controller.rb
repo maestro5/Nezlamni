@@ -44,7 +44,10 @@ class AccountsController < ApplicationController
   private
 
     def account_params
-      params.require(:account).permit(:name, :birthday_on, :goal, :budget, :backers, :collected, :deadline_on, :payment_details, :overview)
+      params.require(:account).permit(:name, :birthday_on, :goal,
+        :budget, :backers, :collected,
+        :deadline_on, :phone_number, :contact_person,
+        :payment_details, :overview)
     end
 
     def find_account
