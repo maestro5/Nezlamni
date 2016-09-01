@@ -57,15 +57,17 @@ br
       .thumbnail
         .caption
           = link_to 'Додати товар', new_account_product_path(@account), class: 'btn btn-primary'
-    - @account.products.each_with_index do |product, index|
+    - @products.each_with_index do |product, index|
       - next unless product.visible?
       . id="product_#{index}"
         .thumbnail
+          h4.text-center = "Внесок #{product.contribution} грн. або більше"
           - @product = product
           = render 'products/avatar'
           .caption
             h3 = link_to product.title, new_product_order_path(product)
             p = product.description
+            p = product.contributions_stat
             p
               - if user_signed_in? && (current_user.admin? || !@account.locked?)
                 = link_to 'Редагувати', edit_product_path(product), class: 'btn btn-primary'

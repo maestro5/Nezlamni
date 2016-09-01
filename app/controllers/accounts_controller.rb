@@ -7,6 +7,7 @@ class AccountsController < ApplicationController
   end
 
   def show
+    @products = @account.products.order(contribution: :asc)
   end
 
   def edit

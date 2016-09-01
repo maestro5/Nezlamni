@@ -4,4 +4,10 @@ class Product < ActiveRecord::Base
   has_many :orders, dependent: :delete_all
 
   validates :title, presence: true
+
+  def contributions_stat
+    return if backers == 0
+    msg = remainder == 0 ? '' : ", залишилось #{remainder - backers} з #{remainder}"
+    "#{backers} людей" + msg
+  end
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160901131237) do
+ActiveRecord::Schema.define(version: 20160901143957) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -71,6 +71,9 @@ ActiveRecord::Schema.define(version: 20160901131237) do
     t.datetime "created_at",      default: '2016-08-22 16:41:40'
     t.datetime "updated_at",      default: '2016-08-22 16:41:40'
     t.string   "avatar_url"
+    t.integer  "contribution",    default: 0
+    t.integer  "backers",         default: 0
+    t.integer  "remainder",       default: 0
   end
 
   add_index "products", ["account_id"], name: "index_products_on_account_id", using: :btree
