@@ -35,7 +35,7 @@
     br
     br
     br
-    = link_to 'Підтримати цю дитину', '', class: 'btn btn-success btn-lg'
+    = link_to 'Підтримати цю дитину', account_products_path(@account), class: 'btn btn-success btn-lg'
 
 .row
   .col-lg-8
@@ -61,7 +61,7 @@ br
       - next unless product.visible?
       . id="product_#{index}"
         .thumbnail
-          h4.text-center = "Внесок #{product.contribution} грн. або більше"
+          h4.text-center = "Внесок #{product.contribution} грн. або більше" if product.contribution > 0
           - @product = product
           = render 'products/avatar'
           .caption

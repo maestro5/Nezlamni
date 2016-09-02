@@ -29,6 +29,8 @@ feature 'User login', %q{
     expect(current_path).to eq root_path
     expect(page).not_to have_link 'Користувачі'
     expect(page).to have_link 'Моя сторінка'
+    expect(page).to have_link 'Замовлення'
+    expect(page).to have_link 'Вийти'
   end
 end # User login
 

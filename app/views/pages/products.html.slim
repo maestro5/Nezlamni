@@ -1,0 +1,25 @@
+-if @products.any?
+  table.table.table-hover
+    thead
+      tr
+        th Назва
+        th Опис
+        th Власник
+        th Зміни
+        th Видимість
+        th
+    tbody
+      - @products.each do |product|
+        tr class="#{products_tr_class(product)}"
+          td = link_to product.title, product_path(product)
+          td = product.description
+          td = link_to product.account.name, account_path(product.account)
+          
+          td = render 'products/check_btn', obj: product  
+          td
+            - if product.visible?
+              = link_to 'Приховувати', visible_product_path(product), class: 'btn btn-danger'
+            - else
+              = link_to 'Показувати', visible_product_path(product), class: 'btn btn-success'
+          td 
+            = link_to 'Видалити', product_path(product), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'

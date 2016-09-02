@@ -13,14 +13,14 @@ Rails.application.routes.draw do
       get 'set_avatar', on: :member
     end
 
-    resources :products, only: [:new, :create]
+    resources :products, only: [:new, :create, :index]
   end
 
   resources :orders, only: [:index, :show] do
     get 'delivered', on: :member
   end
 
-  resources :products, except: [:new, :create] do
+  resources :products, except: [:new, :create, :index] do
     member do
       get 'checked'
       get 'visible'
@@ -33,5 +33,7 @@ Rails.application.routes.draw do
     resources :orders, only: [:new, :create]
   end
   
+  get '/products', to: 'pages#products'
   resources :images, only: [:destroy]
 end
+

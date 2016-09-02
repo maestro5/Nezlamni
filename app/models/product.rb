@@ -6,8 +6,9 @@ class Product < ActiveRecord::Base
   validates :title, presence: true
 
   def contributions_stat
-    return if backers == 0
-    msg = remainder == 0 ? '' : ", залишилось #{remainder - backers} з #{remainder}"
-    "#{backers} людей" + msg
+    return if backers.nil? || backers == 0
+    self.remainder ||= 0
+    msg = self.remainder == 0 ? '' : ", залишилось #{self.remainder - self.backers} з #{self.remainder}"
+    "#{self.backers} людей" + msg
   end
 end

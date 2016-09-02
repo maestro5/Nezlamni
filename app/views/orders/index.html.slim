@@ -3,17 +3,21 @@
     thead
       tr
         th Товар
-        th Адреса
+        th Сумма
         th Одержувач
+        th E-mail
         th Телефон
+        th Адреса        
         th Доставлено
     tbody
       - @orders.each do |order|
         tr class="#{order.delivered? ? 'success' : 'danger'}"
           td = link_to order.product.title, product_path(order.product)
-          td = order.address
+          td = order.contribution
           td = order.recipient
+          td = order.email
           td = order.phone
+          td = order.address          
           td
             - if order.delivered?
               = link_to 'Ні', delivered_order_path(order), class: 'btn btn-danger'

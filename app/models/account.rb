@@ -2,6 +2,7 @@ class Account < ActiveRecord::Base
   belongs_to :user
   has_many :images, as: :imageable, dependent: :delete_all
   has_many :products, dependent: :delete_all
+  has_many :orders, dependent: :delete_all
 
   def collected_percent
     return 0 if budget == 0

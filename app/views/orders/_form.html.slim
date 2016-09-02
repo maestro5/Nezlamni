@@ -9,22 +9,33 @@
           li
             = msg
   .row
-    .col-lg-8.col-lg-offset-2
-      .form-group
-        = f.label :recipient, 'Одержувач', class: 'col-sm-4 control-label'
-        .col-sm-8
-          = f.text_field :recipient, placeholder: 'ПІБ', class: 'form-control'
-      .form-group
-        = f.label :phone, 'Номер телефону', class: 'col-sm-4 control-label'
-        .col-sm-8
-          = f.text_field :phone, placeholder: 'номер телефону', class: 'form-control'
-      .form-group
-        = f.label :email, 'Електронна пошта', class: 'col-sm-4 control-label'
-        .col-sm-8
-          = f.text_field :email, placeholder: 'e-mail', class: 'form-control'
-      .form-group
-        = f.label :address, 'Адреса', class: 'col-sm-4 control-label'
-        .col-sm-8
-          = f.text_field :address, placeholder: 'адреса або місто та номер складу нової пошти', required: true, class: 'form-control'
-      
-  = f.submit :'Оформити', class: 'btn btn-success'
+    / .col-lg-8.col-lg-offset-2
+    /   .form-group
+    /     = f.label :recipient, 'Одержувач', class: 'col-sm-4 control-label'
+    /     .col-sm-8
+    /       = f.text_field :recipient, placeholder: 'ПІБ', class: 'form-control'
+    /   .form-group
+    /     = f.label :phone, 'Номер телефону', class: 'col-sm-4 control-label'
+    /     .col-sm-8
+    /       = f.text_field :phone, placeholder: 'номер телефону', class: 'form-control'
+    /   .form-group
+    /     = f.label :email, 'Електронна пошта', class: 'col-sm-4 control-label'
+    /     .col-sm-8
+    /       = f.text_field :email, placeholder: 'e-mail', class: 'form-control'
+    /   .form-group
+    /     = f.label :address, 'Адреса', class: 'col-sm-4 control-label'
+    /     .col-sm-8
+    /       = f.text_field :address, placeholder: 'адреса або місто та номер складу нової пошти', required: true, class: 'form-control'
+
+    .form-group
+      = f.number_field :contribution, min: @product.contribution, step: 0.01, placeholder: 'Внесок', class: 'form-control'
+    .form-group
+      = f.text_field :recipient, placeholder: 'ПІБ', class: 'form-control'
+    .form-group
+      = f.text_field :phone, placeholder: 'Номер телефону', class: 'form-control'
+    .form-group
+      = f.text_field :email, placeholder: 'E-mail', class: 'form-control'
+    .form-group
+      = f.text_field :address, placeholder: 'Адреса або місто та номер складу нової пошти', required: @product.contribution > 0, class: 'form-control'
+    .form-group
+      = f.submit :'Оформити', class: 'btn btn-success'

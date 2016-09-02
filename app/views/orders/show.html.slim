@@ -1,7 +1,11 @@
+- account = @order.product.account
 .row
   .col-lg-12
-    p = "Товар: #{@order.product.title}"
-    p = "Платіжні реквізити: #{@order.product.account.payment_details}"
+    p = "Внесок: #{@order.contribution} грн."
+    p = "Платіжні реквізити: #{account.payment_details}"
+    p = "Контактна особа: #{account.contact_person} т. #{account.phone_number}"
+    br
+    p = "Винагорода: #{@order.product.title} [#{@order.product.id}]"
     br
     p = "Одержувач: #{@order.recipient}"
     p = "Телефон: #{@order.phone}"
@@ -9,4 +13,4 @@
     p = "Адреса: #{@order.address}"
     br
     h3 Дякую!
-    p = link_to image_tag(@order.product.account.avatar_url, size: '200x200', alt: 'blank avatar'), account_path(@order.product.account)
+    p = link_to image_tag(account.avatar_url, size: '200x200', alt: 'blank avatar'), account_path(account)

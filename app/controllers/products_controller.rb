@@ -1,10 +1,10 @@
 class ProductsController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:show]
-  before_action :find_account, only: [:new, :create]
+  skip_before_action :authenticate_user!, only: [:show, :index]
+  before_action :find_account, only: [:new, :create, :index]
   before_action :find_product, except: [:index, :new, :create]
 
   def index
-    @products = Product.all
+    @products = @account.products.order(contribution: :asc)
   end
 
   def new

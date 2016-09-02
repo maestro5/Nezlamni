@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160901143957) do
+ActiveRecord::Schema.define(version: 20160902055209) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -51,15 +51,18 @@ ActiveRecord::Schema.define(version: 20160901143957) do
 
   create_table "orders", force: :cascade do |t|
     t.integer  "product_id"
-    t.string   "address",    default: ""
-    t.string   "recipient",  default: ""
-    t.string   "phone",      default: ""
-    t.boolean  "delivered",  default: false
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.string   "address",      default: ""
+    t.string   "recipient",    default: ""
+    t.string   "phone",        default: ""
+    t.boolean  "delivered",    default: false
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
     t.string   "email"
+    t.decimal  "contribution", default: 0.0
+    t.integer  "account_id"
   end
 
+  add_index "orders", ["account_id"], name: "index_orders_on_account_id", using: :btree
   add_index "orders", ["product_id"], name: "index_orders_on_product_id", using: :btree
 
   create_table "products", force: :cascade do |t|
@@ -71,7 +74,7 @@ ActiveRecord::Schema.define(version: 20160901143957) do
     t.datetime "created_at",      default: '2016-08-22 16:41:40'
     t.datetime "updated_at",      default: '2016-08-22 16:41:40'
     t.string   "avatar_url"
-    t.integer  "contribution",    default: 0
+    t.decimal  "contribution",    default: 0.0
     t.integer  "backers",         default: 0
     t.integer  "remainder",       default: 0
   end

@@ -4,7 +4,7 @@ class OrdersController < ApplicationController
   before_action :find_order, only: [:show, :delivered]
 
   def index
-    @orders = Order.all
+    @orders = current_user.admin? ? Order.all : current_user.account.orders
   end
 
   def new
@@ -13,6 +13,7 @@ class OrdersController < ApplicationController
 
   def create
     @order = @product.orders.build(order_params)
+    @order.account = @product.account
     if @order.save
       redirect_to @order
     else
@@ -24,15 +25,24 @@ class OrdersController < ApplicationController
   end
 
   def delivered
-    account = @order.product.account
+    account = @order.account
+    product = @order.product
     last_delivered = @order.delivered
 
     @order.toggle!(:delivered)
 
     if !last_delivered && @order.delivered?
-      account.update_attribute(:backers, account.backers + 1)
+      account.update_attributes(
+        backers: account.backers + 1,
+        collected: account.collected + @order.contribution
+      )
+      product.update_attribute(:backers, product.backers + 1)
     elsif last_delivered && !@order.delivered?
-      account.update_attribute(:backers, account.backers - 1)
+      account.update_attributes(
+        backers: account.backers - 1,
+        collected: account.collected - @order.contribution
+      )
+      product.update_attribute(:backers, product.backers - 1)
     end
 
     redirect_to :back
@@ -49,6 +59,6 @@ class OrdersController < ApplicationController
   end
 
   def order_params
-    params.require(:order).permit(:address, :recipient, :phone, :email)
+    params.require(:order).permit(:contribution, :recipient, :phone, :email, :address)
   end
 end
