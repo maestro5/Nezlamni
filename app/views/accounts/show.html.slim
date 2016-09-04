@@ -1,15 +1,14 @@
 .row
   - if user_signed_in? && (current_user.admin? || !@account.locked?)
     .col-lg-6
-      h2
-        = "#{@account.name}, #{@account.age}. #{@account.goal}"
+      h2 = @account.title
     .col-lg-6
       h2.text-right
         = link_to 'Редагувати', edit_account_path(@account), class: 'btn btn-primary', id: 'edit_account'
         = render 'check_btn', obj: @account
   - else
     .col-lg-12
-      h2.text-center = "#{@account.name}, #{@account.age}. #{@account.goal}"
+      h2.text-center = @account.title
 
 .row
   .col-lg-8
@@ -44,11 +43,34 @@
 br
 .row
   .col-lg-8
-    ul.nav.nav-tabs
-      li.active role="presentation" = link_to 'Опис', '#'
-      li role="presentation" = link_to 'Новини', '#'
-    br
-    == @account.overview
+    .section-tabs
+      / Nav tabs
+      ul.nav.nav-tabs role="tablist"
+        li.active role="presentation"
+          a href="#overview" aria-controls="overview" role="tab" data-toggle="tab" Опис
+        li role="presentation"
+          a href="#news" aria-controls="news" role="tab" data-toggle="tab" Новини
+
+      / Tab panes
+      .tab-content
+        .tab-pane.active role="tabpanel" id="overview" == @account.overview
+        .tab-pane role="tabpanel" id="news"
+          - if user_signed_in? && (current_user.admin? || !@account.locked?)
+            = link_to 'Додати', new_account_article_path(@account), class: 'btn btn-success'
+          - @articles.each do |article|
+            - next unless article.visible?
+            .article
+              h3 = date_format article.created_at
+              h3 
+                = link_to article.title, article.link.empty? ? article_path(article) : article.link
+              p == article.description
+              p 
+                = link_to 'Детальніше ...', article.link.empty? ? article_path(article) : article.link
+              - if user_signed_in? && (current_user.admin? || !@account.locked?)
+                p 
+                  = link_to 'Редагувати', edit_article_path(article), class: 'btn btn-primary'
+                  = link_to 'Видалити', article_path(article), method: :delete, data: { confirm: 'Ви впевнені?' }, class: 'btn btn-danger'
+
   .col-lg-1
   .col-lg-3
     h3 Підтримати цю дитину
@@ -77,3 +99,4 @@ br
 
 
 = render 'images/gallery_scripts'
+

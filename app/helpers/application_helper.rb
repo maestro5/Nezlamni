@@ -4,6 +4,11 @@ module ApplicationHelper
     date.strftime('%d.%m.%Y')
   end
 
+  def date_time_format(date)
+    return if date.nil?
+    date.strftime('%d.%m.%Y %H:%M:%S')
+  end
+
   def accounts_tr_class(account)
     return if account.nil?
     if account.collected > 0 && account.collected >= account.budget

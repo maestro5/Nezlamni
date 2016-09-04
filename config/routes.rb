@@ -14,10 +14,15 @@ Rails.application.routes.draw do
     end
 
     resources :products, only: [:new, :create, :index]
-  end
+    resources :articles, only: [:new, :create]
+  end # accounts
 
   resources :orders, only: [:index, :show] do
     get 'delivered', on: :member
+  end # orders
+
+  resources :articles do
+    get 'visible', on: :member
   end
 
   resources :products, except: [:new, :create, :index] do
@@ -31,7 +36,7 @@ Rails.application.routes.draw do
     end
 
     resources :orders, only: [:new, :create]
-  end
+  end # products
   
   get '/products', to: 'pages#products'
   resources :images, only: [:destroy]

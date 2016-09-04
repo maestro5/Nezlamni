@@ -11,6 +11,11 @@ feature 'Visitor items', %q{
     expect(current_path).to eq root_path
     expect(page).not_to have_link 'Користувачі'
     expect(page).not_to have_link 'Моя сторінка'
+    expect(page).not_to have_link 'Замовлення'
+    expect(page).not_to have_link 'Користувачі'
+    expect(page).not_to have_link 'Товари'
+    expect(page).not_to have_link 'Новини'
+
     expect(page).to have_link 'Реєстрація'
     expect(page).to have_link 'Увійти'
   end
@@ -28,6 +33,7 @@ feature 'User login', %q{
 
     expect(current_path).to eq root_path
     expect(page).not_to have_link 'Користувачі'
+    expect(page).not_to have_link 'Товари'
     expect(page).to have_link 'Моя сторінка'
     expect(page).to have_link 'Замовлення'
     expect(page).to have_link 'Вийти'
@@ -46,7 +52,10 @@ feature 'Admin login', %q{
     sign_in admin_user
 
     expect(current_path).to eq root_path
-    expect(page).not_to have_link 'Моя сторінка'
+    expect(page).to have_link 'Моя сторінка'
+    expect(page).to have_link 'Замовлення'
     expect(page).to have_link 'Користувачі'
+    expect(page).to have_link 'Товари'
+    expect(page).to have_link 'Новини'
   end
 end # Admin login

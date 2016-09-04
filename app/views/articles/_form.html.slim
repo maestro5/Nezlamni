@@ -1,0 +1,24 @@
+= form_for [@account, @article], html: { class: 'form-horizontal' } do |f|
+  - if @article.errors.any?
+    #errors
+      h2
+        = pluralize(@article.errors.count, "error")
+        |  prevented this article from saving
+      ul
+        - @article.errors.full_messages.each do |msg|
+          li
+            = msg
+  .form-group
+    = f.label :title, 'Заголовок', class: 'col-sm-4 control-label'
+    .col-sm-8
+      = f.text_field :title, class: 'form-control'
+  .form-group
+    = f.label :description, 'Текст новини', class: 'col-sm-4 control-label'
+    .col-sm-8
+      = f.text_area :description, rows: 7, class: 'form-control'
+  .form-group
+    = f.label :link, 'Посилання', class: 'col-sm-4 control-label'
+    .col-sm-8
+      = f.text_field :link, class: 'form-control'
+  .form-group
+    p.text-right = f.submit :'Зберегти', class: 'btn btn-primary'

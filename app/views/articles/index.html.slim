@@ -1,0 +1,29 @@
+table.table.table-hover
+  thead
+    tr
+      th Дата створення
+      th Заголовок
+      th Користувач
+      th Видимість
+      th
+      th
+  tbody
+    - @articles.each do |article|
+      tr class="#{'danger' unless article.visible}"
+        td = date_time_format article.created_at
+        td = link_to article.title, article.link.empty? ? article_path(article) : article.link
+        td = link_to article.account.name, account_path(article.account) unless article.account.nil?
+        td
+          - if article.visible?
+            = link_to 'Приховувати', visible_article_path(article), class: 'btn btn-danger'
+          - else
+            = link_to 'Показувати', visible_article_path(article), class: 'btn btn-success'
+        td = link_to 'Редагувати', edit_article_path(article), class: 'btn btn-primary'
+        td = link_to 'Видалити', article_path(article), method: :delete, data: { confirm: 'Ви впевнені?' }, class: 'btn btn-danger'
+    tr
+      td = link_to 'Додати', new_account_article_path(@account), class: 'btn btn-success'
+      td
+      td
+      td
+      td
+      td

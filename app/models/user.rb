@@ -6,5 +6,5 @@ class User < ActiveRecord::Base
 
   has_one :account, dependent: :destroy
 
-  after_save { self.create_account if self.account.nil? && !self.admin? }
+  after_save { self.create_account if self.account.nil? }
 end

@@ -13,6 +13,7 @@
         th 
     tbody
       - @accounts.each do |account|
+        - next if account.user.admin?
         tr class="#{accounts_tr_class(account)}"
           td = link_to account.name, account_path(account)
           td = date_format(account.birthday_on)

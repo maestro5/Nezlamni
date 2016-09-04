@@ -8,6 +8,7 @@ class AccountsController < ApplicationController
 
   def show
     @products = @account.products.order(contribution: :asc)
+    @articles = @account.articles.order(created_at: :desc)
   end
 
   def edit

@@ -1,18 +1,25 @@
 .row
-  .col-gl-12
+  .col-lg-9
     - @accounts.each_with_index do |account, index|
-      - next unless account.visible?
-      .col-sm-6.col-md-4 id="product_#{index}"
+      .col-sm-4.col-md-4 id="product_#{index}"
         .thumbnail
           - @account = account
           = render 'accounts/avatar'
           .caption
             h3
-              = link_to account.name, account_path(account)
-              = " #{date_format account.birthday_on}"
-            p = account.goal
+              = link_to account.title, account_path(account)
             p = "#{account.budget}, до #{date_format account.deadline_on}"
             - percent = account.collected_percent
             .progress
               .progress-bar.progress-bar-success role='progressbar' aria-valuenow="#{percent}" aria-valuemin="0" aria-valuemax="100" style="width: #{percent}%;"
                 span = "#{percent}%"
+  .col-lg-3
+    h2 Новини
+    - @articles.each do |article|
+      .article
+        h3 = date_format article.created_at
+        h3 
+          = link_to article.title, article.link.empty? ? article_path(article) : article.link
+        p == article.description
+        p 
+          = link_to 'Детальніше ...', article.link.empty? ? article_path(article) : article.link

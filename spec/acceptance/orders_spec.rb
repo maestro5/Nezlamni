@@ -13,7 +13,7 @@ feature 'Visitor buy', %q{
 
   scenario 'when a visitor click button [Підтримати цю дитину]' do
     visit root_path
-    find('a.avatar').click   
+    find('a.avatar').click
     click_on 'Підтримати цю дитину'
 
     expect(current_path).to eq account_products_path(account)

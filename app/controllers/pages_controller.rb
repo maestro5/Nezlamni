@@ -2,7 +2,8 @@ class PagesController < ApplicationController
   skip_before_action :authenticate_user!, only: [:home]
 
   def home
-    @accounts = Account.all
+    @accounts = Account.where(visible: true).order(deadline_on: :asc)
+    @articles = Article.where(visible: true).order(created_at: :desc)
   end
 
   def products
