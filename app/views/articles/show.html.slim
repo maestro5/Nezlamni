@@ -3,7 +3,7 @@
     h3 = date_format @article.created_at
     h3 = @article.title
     p == @article.description
-    - if user_signed_in? && (current_user.admin? || !@article.account.locked?)
+    - if @article.admin_owner_unlocked?(current_user)
       p 
         = link_to 'Редагувати', edit_article_path(@article), class: 'btn btn-primary'
         = link_to 'Видалити', article_path(@article), method: :delete, data: { confirm: 'Ви впевнені?' }, class: 'btn btn-danger'

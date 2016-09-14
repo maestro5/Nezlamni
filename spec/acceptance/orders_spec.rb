@@ -1,4 +1,4 @@
-require 'rails_helper'
+require_relative '../acceptance_helper'
 
 feature 'Visitor buy', %q{
   As a visitor
@@ -43,11 +43,7 @@ feature 'Visitor buy', %q{
 
     order = product.orders.first
     expect(current_path).to eq order_path(order)
-    
-    expect(page).to have_content product.title
-    expect(page).to have_content order.recipient
-    expect(page).to have_content order.phone
-    expect(page).to have_content order.address
+    expect(page).to have_content 'Дякуємо, за підтримку!'
 
     # delivered
     sign_in user

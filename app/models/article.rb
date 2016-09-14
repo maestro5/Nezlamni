@@ -3,9 +3,13 @@ class Article < ActiveRecord::Base
 
   def check_link!
     prefix = 'http://'
-    return if self.link.empty?
-    return if self.link.include? prefix
-    self.link = prefix + self.link
-    self.save
+    return if self.link.nil? || self.link.empty? || self.link.include?(prefix)
+    self.update_attribute(:link, prefix + self.link)
+  end
+
+  def admin_owner_unlocked?(current_user)
+    return false if current_user.nil?
+    current_user.admin? ||
+    (current_user.account.id == self.account.id && !self.account.locked?)
   end
 end

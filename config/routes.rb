@@ -21,7 +21,7 @@ Rails.application.routes.draw do
     get 'delivered', on: :member
   end # orders
 
-  resources :articles do
+  resources :articles, except: [:new, :create] do
     get 'visible', on: :member
   end
 
@@ -39,6 +39,6 @@ Rails.application.routes.draw do
   end # products
   
   get '/products', to: 'pages#products'
-  resources :images, only: [:destroy]
+  resources :images, only: :destroy
 end
 

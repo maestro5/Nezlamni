@@ -1,18 +1,25 @@
 class AccountsController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:show]
+  skip_before_action :authenticate_user!, only: :show
   before_action :find_account, except: [:index]
+  before_action :admin!, only: [:index, :destroy, :checked, :visible, :locked]
+  before_action :admin_or_owner!, only: [:edit, :update]
+  before_action :visible_account!, only: :show
 
   def index
-    @accounts = Account.all
+    @accounts = Account.all.order(deadline_on: :asc)
   end
 
   def show
-    @products = @account.products.order(contribution: :asc)
-    @articles = @account.articles.order(created_at: :desc)
+    if current_user.nil? # visitor
+      @products = @account.products.where(visible: true).order(contribution: :asc)
+      @articles = @account.articles.where(visible: true).order(created_at: :desc)
+    else
+      @products = @account.products.order(contribution: :asc)
+      @articles = @account.articles.order(created_at: :desc)
+    end
   end
 
   def edit
-    protection
   end
 
   def update
@@ -46,17 +53,35 @@ class AccountsController < ApplicationController
   private
 
     def account_params
-      params.require(:account).permit(:name, :birthday_on, :goal,
-        :budget, :backers, :collected,
-        :deadline_on, :phone_number, :contact_person,
-        :payment_details, :overview)
-    end
+      params.require(:account).permit(
+        :name,
+        :birthday_on,
+        :goal,
+        :budget,
+        :backers,
+        :collected,
+        :deadline_on,
+        :phone_number,
+        :contact_person,
+        :payment_details,
+        :overview
+      )
+    end # account_params
 
     def find_account
       @account = Account.find(params[:id])
     end
 
-    def protection
-      redirect_to root_path if @account.locked? && !current_user.admin?
+    def visible_account!
+      return if @account.visible?
+      return if !current_user.nil? &&
+        (current_user.account.id == @account.id || current_user.admin?)
+      redirect_to root_path
     end
-end
+
+    def admin_or_owner!
+      return if current_user.account.id == @account.id && !@account.locked?
+      return if current_user.admin?
+      redirect_to root_path
+    end
+end # AccountsController

@@ -110,7 +110,7 @@ feature 'Admin add and edit user news', %q{
       click_on 'Новини'
     end
     
-    # adds new inside user news
+    # adds new inside user article
     click_on 'Додати'
     fill_in 'article[title]', with: 'Test inside article title'
     fill_in 'article[description]', with: 'Test description'
@@ -189,7 +189,6 @@ feature 'Admin add and edit user news', %q{
     find('a.avatar').click
     within '.section-tabs' do
       click_on 'Новини'
-      
       within '.article' do
         expect(page).to have_link new_article_title
         expect(page).to have_css('a[href=\'http://' + outside_link + '\']')
@@ -200,7 +199,7 @@ feature 'Admin add and edit user news', %q{
       end
     end # .section-tabs
 
-    # hide user news, visible = false
+    # hide user article, visible = false
     visit articles_path
     click_on 'Приховувати'
     expect(page).to have_selector 'tr.danger'
@@ -213,7 +212,7 @@ feature 'Admin add and edit user news', %q{
 
     find('a.avatar').click
     within '.section-tabs' do
-      expect(page).not_to have_selector '.article'      
+      expect(page).to have_selector '.article'
     end
 
     # show user news, visible = true
@@ -252,15 +251,15 @@ feature 'Admin add and edit own news', %q{
   let(:user_admin) { create :user_admin }
   let(:account) { user_admin.account }
 
-  before { account.update_attribute :name, 'admin' }
+  before { account.update_attributes name: 'admin', visible: true }
 
-  scenario "when admin adds and edits news" do
+  scenario "when admin adds and edits article" do
     sign_in user_admin
     click_on 'Новини'
 
     expect(current_path).to eq articles_path
 
-    # adds new inside user news
+    # adds new inside user article
     click_on 'Додати'
     fill_in 'article[title]', with: 'Test inside article title'
     fill_in 'article[description]', with: 'Test description'
@@ -288,7 +287,7 @@ feature 'Admin add and edit own news', %q{
       expect(page).to have_link 'Детальніше ...'
     end
 
-    # edits inside user news into outside
+    # edits inside user article into outside
     click_on 'Новини'
     click_on 'Редагувати'
 

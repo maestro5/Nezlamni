@@ -2,8 +2,10 @@
   table.table.table-hover
     thead
       tr
+        th Дата
         th Товар
-        th Сумма
+        th Власник
+        th Сума
         th Одержувач
         th E-mail
         th Телефон
@@ -12,7 +14,9 @@
     tbody
       - @orders.each do |order|
         tr class="#{order.delivered? ? 'success' : 'danger'}"
+          td = date_time_format(order.created_at)
           td = link_to order.product.title, product_path(order.product)
+          td = link_to order.account.name, account_path(order.account)
           td = order.contribution
           td = order.recipient
           td = order.email

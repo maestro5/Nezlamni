@@ -1,16 +1,20 @@
-- account = @order.product.account
+/ - account = @order.product.account
+/ .row
+/   .col-lg-12
+/     p = "Внесок: #{@order.contribution} грн."
+/     p = "Платіжні реквізити: #{account.payment_details}"
+/     p = "Контактна особа: #{account.contact_person} т. #{account.phone_number}"
+/     br
+/     p = "Винагорода: #{@order.product.title} [#{@order.product.id}]"
+/     br
+/     p = "Одержувач: #{@order.recipient}"
+/     p = "Телефон: #{@order.phone}"
+/     p = "E-mail: #{@order.email}"
+/     p = "Адреса: #{@order.address}"
+/     br
+/     h3 Дякую!
+/     p = link_to image_tag(account.avatar_url, size: '200x200', alt: 'blank avatar'), account_path(account)
+
 .row
   .col-lg-12
-    p = "Внесок: #{@order.contribution} грн."
-    p = "Платіжні реквізити: #{account.payment_details}"
-    p = "Контактна особа: #{account.contact_person} т. #{account.phone_number}"
-    br
-    p = "Винагорода: #{@order.product.title} [#{@order.product.id}]"
-    br
-    p = "Одержувач: #{@order.recipient}"
-    p = "Телефон: #{@order.phone}"
-    p = "E-mail: #{@order.email}"
-    p = "Адреса: #{@order.address}"
-    br
-    h3 Дякую!
-    p = link_to image_tag(account.avatar_url, size: '200x200', alt: 'blank avatar'), account_path(account)
+    h2 Дякуємо, за підтримку!

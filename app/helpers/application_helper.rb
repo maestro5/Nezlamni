@@ -6,7 +6,7 @@ module ApplicationHelper
 
   def date_time_format(date)
     return if date.nil?
-    date.strftime('%d.%m.%Y %H:%M:%S')
+    date.localtime.strftime('%d.%m.%Y %H:%M:%S')
   end
 
   def accounts_tr_class(account)
@@ -32,5 +32,10 @@ module ApplicationHelper
     elsif !product.visible?
       'danger'
     end
+  end
+
+  def owner?(account)
+    return true if current_user.admin?
+    current_user.account == account
   end
 end

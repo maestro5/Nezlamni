@@ -2,11 +2,12 @@
   .col-lg-3
     h3 Підтримати цю дитину
     br
-    - if user_signed_in? && (current_user.admin? || !@account.locked?)
+    - if user_signed_in? && owner?(@account) && (current_user.admin? || !@account.locked?)
       .thumbnail
         .caption
           = link_to 'Додати товар', new_account_product_path(@account), class: 'btn btn-primary'
     - @products.each_with_index do |product, index|
+      - next unless (product.visible? || current_user.account.id == product.account.id || current_user.admin?)
       . id="product_#{index}"
         .thumbnail
           h4.text-center = "Внесок #{product.contribution} грн. або більше" if product.contribution > 0
@@ -17,8 +18,9 @@
             p = product.description
             p = product.contributions_stat
             p
-              - if user_signed_in? && (current_user.admin? || !@account.locked?)
+              - if user_signed_in? && owner?(@account) && (current_user.admin? || !@account.locked?)
                 = link_to 'Редагувати', edit_product_path(product), class: 'btn btn-primary'
                 = link_to 'Видалити', product_path(product), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'
               = render 'products/check_btn', obj: product
-              = link_to 'Обрати', new_product_order_path(product), class: 'btn btn-success'
+              - if @account.visible? && product.visible?
+                = link_to 'Обрати', new_product_order_path(product), class: 'btn btn-success'

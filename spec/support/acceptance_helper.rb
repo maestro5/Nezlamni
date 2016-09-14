@@ -1,4 +1,3 @@
-# acceptance helpers
 module AcceptanceHelper
   def sign_in(user)
     visit new_user_session_path
