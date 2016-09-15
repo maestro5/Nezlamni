@@ -20,7 +20,7 @@ feature 'Admin lock an account', %q{
     fill_in 'product[title]', with: 'title'
     click_on 'Зберегти'
 
-    within('#product_0') do
+    within('.product') do
       click_on 'Редагувати'
     end
 
@@ -49,7 +49,7 @@ feature 'Admin lock an account', %q{
     expect(page).to have_content 'Bob'
 
     # admin can edit locked user products
-    within('#product_0') do
+    within('.product') do
       click_on 'Редагувати'
     end
     fill_in 'product[title]', with: 'admin edited product'
@@ -66,7 +66,7 @@ feature 'Admin lock an account', %q{
     expect(page).not_to have_link 'Редагувати'
     expect(page).not_to have_link 'Додати товар'
     
-    within('#product_0') do
+    within('.product') do
       expect(page).not_to have_link 'Редагувати'
       expect(page).not_to have_link 'Видалити'
     end

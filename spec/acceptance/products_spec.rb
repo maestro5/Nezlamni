@@ -26,7 +26,7 @@ feature 'User add product', %q{
     expect { click_on 'Зберегти' }.to change(user.account.products, :count).by(1)
 
     expect(current_path).to eq account_path(user.account)
-    within '#product_0' do
+    within '.product' do
       expect(page).to have_content 'Внесок 100.0 грн. або більше'
       expect(page).to have_link 'Тестовий товар'
       expect(page).to have_content 'Опис тестового товара'
@@ -49,7 +49,7 @@ feature 'User change product', %q{
     sign_in user
 
     click_on 'Моя сторінка'
-    within '#product_0' do
+    within '.product' do
       click_on 'Редагувати'
     end
 
@@ -60,14 +60,14 @@ feature 'User change product', %q{
     click_on 'Зберегти'
 
     expect(current_path).to eq account_path(user.account)
-    within '#product_0' do
+    within '.product' do
       expect(page).not_to have_content 'Внесок'
       click_on 'Редагувати'
     end
 
     fill_in 'product[contribution]', with: 333
     click_on 'Зберегти'
-    within '#product_0' do
+    within '.product' do
       expect(page).to have_content 'Внесок 333.0 грн. або більше'
       click_on 'Редагувати'
     end
@@ -75,28 +75,28 @@ feature 'User change product', %q{
     # contributions_stat
     fill_in 'product[backers]', with: 7
     click_on 'Зберегти'
-    within '#product_0' do
+    within '.product' do
       expect(page).to have_content '7 людей, залишилось 13 з 20'
       click_on 'Редагувати'
     end
 
     fill_in 'product[remainder]', with: 30
     click_on 'Зберегти'
-    within '#product_0' do
+    within '.product' do
       expect(page).to have_content '7 людей, залишилось 23 з 30'
       click_on 'Редагувати'
     end
 
     fill_in 'product[remainder]', with: 0
     click_on 'Зберегти'
-    within '#product_0' do
+    within '.product' do
       expect(page).to have_content '7 людей'
       click_on 'Редагувати'
     end
 
     fill_in 'product[backers]', with: 0
     click_on 'Зберегти'
-    within '#product_0' do
+    within '.product' do
       expect(page).not_to have_content 'людей'
     end
   end # when user change a product

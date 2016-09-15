@@ -1,4 +1,4 @@
-require 'rails_helper'
+require_relative '../acceptance_helper'
 
 feature 'User add and edit news', %q{
   As a user
@@ -35,7 +35,7 @@ feature 'User add and edit news', %q{
       expect(page).to have_link article.title
       expect(page).to have_css('a[href=\'' + article_path(article) + '\']')
       expect(page).to have_content article.description
-      expect(page).to have_link 'Детальніше ...' 
+      expect(page).to have_link 'детальніше' if article.description.length >= 300
       expect(page).to have_link 'Редагувати'
       expect(page).to have_link 'Видалити'
     end
@@ -44,7 +44,7 @@ feature 'User add and edit news', %q{
     within '.article' do
       expect(page).to have_link article.title
       expect(page).to have_content article.description
-      expect(page).to have_link 'Детальніше ...'
+      expect(page).to have_link 'детальніше' if article.description.length >= 300
     end
 
     # edits, change link from inside to outside
@@ -72,7 +72,7 @@ feature 'User add and edit news', %q{
       expect(page).to have_link new_article_title
       expect(page).to have_css('a[href=\'http://' + outside_link + '\']')
       expect(page).to have_content article.description
-      expect(page).to have_link 'Детальніше ...' 
+      expect(page).to have_link 'детальніше' if article.description.length >= 300
       expect(page).to have_link 'Редагувати'
       expect(page).to have_link 'Видалити'
     end
@@ -82,7 +82,7 @@ feature 'User add and edit news', %q{
       expect(page).to have_link new_article_title
       expect(page).to have_css('a[href=\'http://' + outside_link + '\']')
       expect(page).to have_content article.description
-      expect(page).to have_link 'Детальніше ...'
+      expect(page).to have_link 'детальніше' if article.description.length >= 300
     end
   end # when user adds and edits news
 end # User add and edit news
@@ -135,7 +135,7 @@ feature 'Admin add and edit user news', %q{
       expect(page).to have_link article.title
       expect(page).to have_css('a[href=\'' + article_path(article) + '\']')
       expect(page).to have_content article.description
-      expect(page).to have_link 'Детальніше ...'
+      expect(page).to have_link 'детальніше' if article.description.length >= 300
     end
 
     find('a.avatar').click
@@ -146,7 +146,7 @@ feature 'Admin add and edit user news', %q{
         expect(page).to have_link article.title
         expect(page).to have_css('a[href=\'' + article_path(article) + '\']')
         expect(page).to have_content article.description
-        expect(page).to have_link 'Детальніше ...' 
+        expect(page).to have_link 'детальніше' if article.description.length >= 300
         expect(page).to have_link 'Редагувати'
         expect(page).to have_link 'Видалити'
       end
@@ -183,7 +183,7 @@ feature 'Admin add and edit user news', %q{
       expect(page).to have_link new_article_title
       expect(page).to have_css('a[href=\'http://' + outside_link + '\']')
       expect(page).to have_content article.description
-      expect(page).to have_link 'Детальніше ...'
+      expect(page).to have_link 'детальніше' if article.description.length >= 300
     end
 
     find('a.avatar').click
@@ -193,7 +193,7 @@ feature 'Admin add and edit user news', %q{
         expect(page).to have_link new_article_title
         expect(page).to have_css('a[href=\'http://' + outside_link + '\']')
         expect(page).to have_content article.description
-        expect(page).to have_link 'Детальніше ...' 
+        expect(page).to have_link 'детальніше' if article.description.length >= 300
         expect(page).to have_link 'Редагувати'
         expect(page).to have_link 'Видалити'
       end
@@ -228,7 +228,7 @@ feature 'Admin add and edit user news', %q{
       expect(page).to have_link new_article_title
       expect(page).to have_css('a[href=\'http://' + outside_link + '\']')
       expect(page).to have_content article.description
-      expect(page).to have_link 'Детальніше ...'
+      expect(page).to have_link 'детальніше' if article.description.length >= 300
     end
 
     find('a.avatar').click
@@ -237,7 +237,7 @@ feature 'Admin add and edit user news', %q{
         expect(page).to have_link new_article_title
         expect(page).to have_css('a[href=\'http://' + outside_link + '\']')
         expect(page).to have_content article.description
-        expect(page).to have_link 'Детальніше ...'
+        expect(page).to have_link 'детальніше' if article.description.length >= 300
       end
     end
   end # when admin adds and edits user news
@@ -284,7 +284,7 @@ feature 'Admin add and edit own news', %q{
       expect(page).to have_link article.title
       expect(page).to have_css('a[href=\'' + article_path(article) + '\']')
       expect(page).to have_content article.description
-      expect(page).to have_link 'Детальніше ...'
+      expect(page).to have_link 'детальніше' if article.description.length >= 300
     end
 
     # edits inside user article into outside
@@ -314,7 +314,7 @@ feature 'Admin add and edit own news', %q{
       expect(page).to have_link new_article_title
       expect(page).to have_css('a[href=\'http://' + outside_link + '\']')
       expect(page).to have_content article.description
-      expect(page).to have_link 'Детальніше ...'
+      expect(page).to have_link 'детальніше' if article.description.length >= 300
     end
 
     # hide news, visible = false
@@ -341,7 +341,7 @@ feature 'Admin add and edit own news', %q{
       expect(page).to have_link new_article_title
       expect(page).to have_css('a[href=\'http://' + outside_link + '\']')
       expect(page).to have_content article.description
-      expect(page).to have_link 'Детальніше ...'
+      expect(page).to have_link 'детальніше' if article.description.length >= 300
     end
   end # when admin adds and edits own news
 end # Admin add and edit news

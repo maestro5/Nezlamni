@@ -6,4 +6,4 @@
     - if @article.admin_owner_unlocked?(current_user)
       p 
         = link_to 'Редагувати', edit_article_path(@article), class: 'btn btn-primary'
-        = link_to 'Видалити', article_path(@article), method: :delete, data: { confirm: 'Ви впевнені?' }, class: 'btn btn-danger'
+        = link_to 'Видалити', article_path(@article, from: 'show'), method: :delete, data: { confirm: 'Ви впевнені?' }, class: 'btn btn-danger'

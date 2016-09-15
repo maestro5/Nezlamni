@@ -15,12 +15,4 @@
                 span = "#{percent}%"
   .col-lg-3
     h2 Новини
-    - @articles.each do |article|
-      .article
-        h3 = date_time_format article.created_at
-        h3
-          = link_to article.title, article.link.empty? ? article_path(article) : article.link
-
-        p == article.description
-        p 
-          = link_to 'Детальніше ...', article.link.empty? ? article_path(article) : article.link
+    = render @articles

@@ -54,7 +54,7 @@ feature 'User account and product images', %q{
     sign_in user
     click_on 'Моя сторінка'
 
-    within('#product_0') do
+    within('.product') do
       click_on 'Редагувати'
     end
 

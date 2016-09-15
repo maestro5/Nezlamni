@@ -17,7 +17,7 @@ feature 'Visitor buy', %q{
     click_on 'Підтримати цю дитину'
 
     expect(current_path).to eq account_products_path(account)
-    within '#product_0' do
+    within '.product' do
       expect(page).to have_content product.title
       expect(page).to have_content product.description
       expect(page).to have_content product.backers
@@ -63,7 +63,7 @@ feature 'Visitor buy', %q{
     visit account_path(account)
     expect(page).to have_content 1
     expect(page).to have_content 777
-    within '#product_0' do
+    within '.product' do
       expect(page).to have_content '12 людей, залишилось 8 з 20'
     end
 
@@ -75,7 +75,7 @@ feature 'Visitor buy', %q{
 
     visit account_path(account)
     expect(page).to have_content 0
-    within '#product_0' do
+    within '.product' do
       expect(page).to have_content '11 людей, залишилось 9 з 20'
     end
   end # when visitor supports a child with a reward

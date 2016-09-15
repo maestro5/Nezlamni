@@ -74,7 +74,7 @@ feature 'Visitor close routes and links', %q{
 
     scenario 'when product default' do
       expect(page).not_to have_link 'Додати товар'
-      within '#product_0' do
+      within '.product' do
         expect(page).not_to have_link 'Редагувати'
         expect(page).not_to have_link 'Видалити'
         expect(page).not_to have_link 'Перевірено'
@@ -84,7 +84,7 @@ feature 'Visitor close routes and links', %q{
       # support child
       click_on 'Підтримати цю дитину'
       expect(page).not_to have_link 'Додати товар'
-      within '#product_0' do
+      within '.product' do
         expect(page).not_to have_link 'Редагувати'
         expect(page).not_to have_link 'Видалити'
         expect(page).not_to have_link 'Перевірено'
@@ -96,12 +96,12 @@ feature 'Visitor close routes and links', %q{
       product.update_attribute(:visible, false)
       visit account_path(account)
       expect(page).not_to have_link 'Додати товар'
-      expect(page).not_to have_css '#product_0'
+      expect(page).not_to have_css '.product'
 
       # account support child
       click_on 'Підтримати цю дитину'
       expect(page).not_to have_link 'Додати товар'
-      expect(page).not_to have_css '#product_0'
+      expect(page).not_to have_css '.product'
     end # when product invisible
   
     scenario 'when article default' do
@@ -113,7 +113,7 @@ feature 'Visitor close routes and links', %q{
         within '.article' do
           expect(page).to have_link article.title
           expect(page).to have_css('a[href=\'' + article_path(article) + '\']')
-          expect(page).to have_link 'Детальніше ...' 
+          expect(page).to have_link 'детальніше' if article.description.length >= 300
           expect(page).not_to have_link 'Редагувати'
           expect(page).not_to have_link 'Видалити'
 
@@ -278,7 +278,7 @@ feature 'User close routes and links', %q{
             visit account_path(account_user)
             if account_user.locked?
               expect(page).not_to have_link 'Додати товар'
-              within '#product_0' do
+              within '.product' do
                 expect(page).not_to have_link 'Редагувати'
                 expect(page).not_to have_link 'Видалити'
                 expect(page).not_to have_link 'Перевірено'
@@ -294,7 +294,7 @@ feature 'User close routes and links', %q{
               click_on 'Підтримати цю дитину'
               expect(current_path).to eq account_products_path(account_user)
               expect(page).not_to have_link 'Додати товар'
-              within '#product_0' do
+              within '.product' do
                 expect(page).not_to have_link 'Редагувати'
                 expect(page).not_to have_link 'Видалити'
                 expect(page).not_to have_link 'Перевірено'
@@ -307,7 +307,7 @@ feature 'User close routes and links', %q{
               end
             else
               expect(page).to have_link 'Додати товар'
-              within '#product_0' do
+              within '.product' do
                 expect(page).to have_link 'Редагувати'
                 expect(page).to have_link 'Видалити'
                 expect(page).not_to have_link 'Перевірено'
@@ -322,7 +322,7 @@ feature 'User close routes and links', %q{
               visit account_path(account_user)
               click_on 'Підтримати цю дитину'
               expect(page).to have_link 'Додати товар'
-              within '#product_0' do
+              within '.product' do
                 expect(page).to have_link 'Редагувати'
                 expect(page).to have_link 'Видалити'
                 expect(page).not_to have_link 'Перевірено'
@@ -343,7 +343,7 @@ feature 'User close routes and links', %q{
 
             expect(current_path).to eq account_path(account_admin)
             expect(page).not_to have_link 'Додати товар'
-            within '#product_0' do
+            within '.product' do
               expect(page).not_to have_link 'Редагувати'
               expect(page).not_to have_link 'Видалити'
               expect(page).not_to have_link 'Перевірено'
@@ -356,7 +356,7 @@ feature 'User close routes and links', %q{
             click_on 'Підтримати цю дитину'
             expect(current_path).to eq account_products_path(account_admin)
             expect(page).not_to have_link 'Додати товар'
-            within '#product_0' do
+            within '.product' do
               expect(page).not_to have_link 'Редагувати'
               expect(page).not_to have_link 'Видалити'
               expect(page).not_to have_link 'Перевірено'
@@ -374,7 +374,7 @@ feature 'User close routes and links', %q{
             
             if account_user.locked?
               expect(page).not_to have_link 'Додати товар'
-              within '#product_0' do
+              within '.product' do
                 expect(page).not_to have_link 'Редагувати'
                 expect(page).not_to have_link 'Видалити'
                 expect(page).not_to have_link 'Перевірено'
@@ -382,7 +382,7 @@ feature 'User close routes and links', %q{
               end
               click_on 'Підтримати цю дитину'
               expect(page).not_to have_link 'Додати товар'
-              within '#product_0' do
+              within '.product' do
                 expect(page).not_to have_link 'Редагувати'
                 expect(page).not_to have_link 'Видалити'
                 expect(page).not_to have_link 'Перевірено'
@@ -390,7 +390,7 @@ feature 'User close routes and links', %q{
               end
             else
               expect(page).to have_link 'Додати товар'
-              within '#product_0' do
+              within '.product' do
                 expect(page).to have_link 'Редагувати'
                 expect(page).to have_link 'Видалити'
                 expect(page).not_to have_link 'Перевірено'
@@ -398,7 +398,7 @@ feature 'User close routes and links', %q{
               end
               click_on 'Підтримати цю дитину'
               expect(page).to have_link 'Додати товар'
-              within '#product_0' do
+              within '.product' do
                 expect(page).to have_link 'Редагувати'
                 expect(page).to have_link 'Видалити'
                 expect(page).not_to have_link 'Перевірено'
@@ -414,11 +414,11 @@ feature 'User close routes and links', %q{
 
             expect(current_path).to eq account_path(account_admin)
             expect(page).not_to have_link 'Додати товар'
-            expect(page).not_to have_selector '#product_0'
+            expect(page).not_to have_selector '.product'
           
             click_on 'Підтримати цю дитину'
             expect(page).not_to have_link 'Додати товар'
-            expect(page).not_to have_selector '#product_0'
+            expect(page).not_to have_selector '.product'
           end # when user on someone else\'s account page
         end # when product invisible
       end # when user account visible? locked?  
@@ -444,7 +444,7 @@ feature 'User close routes and links', %q{
                 within '.article' do
                   expect(page).to have_link article_user.title
                   expect(page).to have_css('a[href=\'' + article_path(article_user) + '\']')
-                  expect(page).to have_link 'Детальніше ...' 
+                  expect(page).to have_link 'детальніше' if article_user.description.length >= 300 
                   expect(page).not_to have_link 'Редагувати'
                   expect(page).not_to have_link 'Видалити'
                   click_on article_user.title
@@ -461,7 +461,7 @@ feature 'User close routes and links', %q{
                 within '.article' do
                   expect(page).to have_link article_user.title
                   expect(page).to have_css('a[href=\'' + article_path(article_user) + '\']')
-                  expect(page).to have_link 'Детальніше ...' 
+                  expect(page).to have_link 'детальніше' if article_user.description.length >= 300 
                   expect(page).to have_link 'Редагувати'
                   expect(page).to have_link 'Видалити'
                   click_on article_user.title
@@ -469,7 +469,6 @@ feature 'User close routes and links', %q{
               end # .section-tabs
               expect(current_path).to eq article_path(article_user)
               expect(page).to have_content article_user.title
-              expect(page).to have_css('a[href=\'' + article_path(article_user) + '\']')
               expect(page).to have_link 'Редагувати'
               expect(page).to have_link 'Видалити'
             end # account_user.locked?
@@ -486,7 +485,7 @@ feature 'User close routes and links', %q{
               within '.article' do
                 expect(page).to have_link article_admin.title
                 expect(page).to have_css('a[href=\'' + article_path(article_admin) + '\']')
-                expect(page).to have_link 'Детальніше ...' 
+                expect(page).to have_link 'детальніше' if article_admin.description.length >= 300 
                 expect(page).not_to have_link 'Редагувати'
                 expect(page).not_to have_link 'Видалити'
                 click_on article_admin.title
@@ -512,7 +511,7 @@ feature 'User close routes and links', %q{
                 within '.article' do
                   expect(page).to have_link article_user.title
                   expect(page).to have_css('a[href=\'' + article_path(article_user) + '\']')
-                  expect(page).to have_link 'Детальніше ...' 
+                  expect(page).to have_link 'детальніше' if article_user.description.length >= 300 
                   expect(page).not_to have_link 'Редагувати'
                   expect(page).not_to have_link 'Видалити'
                   click_on article_user.title
@@ -529,7 +528,7 @@ feature 'User close routes and links', %q{
                 within '.article' do
                   expect(page).to have_link article_user.title
                   expect(page).to have_css('a[href=\'' + article_path(article_user) + '\']')
-                  expect(page).to have_link 'Детальніше ...' 
+                  expect(page).to have_link 'детальніше' if article_user.description.length >= 300 
                   expect(page).to have_link 'Редагувати'
                   expect(page).to have_link 'Видалити'
                   click_on article_user.title
@@ -774,7 +773,7 @@ feature 'Admin routes and links', %q{
         scenario 'when product visible (default)' do
           visit account_path(account_user)
           expect(page).to have_link 'Додати товар'
-          within '#product_0' do
+          within '.product' do
             expect(page).to have_link 'Редагувати'
             expect(page).to have_link 'Видалити'
             expect(page).to have_link 'Перевірено'
@@ -790,7 +789,7 @@ feature 'Admin routes and links', %q{
           click_on 'Підтримати цю дитину'
           expect(current_path).to eq account_products_path(account_user)
           expect(page).to have_link 'Додати товар'
-          within '#product_0' do
+          within '.product' do
             expect(page).to have_link 'Редагувати'
             expect(page).to have_link 'Видалити'
             expect(page).to have_link 'Перевірено'
@@ -807,7 +806,7 @@ feature 'Admin routes and links', %q{
           product_user.update_attribute(:visible, false)
           visit account_path(account_user)
           expect(page).to have_link 'Додати товар'
-          within '#product_0' do
+          within '.product' do
             expect(page).to have_link 'Редагувати'
             expect(page).to have_link 'Видалити'
             expect(page).to have_link 'Перевірено'
@@ -818,7 +817,7 @@ feature 'Admin routes and links', %q{
           click_on 'Підтримати цю дитину'
           expect(current_path).to eq account_products_path(account_user)
           expect(page).to have_link 'Додати товар'
-          within '#product_0' do
+          within '.product' do
             expect(page).to have_link 'Редагувати'
             expect(page).to have_link 'Видалити'
             expect(page).to have_link 'Перевірено'
@@ -834,7 +833,7 @@ feature 'Admin routes and links', %q{
             within '.article' do
               expect(page).to have_link article_user.title
               expect(page).to have_css('a[href=\'' + article_path(article_user) + '\']')
-              expect(page).to have_link 'Детальніше ...' 
+              expect(page).to have_link 'детальніше' if article_user.description.length >= 300 
               expect(page).to have_link 'Редагувати'
               expect(page).to have_link 'Видалити'
               click_on article_user.title
@@ -855,7 +854,7 @@ feature 'Admin routes and links', %q{
             within '.article' do
               expect(page).to have_link article_user.title
               expect(page).to have_css('a[href=\'' + article_path(article_user) + '\']')
-              expect(page).to have_link 'Детальніше ...' 
+              expect(page).to have_link 'детальніше' if article_user.description.length >= 300 
               expect(page).to have_link 'Редагувати'
               expect(page).to have_link 'Видалити'
               click_on article_user.title

@@ -29,7 +29,7 @@ feature 'Admin checks a product', %q{
     expect(page).to have_content description
     expect(page).to have_link 'Додати товар'
 
-    within('#product_0') do
+    within('.product') do
       expect(page).to have_link 'Редагувати'
       expect(page).to have_link 'Видалити'
       expect(page).not_to have_link 'Перевірено'
@@ -58,7 +58,7 @@ feature 'Admin checks a product', %q{
 
     click_on 'Моя сторінка'
 
-    within('#product_0') do
+    within('.product') do
       click_on 'Редагувати'
     end
     fill_in 'product[description]', with: new_description
@@ -78,7 +78,7 @@ feature 'Admin checks a product', %q{
 
     click_on user.account.name
 
-    within('#product_0') do
+    within('.product') do
       click_on 'Перевірено'
     end
 

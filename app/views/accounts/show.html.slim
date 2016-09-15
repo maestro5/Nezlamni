@@ -18,13 +18,10 @@
   .col-lg-3
     h2 = @account.backers
     p людей підтримало
-
     h2 = @account.collected
     p = "зібрано, з необхідних #{@account.budget}"
-
     h2 = time_ago_in_words(@account.deadline_on) unless @account.deadline_on.nil?
     p днів залишилось щоб зібрати
-
     br
     br
     h3
@@ -45,32 +42,17 @@ br
 .row
   .col-lg-8
     .section-tabs
-      / Nav tabs
       ul.nav.nav-tabs role="tablist"
         li.active role="presentation"
           a href="#overview" aria-controls="overview" role="tab" data-toggle="tab" Опис
         li role="presentation"
           a href="#news" aria-controls="news" role="tab" data-toggle="tab" Новини
-
-      / Tab panes
       .tab-content
         .tab-pane.active role="tabpanel" id="overview" == @account.overview
         .tab-pane role="tabpanel" id="news"
           - if user_signed_in? && owner?(@account) && (current_user.admin? || !@account.locked?)
             = link_to 'Додати', new_account_article_path(@account), class: 'btn btn-success'
-          - @articles.each do |article|
-            - next unless (article.visible? || current_user.account.id == article.account.id || current_user.admin?)
-            .article
-              h3 = date_time_format article.created_at
-              h3 
-                = link_to article.title, article.link.empty? ? article_path(article) : article.link
-              p == article.description
-              p 
-                = link_to 'Детальніше ...', article.link.empty? ? article_path(article) : article.link
-              - if user_signed_in? && owner?(@account) && (current_user.admin? || !@account.locked?)
-                p
-                  = link_to 'Редагувати', edit_article_path(article), class: 'btn btn-primary'
-                  = link_to 'Видалити', article_path(article), method: :delete, data: { confirm: 'Ви впевнені?' }, class: 'btn btn-danger'
+          = render @articles
 
   .col-lg-1
   .col-lg-3
@@ -80,25 +62,6 @@ br
       .thumbnail
         .caption
           = link_to 'Додати товар', new_account_product_path(@account), class: 'btn btn-primary'
-    - @products.each_with_index do |product, index|
-      - next unless (product.visible? || current_user.account.id == product.account.id || current_user.admin?)
-      . id="product_#{index}"
-        .thumbnail
-          h4.text-center = "Внесок #{product.contribution} грн. або більше" if product.contribution > 0
-          - @product = product
-          = render 'products/avatar'
-          .caption
-            h3 = link_to product.title, new_product_order_path(product)
-            p = product.description
-            p = product.contributions_stat
-            p
-              - if user_signed_in? && owner?(@account) && (current_user.admin? || !@account.locked?)
-                = link_to 'Редагувати', edit_product_path(product), class: 'btn btn-primary'
-                = link_to 'Видалити', product_path(product), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'
-              = render 'products/check_btn', obj: product
-              - if @account.visible? && product.visible?
-                = link_to 'Обрати', new_product_order_path(product), class: 'btn btn-success'
-
+    = render @products
 
 = render 'images/gallery_scripts'
-

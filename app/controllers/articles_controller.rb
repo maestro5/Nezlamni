@@ -43,7 +43,11 @@ class ArticlesController < ApplicationController
 
   def destroy
     @article.destroy
-    redirect_to :back
+    if params[:from] == 'show'
+      redirect_to @article.account
+    else
+      redirect_to :back
+    end
   end
 
   def visible
