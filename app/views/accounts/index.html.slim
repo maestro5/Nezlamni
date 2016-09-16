@@ -33,3 +33,4 @@
               = link_to 'Заблокувати', locked_account_path(account), class: 'btn btn-danger'
           td
             = link_to 'Видалити', account_path(account), method: :delete, data: { confirm: 'Ви впевнені?' }, class: 'btn btn-danger'
+  = paginate @accounts

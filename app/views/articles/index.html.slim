@@ -11,7 +11,11 @@ table.table.table-hover
     - @articles.each do |article|
       tr class="#{'danger' unless article.visible}"
         td = date_time_format article.created_at
-        td = link_to article.title, article.link.empty? ? article_path(article) : article.link
+        td
+          - if article.link.empty?
+            = link_to article.title, article_path(article)
+          - else
+            = link_to article.title, article.link, target: '_blank'
         td = link_to article.account.name, account_path(article.account) unless article.account.nil?
         td
           - if article.visible?

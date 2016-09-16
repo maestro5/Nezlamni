@@ -6,7 +6,7 @@ class AccountsController < ApplicationController
   before_action :visible_account!, only: :show
 
   def index
-    @accounts = Account.all.order(deadline_on: :asc)
+    @accounts = Account.all.order(deadline_on: :asc).page(params[:page]).per(10)
   end
 
   def show

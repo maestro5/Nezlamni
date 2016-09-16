@@ -48,7 +48,8 @@ RSpec.describe AccountsController, type: :controller do
       expect(response).to redirect_to root_path
     end # role: user
 
-    context 'admin, visible and invisible user accounts' do
+    context 'admin, visible user accounts' do
+      before { create_list(:user, 11) }
       before { account_user.update_attribute(:visible, true) }
       before { account_admin }
       before { sign_in user_admin }
@@ -58,15 +59,13 @@ RSpec.describe AccountsController, type: :controller do
       end
       it 'populates an array of all accounts' do
         expect(assigns(:accounts)).not_to be_empty
-        expect(assigns(:accounts)).to match_array Account.all
+        expect(assigns(:accounts)).to match_array Account.all.order(deadline_on: :asc).limit(10)
       end
-    end # role: admin. visible and invisible user accounts
+    end # role: admin. visible and unlocked user accounts
 
-    context 'admin, visible, locked and invisible accounts' do
-      before { account_user.update_attributes(
-          visible: true,
-          locked: true
-        ) }
+    context 'admin, visible and locked accounts' do
+      before { create_list(:user, 11) }
+      before { Account.all.each { |a| a.update_attributes(visible: true, locked: true) } }
       before { account_admin }
       before { sign_in user_admin }
       before { get :index }
@@ -75,7 +74,7 @@ RSpec.describe AccountsController, type: :controller do
       end
       it 'populates an array of all accounts' do
         expect(assigns(:accounts)).not_to be_empty
-        expect(assigns(:accounts)).to match_array Account.all
+        expect(assigns(:accounts)).to match_array Account.all.order(deadline_on: :asc).limit(10)
       end
     end # role: admin. visible, locked and invisible user accounts
   end # GET #index
