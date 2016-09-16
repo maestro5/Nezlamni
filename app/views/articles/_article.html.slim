@@ -1,13 +1,20 @@
-- return unless (article.visible? || current_user.account.id == article.account.id || current_user.admin?)
-.article
-  h3 = date_time_format article.created_at
-  h3 
-    = link_to article.title, article.link.empty? ? article_path(article) : article.link
-  p 
-    == truncate article.description, length: 300
-    - if article.description.length >= 300
-      = link_to 'детальніше', article.link.empty? ? article : article.link
-  - if user_signed_in? && owner?(@account) && (current_user.admin? || !@account.locked?)
-    p
-      = link_to 'Редагувати', edit_article_path(article), class: 'btn btn-primary'
-      = link_to 'Видалити', article_path(article), method: :delete, data: { confirm: 'Ви впевнені?' }, class: 'btn btn-danger'
+- if article.visible? || current_user.account.id == article.account.id || current_user.admin?
+  .article
+    h3 = date_time_format article.created_at
+    h3
+      - if article.link.empty?
+        = link_to article.title, article_path(article)
+      - else
+        = link_to article.title, article.link, target: '_blank'
+    p 
+      == truncate article.description, length: 300
+      - if article.description.length >= 300
+        - if article.link.empty?
+          = link_to 'детальніше', article_path(article)
+        - else
+          = link_to 'детальніше', article.link, target: '_blank'
+
+    - if user_signed_in? && owner?(@account) && (current_user.admin? || !@account.locked?)
+      p
+        = link_to 'Редагувати', edit_article_path(article), class: 'btn btn-primary'
+        = link_to 'Видалити', article_path(article), method: :delete, data: { confirm: 'Ви впевнені?' }, class: 'btn btn-danger'

@@ -31,84 +31,48 @@ RSpec.describe OrdersController, type: :controller do
       expect(response).to redirect_to new_user_session_path
     end # role: visitor. close route
     
-    %w(user admin).each do |role|
-      context "#{role} when user account invisible" do
-        before { order_product_user }
-        before { order_product_admin }
-        before { sign_in user } if role == 'user'
-        before { sign_in user_admin } if role == 'admin'
-        before { get :index }
-        it 'renders index view' do
-          expect(response).to render_template :index
-        end
-        it 'populates an array of user/all products' do
-          expect(assigns(:orders)).not_to be_empty
-          expect(assigns(:orders)).to match_array [order_product_user] if role == 'user'
-          expect(assigns(:orders)).to match_array Order.all if role == 'admin'
-        end
-      end # invisible user account
-    end # roles: user, admin
+    # generate user account parameters (visible, locked)
+    [false, true].repeated_permutation(2).each do |e|
+      context "when user account visible = #{e[0]}, locked = #{e[1]}" do
+        %w(user admin).each do |role|
+          context role do
+            before { create_list(:order, 13, product: product_user, account: account_user) }
+            before { create_list(:order, 13, product: product_admin, account: account_admin) }
+            before { sign_in user } if role == 'user'
+            before { sign_in user_admin } if role == 'admin'
+            before { get :index }
+            it 'renders index view' do
+              expect(response).to render_template :index
+            end
+            it 'populates an array of user/all products' do
+              expect(assigns(:orders)).not_to be_empty
+              expect(assigns(:orders)).to match_array account_user.orders.order(created_at: :desc).limit(10) if role == 'user'
+              expect(assigns(:orders)).to match_array Order.all.order(created_at: :desc).limit(10) if role == 'admin'
+            end
+          end # visible product (default)
+        end # roles: user, admin
 
-    %w(user admin).each do |role|
-      context 'user' do
-        before { account_user.update_attributes(
-          visible: true,
-          locked: true
-        ) }
-        before { order_product_user }
-        before { order_product_admin }
-        before { sign_in user } if role == 'user'
-        before { sign_in user_admin } if role == 'admin'
-        before { get :index }
-        it 'renders index view' do
-          expect(response).to render_template :index
-        end
-        it 'populates an array of user/all products' do
-          expect(assigns(:orders)).not_to be_empty
-          expect(assigns(:orders)).to match_array [order_product_user] if role == 'user'
-          expect(assigns(:orders)).to match_array Order.all if role == 'admin'
-        end
-      end # visible, locked user account
-    end # roles: user admin
-
-    %w(user admin).each do |role|
-      context 'user' do
-        before { account_user.update_attribute(:visible, true) }
-        before { product_user.update_attribute(:visible, false) }
-        before { order_product_user }
-        before { order_product_admin }
-        before { sign_in user } if role == 'user'
-        before { sign_in user_admin } if role == 'admin'
-        before { get :index }
-        it 'renders index view' do
-          expect(response).to render_template :index
-        end
-        it 'populates an array of user/all products' do
-          expect(assigns(:orders)).not_to be_empty
-          expect(assigns(:orders)).to match_array [order_product_user] if role == 'user'
-          expect(assigns(:orders)).to match_array Order.all if role == 'admin'
-        end
-      end # invisible product
-    end # roles: user, admin
-
-    %w(user admin).each do |role|
-      context 'user' do
-        before { account_user.update_attribute(:visible, true) }
-        before { order_product_user }
-        before { order_product_admin }
-        before { sign_in user } if role == 'user'
-        before { sign_in user_admin } if role == 'admin'
-        before { get :index }
-        it 'renders index view' do
-          expect(response).to render_template :index
-        end
-        it 'populates an array of user/all products' do
-          expect(assigns(:orders)).not_to be_empty
-          expect(assigns(:orders)).to match_array [order_product_user] if role == 'user'
-          expect(assigns(:orders)).to match_array Order.all if role == 'admin'
-        end
-      end # visible, unlocked user account; visible product
-    end # roles: user, admin
+        %w(user admin).each do |role|
+          context role do
+            before { product_user.update_attribute(:visible, false) }
+            before { product_admin.update_attribute(:visible, false) }
+            before { create_list(:order, 13, product: product_user, account: account_user) }
+            before { create_list(:order, 13, product: product_admin, account: account_admin) }
+            before { sign_in user } if role == 'user'
+            before { sign_in user_admin } if role == 'admin'
+            before { get :index }
+            it 'renders index view' do
+              expect(response).to render_template :index
+            end
+            it 'populates an array of user/all products' do
+              expect(assigns(:orders)).not_to be_empty
+              expect(assigns(:orders)).to match_array account_user.orders.order(created_at: :desc).limit(10) if role == 'user'
+              expect(assigns(:orders)).to match_array Order.all.order(created_at: :desc).limit(10) if role == 'admin'
+            end
+          end # invisible product
+        end # roles: user, admin
+      end # when user account visible? locked?
+    end # generate user account parameters (visible, locked)
   end # GET #index
 
   describe 'GET #new' do

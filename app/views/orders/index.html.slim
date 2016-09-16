@@ -27,3 +27,4 @@
               = link_to 'Ні', delivered_order_path(order), class: 'btn btn-danger'
             - else
               = link_to 'Так', delivered_order_path(order), class: 'btn btn-success'
+  = paginate @orders

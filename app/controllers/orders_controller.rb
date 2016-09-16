@@ -6,7 +6,12 @@ class OrdersController < ApplicationController
   before_action :admin_or_owner!, only: :delivered
 
   def index
-    @orders = current_user.admin? ? Order.all.order(created_at: :desc) : current_user.account.orders.order(created_at: :desc)
+    @orders = 
+      if current_user.admin?
+        Order.all.order(created_at: :desc).page(params[:page]).per(10)
+      else
+        current_user.account.orders.order(created_at: :desc).page(params[:page]).per(10)
+      end
   end
 
   def new
