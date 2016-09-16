@@ -72,6 +72,7 @@ RSpec.describe PagesController, type: :controller do
     context 'admin' do
       before { product_admin.update_attribute(:visible, false) }
       before { product_user }
+      before { create_list(:product, 9, account: account_user) }
       before { sign_in user_admin }
       before { get :products }
       it 'renders products view' do
@@ -79,7 +80,7 @@ RSpec.describe PagesController, type: :controller do
       end
       it 'populates an array of all products' do
         expect(assigns(:products)).not_to be_empty
-        expect(assigns(:products)).to match_array [product_admin, product_user]
+        expect(assigns(:products)).to match_array Product.all.order(created_at: :desc).limit(10)
       end
     end # role: admin
   end # GET #products

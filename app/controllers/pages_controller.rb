@@ -8,6 +8,6 @@ class PagesController < ApplicationController
   end
 
   def products
-    @products = Product.all
+    @products = Product.all.order(created_at: :desc).page(params[:page]).per(10)
   end
 end # PagesController

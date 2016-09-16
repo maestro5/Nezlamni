@@ -23,3 +23,4 @@
               = link_to 'Показувати', visible_product_path(product), class: 'btn btn-success'
           td 
             = link_to 'Видалити', product_path(product), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'
+  = paginate @products
