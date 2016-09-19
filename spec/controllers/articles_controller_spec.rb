@@ -368,12 +368,31 @@ RSpec.describe ArticlesController, type: :controller do
           expect { delete :destroy, id: article_user }
             .to change(Article, :count).by(-1)
         end
-        it 'redirects to account or products' do
+        it 'redirects to account or articles' do
           delete :destroy, id: article_user
           expect(response).to redirect_to account_path(account_user) if role == 'user'
           expect(response).to redirect_to articles_path if role == 'admin'
         end
       end # default
+    end # roles: user, admin
+
+    %w(user admin).each do |role|
+      context "#{role} when invisible user account" do
+        before { article_user }
+        before { @request.env['HTTP_REFERER'] = article_path(article_user) } if role == 'user'
+        before { @request.env['HTTP_REFERER'] = account_path(account_user) } if role == 'admin'
+        before { sign_in user } if role == 'user'
+        before { sign_in user_admin } if role == 'admin'
+        it 'delete the article from database' do
+          expect { delete :destroy, id: article_user }
+            .to change(Article, :count).by(-1)
+        end
+        it 'redirects to account' do
+          delete :destroy, id: article_user, from: 'show' if role == 'user'
+          delete :destroy, id: article_user if role == 'admin'
+          expect(response).to redirect_to account_path(account_user)
+        end
+      end # default. user from article, admin from user account
     end # roles: user, admin
 
     %w(user admin).each do |role|
@@ -397,6 +416,25 @@ RSpec.describe ArticlesController, type: :controller do
 
     %w(user admin).each do |role|
       context "#{role} when invisible article" do
+        before { article_user.update_attribute(:visible, false) }
+        before { @request.env['HTTP_REFERER'] = article_path(article_user) } if role == 'user'
+        before { @request.env['HTTP_REFERER'] = account_path(account_user) } if role == 'admin'
+        before { sign_in user } if role == 'user'
+        before { sign_in user_admin } if role == 'admin'
+        it 'delete the article from database' do
+          expect { delete :destroy, id: article_user }
+            .to change(Article, :count).by(-1)
+        end
+        it 'redirects to account or products' do
+          delete :destroy, id: article_user, from: 'show' if role == 'user'
+          delete :destroy, id: article_user if role == 'admin'
+          expect(response).to redirect_to account_path(account_user)
+        end
+      end # invisible article
+    end # roles: user, admin
+
+    %w(user admin).each do |role|
+      context "#{role} when invisible article" do
         before { account_user.update_attribute(:visible, true) }
         before { article_user }
         before { @request.env['HTTP_REFERER'] = account_path(account_user) } if role == 'user'
@@ -414,6 +452,26 @@ RSpec.describe ArticlesController, type: :controller do
         end
       end # visible user account
     end # roles: user, admin
+
+    %w(user admin).each do |role|
+      context "#{role} when invisible article" do
+        before { account_user.update_attribute(:visible, true) }
+        before { article_user }
+        before { @request.env['HTTP_REFERER'] = article_path(article_user) } if role == 'user'
+        before { @request.env['HTTP_REFERER'] = account_path(account_user) } if role == 'admin'
+        before { sign_in user } if role == 'user'
+        before { sign_in user_admin } if role == 'admin'
+        it 'delete the article from database' do
+          expect { delete :destroy, id: article_user }
+            .to change(Article, :count).by(-1)
+        end
+        it 'redirects to account or products' do
+          delete :destroy, id: article_user, from: 'show' if role == 'user'
+          delete :destroy, id: article_user if role == 'admin'
+          expect(response).to redirect_to account_path(account_user)
+        end
+      end # visible user account
+    end # roles: user, admin
   end # GET #destroy
 
   describe 'GET #visible' do
@@ -424,7 +482,7 @@ RSpec.describe ArticlesController, type: :controller do
         expect(response).to redirect_to new_user_session_path if role == 'visitor'
         expect(response).to redirect_to root_path if role == 'user'
       end
-    end # roleы: visitor, user
+    end # roles: visitor, user
 
     context 'admin' do
       before { sign_in user_admin }
