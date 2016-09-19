@@ -7,7 +7,7 @@ class ArticlesController < ApplicationController
   before_action :admin_or_owner!, only: [:create, :edit, :update, :destroy]
   
   def index
-    @articles = Article.all.order(created_at: :desc)
+    @articles = Article.all.order(created_at: :desc).page(params[:page]).per(10)
     @account  = current_user.account
   end
 

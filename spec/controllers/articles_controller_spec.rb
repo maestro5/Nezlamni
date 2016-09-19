@@ -40,6 +40,8 @@ RSpec.describe ArticlesController, type: :controller do
 
     context 'admin include invisible articles' do
       before { article_user.update_attribute(:visible, false) }
+      before { create_list(:article, 5, account: account_user, visible: false)}
+      before { create_list(:article, 7, account: account_admin)}
       before { article_admin }
       before { sign_in user_admin }
       before { get :index }
@@ -48,7 +50,7 @@ RSpec.describe ArticlesController, type: :controller do
       end
       it 'populates an array of all articles' do
         expect(assigns(:articles)).not_to be_empty
-        expect(assigns(:articles)).to match_array Article.all
+        expect(assigns(:articles)).to match_array Article.all.order(created_at: :desc).limit(10)
         expect(assigns(:account)).to eq account_admin
       end
     end # role: admin
