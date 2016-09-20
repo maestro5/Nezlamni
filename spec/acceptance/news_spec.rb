@@ -8,7 +8,7 @@ feature 'User add and edit news', %q{
   let(:user) { create :user }
   let(:account) { user.account }
 
-  before { account.toggle!(:visible) }
+  before { account.update_attribute(:visible, true) }
 
   scenario 'when user adds and edits news' do
     sign_in user
@@ -20,7 +20,7 @@ feature 'User add and edit news', %q{
     fill_in 'article[title]', with: 'Test inside article title'
     fill_in 'article[description]', with: 'Test description'
 
-    expect { click_on 'Зберегти' }.to change(account.articles, :count).by(1)
+    expect { click_on 'Зберегти' }.to change(Article, :count).by(1)
 
     article = account.articles.first
     expect(current_path).to eq article_path(article)

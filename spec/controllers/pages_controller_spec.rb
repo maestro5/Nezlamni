@@ -29,11 +29,18 @@ RSpec.describe PagesController, type: :controller do
     %w(visitor user admin).each do |role|
       context role do
         before do
-          account_user.update_attribute(:visible, true)
-          account_admin.update_attribute(:visible, true)
-          account_invisible_user
-          articles_user
-          article_admin.update_attribute(:visible, false)
+          create(:article, account: account_user)
+          create_list(:article, 5, account: account_admin)
+          create_list(:article, 3, account: account_admin, visible: false)
+
+          create_list(:user, 10).each_with_index do |e, i|
+            e.account.update_attribute(:visible, true)
+            if i == 7 || i == 8 || i == 9
+              create_list(:article, 2, account: e.account)
+              create(:article, account: e.account, visible: false)
+            end
+          end
+
           sign_in user if role == 'user'
           sign_in user_admin if role == 'admin'
           get :home
@@ -41,13 +48,18 @@ RSpec.describe PagesController, type: :controller do
         it 'renders home view' do
           expect(response).to render_template :home
         end
-        it 'populates an array of all visible accounts' do
+        it 'populates an array of 9 visible accounts' do
           expect(assigns(:accounts)).not_to be_empty
-          expect(assigns(:accounts)).to match_array [account_user, account_admin]
+          expect(assigns(:accounts)).to match_array Account.where(visible: true).order(deadline_on: :asc).limit(9)
+          expect(assigns(:accounts)).not_to include account_user
+          expect(assigns(:accounts)).not_to include account_admin
         end
-        it 'populates an array of all visible articles' do
+        it 'populates an array of 9 visible articles and visible accounts and admin visible articles' do
+          visible_accounts_and_articles = Article.where(account: Account.last(3), visible: true)  # 6
+          all_admin_visible_articles    = account_admin.articles.where(visible: true)             # 5
           expect(assigns(:articles)).not_to be_empty
-          expect(assigns(:articles)).to match_array articles_user
+          expect(assigns(:articles)).not_to match_array visible_accounts_and_articles + all_admin_visible_articles
+          expect(assigns(:articles)).to match_array visible_accounts_and_articles + all_admin_visible_articles.last(3)
         end
       end
     end # roles: visitor, user, admin
