@@ -5,6 +5,8 @@ class Account < ActiveRecord::Base
   has_many :orders, dependent: :delete_all
   has_many :articles, dependent: :delete_all
 
+  before_create :set_default
+
   def collected_percent
     return 0 if budget == 0
     ((collected / budget) * 100).round(2)
@@ -22,4 +24,12 @@ class Account < ActiveRecord::Base
     msg += ". #{self.goal}" unless self.goal.empty?
     msg
   end
+
+  private
+    def set_default
+      binding.pry
+      self.name       = self.user.email
+      self.created_at = Time.now
+      self.updated_at = Time.now
+    end
 end

@@ -30,8 +30,8 @@ ActiveRecord::Schema.define(version: 20160921085732) do
     t.datetime "prev_updated_at", default: '0001-01-01 00:00:00'
     t.boolean  "visible",         default: false
     t.boolean  "locked",          default: false
-    t.datetime "created_at",      default: '2016-08-19 04:17:29'
-    t.datetime "updated_at",      default: '2016-08-19 04:17:29'
+    t.datetime "created_at",      default: '0001-01-01 00:00:00'
+    t.datetime "updated_at",      default: '0001-01-01 00:00:00'
     t.string   "avatar_url"
     t.string   "phone_number"
     t.string   "contact_person"
@@ -99,8 +99,8 @@ ActiveRecord::Schema.define(version: 20160921085732) do
     t.text     "description",     default: ""
     t.datetime "prev_updated_at", default: '0001-01-01 00:00:00'
     t.boolean  "visible",         default: true
-    t.datetime "created_at",      default: '2016-08-22 16:41:40'
-    t.datetime "updated_at",      default: '2016-08-22 16:41:40'
+    t.datetime "created_at",      default: '0001-01-01 00:00:00'
+    t.datetime "updated_at",      default: '0001-01-01 00:00:00'
     t.string   "avatar_url"
     t.decimal  "contribution",    default: 0.0
     t.integer  "backers",         default: 0

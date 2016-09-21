@@ -16,8 +16,8 @@ class CreateAccounts < ActiveRecord::Migration
       t.boolean :visible, default: false
       t.boolean :locked, default: false
 
-      t.datetime :created_at, default: Time.now
-      t.datetime :updated_at, default: Time.now
+      t.datetime :created_at, default: '0001-01-01'
+      t.datetime :updated_at, default: '0001-01-01'
     end
   end
 end
