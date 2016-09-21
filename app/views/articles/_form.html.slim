@@ -15,7 +15,7 @@
   .form-group
     = f.label :description, 'Текст новини', class: 'col-sm-4 control-label'
     .col-sm-8
-      = f.text_area :description, rows: 7, class: 'form-control'
+      = f.cktext_area :description, rows: 20, ckeditor: { uiColor: "#AADC6E", toolbar: "mini" }
   .form-group
     = f.label :link, 'Посилання', class: 'col-sm-4 control-label'
     .col-sm-8

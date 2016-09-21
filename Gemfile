@@ -9,7 +9,9 @@ gem 'devise', '~> 3.5', '>= 3.5.1'
 gem 'twitter-bootstrap-rails', '~> 3.2', '>= 3.2.2'
 gem 'devise-bootstrap-views', '~> 0.0.8'
 gem 'carrierwave', '~> 0.11.2'
+gem 'mini_magick', '~> 4.5', '>= 4.5.1'
 gem 'kaminari', '~> 0.16.3'
+gem 'ckeditor', '~> 4.2'
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'

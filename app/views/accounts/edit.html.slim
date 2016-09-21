@@ -66,7 +66,7 @@ br
           .form-group
             = f.label :overview, 'Відомості', class: 'col-sm-4 control-label'
             .col-sm-8
-              = f.text_area :overview, rows: 11, class: 'form-control'
+              = f.cktext_area :overview, rows: 20, ckeditor: { uiColor: "#AADC6E", toolbar: "mini" }
         .col-lg-6
           .form-group
             = f.label :backers, 'Людей', class: 'col-sm-4 control-label'
