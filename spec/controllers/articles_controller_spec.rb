@@ -285,11 +285,12 @@ RSpec.describe ArticlesController, type: :controller do
       expect(response).to redirect_to root_path
     end # role: visitor. invisible article
 
-    it 'user not available someone else\'s invisible account' do
+    it 'user not available someone else\'s invisible article' do
+      article_admin.update_attribute(:visible, false)
       sign_in user
       get :show, id: article_admin
       expect(response).to redirect_to root_path
-    end # role: user. invisible account
+    end # role: user. invisible article
 
     %w(user admin).each do |role|
       context "#{role} available invisible account and invisible article" do

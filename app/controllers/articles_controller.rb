@@ -70,7 +70,7 @@ class ArticlesController < ApplicationController
     end
 
     def visible_account_article!
-      return if @article.account.visible? && @article.visible?
+      return if (@article.account.visible? || @article.account.user.admin?) && @article.visible?
       return if !current_user.nil? && 
         (current_user.account.id == @article.account.id || current_user.admin?)
       redirect_to root_path

@@ -13,8 +13,7 @@
           = link_to 'детальніше', article_path(article)
         - else
           = link_to 'детальніше', article.link, target: '_blank'
-
-    - if user_signed_in? && owner?(@account) && (current_user.admin? || !@account.locked?)
+    - if article.admin_owner_unlocked?(current_user)
       p
         = link_to 'Редагувати', edit_article_path(article), class: 'btn btn-primary'
         = link_to 'Видалити', article_path(article), method: :delete, data: { confirm: 'Ви впевнені?' }, class: 'btn btn-danger'
