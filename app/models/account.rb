@@ -27,7 +27,6 @@ class Account < ActiveRecord::Base
 
   private
     def set_default
-      binding.pry
       self.name       = self.user.email
       self.created_at = Time.now
       self.updated_at = Time.now
