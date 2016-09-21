@@ -42,4 +42,3 @@ Rails.application.routes.draw do
   get '/products', to: 'pages#products'
   resources :images, only: :destroy
 end
-
