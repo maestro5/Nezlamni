@@ -92,7 +92,7 @@ RSpec.describe PagesController, type: :controller do
       end
       it 'populates an array of all products' do
         expect(assigns(:products)).not_to be_empty
-        expect(assigns(:products)).to match_array Product.all.order(created_at: :desc).limit(10)
+        expect(assigns(:products)).to match_array Product.all.order(account_id: :asc, created_at: :desc).limit(10)
       end
     end # role: admin
   end # GET #products
