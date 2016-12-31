@@ -19,8 +19,8 @@ RSpec.describe ImagesController, type: :controller do
 
   let(:user) { create(:user) }
   let(:user_admin) { create(:user_admin) }
-  let(:account_user) { user.account }
-  let(:account_admin) { user_admin.account }
+  let(:account_user) { create(:account, user: user) }
+  let(:account_admin) { create(:account, user: user_admin) }
   let(:product_user) { create(:product, account: account_user) }
   let(:image_account_user) { create(:image, imageable: account_user) }
   let(:image_account_admin) { create(:image, imageable: account_admin) }

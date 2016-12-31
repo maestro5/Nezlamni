@@ -1,11 +1,15 @@
 class Account < ActiveRecord::Base
   belongs_to :user
   has_many :images, as: :imageable, dependent: :delete_all
-  has_many :products, dependent: :delete_all
+  has_many :products, dependent: :destroy
   has_many :orders, dependent: :delete_all
   has_many :articles, dependent: :delete_all
 
-  before_create :set_default
+  validates :name, :birthday_on, :goal, :deadline_on, :payment_details, presence: true
+  validates :budget, numericality: { other_than: 0 }
+
+  before_update :set_changed
+  after_save { create_default_product }
 
   def collected_percent
     return 0 if budget == 0
@@ -25,10 +29,20 @@ class Account < ActiveRecord::Base
     msg
   end
 
-  private
-    def set_default
-      self.name       = self.user.email
-      self.created_at = Time.now
-      self.updated_at = Time.now
-    end
+private
+  def set_changed
+    return if (changed & %w(name birthday_on goal budget backers collected deadline_on
+      payment_details overview avatar_url phone_number contact_person)).empty?
+    self.was_changed = true
+  end
+
+  def create_default_product
+    products.find_or_create_by!(
+      title: 'Без винагороди',
+      description: 'Зробити внесок без винагороди',
+      visible: true,
+      default: true,
+      was_changed: false
+    )
+  end
 end

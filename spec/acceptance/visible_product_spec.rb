@@ -7,35 +7,42 @@ feature 'Admin switch an user product visible', %q{
 
   let(:admin_user) { create(:user_admin) }
   let(:user) { create(:user) }
-  let!(:product) { create :product, account: user.account }
+  let(:account) { create(:account, user: user, visible: true) }
+  let!(:product) { create :product, account: account }
 
-  before { user.account.toggle!(:visible) }
-
-  scenario 'when admin switchs an user product visible' do
+  scenario 'when product visible' do
     visit root_path
     find('a.avatar').click
 
-    expect(current_path).to eq account_path(user.account)
+    expect(current_path).to eq account_path(account)
     expect(page).to have_content product.title
     expect(page).to have_content product.description
-    expect(page).to have_link 'Обрати'
+  end # when product visible
 
+  scenario 'when admin switchs an user product visible' do    
     sign_in admin_user
     click_on 'Товари'
 
-    expect(page).not_to have_link 'Показувати'
     expect(page).to have_link 'Приховувати'
-    
-    click_on 'Приховувати'
-    expect(page).not_to have_link 'Приховувати'
-    expect(page).to have_link 'Показувати'
+    expect(page).not_to have_link 'Показувати'
 
-    click_on 'Вийти'
+    expect{ click_on 'Приховувати' }
+      .to change { Product.find(product.id).visible }.from(true).to(false)
+    expect(page).to have_link 'Показувати'
+    expect(page).not_to have_link 'Приховувати'
+
+    expect{ click_on 'Показувати' }
+      .to change { Product.find(product.id).visible }.from(false).to(true)
+    expect(page).to have_link 'Приховувати'
+    expect(page).not_to have_link 'Показувати'
+  end # when admin switchs an user product visible
+
+  scenario 'when product invisible' do
+    product.update_attribute(:visible, false)
 
     visit root_path
     find('a.avatar').click
     expect(page).not_to have_content product.title
     expect(page).not_to have_content product.description
-    expect(page).not_to have_link 'Обрати'
-  end # when admin switchs an user product visible
+  end # when product invisible
 end # Admin switch an user product visible

@@ -1,5 +1,5 @@
 - if user_signed_in? && current_user.admin?
-  - if obj.updated_at > obj.prev_updated_at
-    = link_to 'Перевірено', checked_account_path(obj), class: 'btn btn-success'
+  - if obj.was_changed?
+    = link_to 'Перевірено', checked_account_path(obj), class: 'btn btn-success', id: 'check_account'
   - else
-    = link_to 'Перевірено', checked_account_path(obj), class: 'btn btn-success', disabled: 'disabled'
+    = link_to 'Перевірено', checked_account_path(obj), class: 'btn btn-success', id: 'check_account', disabled: 'disabled'

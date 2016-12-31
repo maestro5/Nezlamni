@@ -1,0 +1,20 @@
+-if @users.any?
+  table.table.table-hover
+    thead
+      tr
+        th Email
+        th Зареєстрований
+        th Зборів
+        th 
+    tbody
+      - @users.each do |user|
+        tr
+          td= user.email
+          td= user.created_at
+          td= user.accounts.count
+          - if user.admin?
+            td= link_to 'Видалити', user_path(user), method: :delete, data: { confirm: 'Ви впевнені?' }, class: 'btn btn-danger', disabled: true
+          - else
+            td= link_to 'Видалити', user_path(user), method: :delete, data: { confirm: 'Ви впевнені?' }, class: 'btn btn-danger'
+
+  = paginate @users

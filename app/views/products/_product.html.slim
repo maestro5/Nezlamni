@@ -1,4 +1,4 @@
-- if product.visible? || current_user.account.id == product.account.id || current_user.admin?
+- if product.visible? || current_user.accounts.include?(product.account.id) || current_user.admin?
   .product
     .thumbnail
       h4.text-center = "Внесок #{product.contribution} грн. або більше" if product.contribution > 0

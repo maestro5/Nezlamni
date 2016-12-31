@@ -7,30 +7,33 @@
         th Мета
         th Зібрано
         th Дедлайн
-        th Зміни
-        th Видимість
-        th Редагування
-        th 
+        - if current_user.admin?
+          th Зміни
+          th Видимість
+          th Редагування
+          th
     tbody
       - @accounts.each do |account|
-        - next if account.user.admin?
         tr class="#{accounts_tr_class(account)}"
           td = link_to account.name, account_path(account)
           td = date_format(account.birthday_on)
           td = account.goal
           td = "#{account.collected_percent} %"
           td = date_format(account.deadline_on)
-          td = render 'check_btn', obj: account
-          td
-            - if account.visible?
-              = link_to 'Приховувати', visible_account_path(account), class: 'btn btn-danger'
-            - else
-              = link_to 'Показувати', visible_account_path(account), class: 'btn btn-success'
-          td
-            - if account.locked?
-              = link_to 'Розблокувати', locked_account_path(account), class: 'btn btn-success'
-            - else
-              = link_to 'Заблокувати', locked_account_path(account), class: 'btn btn-danger'
-          td
-            = link_to 'Видалити', account_path(account), method: :delete, data: { confirm: 'Ви впевнені?' }, class: 'btn btn-danger'
-  = paginate @accounts
+          - if current_user.admin?
+            td = render 'check_btn', obj: account
+            td
+              - if account.visible?
+                = link_to 'Приховувати', visible_account_path(account), class: 'btn btn-danger'
+              - else
+                = link_to 'Показувати', visible_account_path(account), class: 'btn btn-success'
+            td
+              - if account.locked?
+                = link_to 'Розблокувати', locked_account_path(account), class: 'btn btn-success'
+              - else
+                = link_to 'Заблокувати', locked_account_path(account), class: 'btn btn-danger'
+            td
+              = link_to 'Видалити', account_path(account), method: :delete, data: { confirm: 'Ви впевнені?' }, class: 'btn btn-danger'
+  
+  .text-center
+    = paginate @accounts

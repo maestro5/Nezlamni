@@ -21,8 +21,8 @@ RSpec.describe ArticlesController, type: :controller do
 
   let(:user) { create(:user) }
   let(:user_admin) { create(:user_admin) }
-  let(:account_user) { user.account }
-  let(:account_admin) { user_admin.account }
+  let(:account_user) { create(:account, user: user) }
+  let(:account_admin) { create(:account, user: user_admin) }
   let(:article_user) { create(:article, account: account_user) }
   let(:article_admin) { create(:article, account: account_admin) }
 
@@ -39,19 +39,20 @@ RSpec.describe ArticlesController, type: :controller do
     end # roles: visitor, user
 
     context 'admin include invisible articles' do
-      before { article_user.update_attribute(:visible, false) }
-      before { create_list(:article, 5, account: account_user, visible: false)}
-      before { create_list(:article, 7, account: account_admin)}
-      before { article_admin }
-      before { sign_in user_admin }
-      before { get :index }
+      before do
+        article_user.update_attribute(:visible, false)
+        create_list(:article, 5, account: account_user, visible: false)
+        create_list(:article, 7, account: account_admin)
+        article_admin
+        sign_in user_admin
+        get :index
+      end
       it 'renders index view' do
         expect(response).to render_template :index
       end
       it 'populates an array of all articles' do
         expect(assigns(:articles)).not_to be_empty
         expect(assigns(:articles)).to match_array Article.all.order(created_at: :desc).limit(10)
-        expect(assigns(:account)).to eq account_admin
       end
     end # role: admin
   end # GET #index
@@ -64,10 +65,12 @@ RSpec.describe ArticlesController, type: :controller do
 
     %w(user admin).each do |role|
       context "#{role} locked user account" do
-        before { account_user.update_attribute(:locked, true) }
-        before { sign_in user } if role == 'user'
-        before { sign_in user_admin } if role == 'admin'
-        before { get :new, account_id: account_user }
+        before do
+          account_user.update_attribute(:locked, true)
+          sign_in user if role == 'user'
+          sign_in user_admin if role == 'admin'
+          get :new, account_id: account_user
+        end
         it 'assigns a new Article to @article' do
           expect(assigns(:article)).to be_a_new(Article)
         end

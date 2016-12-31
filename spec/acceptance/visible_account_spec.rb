@@ -7,24 +7,22 @@ feature 'Admin switch an user account visible', %q{
 
   let(:admin_user) { create(:user_admin) }
   let(:user) { create(:user) }
+  let!(:account) { create(:account, user: user) }
 
   scenario 'when admin switchs an user account visible' do
-    user.account.update_attribute(:name, 'user')
-
     visit root_path
-    expect(page).not_to have_link user.account.name
+    expect(page).not_to have_link account.name
 
     sign_in admin_user
-    click_on 'Користувачі'
+
+    click_on 'Збори'
     click_on 'Показувати'
-
     visit root_path
-    expect(page).to have_link user.account.name
+    expect(page).to have_link account.name
 
-    click_on 'Користувачі'
+    click_on 'Збори'
     click_on 'Приховувати'
-
     visit root_path
-    expect(page).not_to have_link user.account.name
+    expect(page).not_to have_link account.name
   end # when admin switchs an user account visible
 end # Admin switch an user account visible

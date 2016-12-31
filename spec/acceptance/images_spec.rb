@@ -6,14 +6,14 @@ feature 'User account and product images', %q{
 } do
 
   let(:user) { create(:user) }
-  let(:account) { user.account }
-  let!(:product) { create :product, account: user.account }
+  let(:account) { create(:account, user: user, visible: true) }
+  let!(:product) { create :product, account: account }
 
-  before { user.account.toggle!(:visible) }
+  # before { user.account.toggle!(:visible) }
 
   scenario 'when user uploads account image and set account avatar' do
     sign_in user
-    click_on 'Моя сторінка'
+    visit account_path(account)
 
     find('#edit_account').click
     attach_file('image[image]', 'spec/test.jpg')
@@ -52,9 +52,9 @@ feature 'User account and product images', %q{
 
   scenario 'when user uploads product image and set product avatar' do
     sign_in user
-    click_on 'Моя сторінка'
+    visit account_path(account)
 
-    within('.product') do
+    within all('.product').last do
       click_on 'Редагувати'
     end
 

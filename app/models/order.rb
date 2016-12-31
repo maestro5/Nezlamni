@@ -8,21 +8,21 @@ class Order < ActiveRecord::Base
     self.toggle!(:delivered)
   end
 
-  private
+private
 
-    def delivery_recalculate!
-      if self.delivered?
-        self.account.update_attributes(
-          backers: self.account.backers + 1,
-          collected: self.account.collected + self.contribution
-          )
-        self.product.update_attribute(:backers, (self.product.backers || 0) + 1)
-      else
-        self.account.update_attributes(
-          backers: self.account.backers - 1,
-          collected: self.account.collected - self.contribution
-          )
-        self.product.update_attribute(:backers, (self.product.backers || 1) - 1)
-      end
-    end # delivery_recalculate!
+  def delivery_recalculate!
+    if self.delivered?
+      self.account.update_attributes(
+        backers: self.account.backers + 1,
+        collected: self.account.collected + self.contribution
+        )
+      self.product.update_attribute(:backers, (self.product.backers || 0) + 1)
+    else
+      self.account.update_attributes(
+        backers: self.account.backers - 1,
+        collected: self.account.collected - self.contribution
+        )
+      self.product.update_attribute(:backers, (self.product.backers || 1) - 1)
+    end
+  end # delivery_recalculate!
 end # Order

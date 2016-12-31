@@ -23,8 +23,8 @@ RSpec.describe AccountsController, type: :controller do
 
   let(:user) { create(:user) }
   let(:user_admin) { create(:user_admin) }
-  let(:account_user) { user.account }
-  let(:account_admin) { user_admin.account }
+  let(:account_user) { create(:account, user: user) }
+  let(:account_admin) { create(:account, user: user_admin) }
   let(:images) { create_list(:image, 2, imageable: account_user) }
   let(:products) { create_list(:product, 2, account: account_user) }
   let(:products_admin) { create_list(:product, 2, account: account_admin) }
@@ -42,18 +42,30 @@ RSpec.describe AccountsController, type: :controller do
       expect(response).to redirect_to new_user_session_path
     end # role: visitor
 
-    it 'user redirect to home page' do
-      sign_in user
-      get :index
-      expect(response).to redirect_to root_path
+    context 'user' do
+      before do
+        account_user
+        account_admin
+        sign_in user
+        get :index
+      end
+      it 'renders index view' do
+        expect(response).to render_template :index
+      end
+      it 'populates an array of all accounts' do
+        expect(assigns(:accounts)).not_to be_empty
+        expect(assigns(:accounts)).to match_array user.accounts.order(deadline_on: :asc).limit(10)
+      end
     end # role: user
 
     context 'admin, visible user accounts' do
-      before { create_list(:user, 11) }
-      before { account_user.update_attribute(:visible, true) }
-      before { account_admin }
-      before { sign_in user_admin }
-      before { get :index }
+      before do
+        create_list(:account, 11, user: user)
+        account_user.update_attribute(:visible, true)
+        account_admin
+        sign_in user_admin
+        get :index
+      end
       it 'renders index view' do
         expect(response).to render_template :index
       end
@@ -64,11 +76,12 @@ RSpec.describe AccountsController, type: :controller do
     end # role: admin. visible and unlocked user accounts
 
     context 'admin, visible and locked accounts' do
-      before { create_list(:user, 11) }
-      before { Account.all.each { |a| a.update_attributes(visible: true, locked: true) } }
-      before { account_admin }
-      before { sign_in user_admin }
-      before { get :index }
+      before do
+        create_list(:account, 11, visible: true, locked: true, user: user)
+        account_admin
+        sign_in user_admin
+        get :index
+      end
       it 'renders index view' do
         expect(response).to render_template :index
       end
@@ -95,12 +108,14 @@ RSpec.describe AccountsController, type: :controller do
     end # role: visitor. default
 
     context 'visitor' do
-      before { account_user.update_attribute(:visible, true) }
-      before { invisible_product_user }
-      before { invisible_article_user }
-      before { products }
-      before { articles }
-      before { get :show, id: account_user }
+      before do
+        account_user.update_attribute(:visible, true)
+        invisible_product_user
+        invisible_article_user
+        products
+        articles
+        get :show, id: account_user
+      end
       it 'renders show account view' do
         expect(response).to render_template :show
       end
@@ -109,24 +124,24 @@ RSpec.describe AccountsController, type: :controller do
       end
       it 'populates only visible account products' do
         expect(assigns(:products)).not_to be_empty
-        expect(assigns(:products)).to match_array products
+        expect(assigns(:products))
+          .to match_array account_user.products.where(visible: true)
       end
       it 'populates only visible account articles' do
         expect(assigns(:articles)).not_to be_empty
-            expect(assigns(:articles)).to match_array articles
+        expect(assigns(:articles)).to match_array articles
       end
     end # role: visitor. visible user account
 
     context 'visitor' do
-      before { account_user.update_attributes(
-        visible: true,
-        locked: true
-      ) }
-      before { invisible_product_user }
-      before { invisible_article_user }
-      before { products }
-      before { articles }
-      before { get :show, id: account_user }
+      before do
+        account_user.update_attributes(visible: true, locked: true)
+        invisible_product_user
+        invisible_article_user
+        products
+        articles
+        get :show, id: account_user
+      end
       it 'renders show account view' do
         expect(response).to render_template :show
       end
@@ -135,24 +150,27 @@ RSpec.describe AccountsController, type: :controller do
       end
       it 'populates only visible account products' do
         expect(assigns(:products)).not_to be_empty
-        expect(assigns(:products)).to match_array products
+        expect(assigns(:products))
+          .to match_array account_user.products.where(visible: true)
       end
       it 'populates only visible account articles' do
         expect(assigns(:articles)).not_to be_empty
-            expect(assigns(:articles)).to match_array articles
+        expect(assigns(:articles)).to match_array articles
       end
     end # role: visitor. visible, locked user account
 
     # invisible, unlocked user account (default)
     %w(user admin).each do |role|
       context role do
-        before { invisible_product_user }
-        before { invisible_article_user }
-        before { products }
-        before { articles }
-        before { sign_in user } if role == 'user'
-        before { sign_in user_admin } if role == 'admin'
-        before { get :show, id: account_user }
+        before do
+          invisible_product_user
+          invisible_article_user
+          products
+          articles
+          sign_in user if role == 'user'
+          sign_in user_admin if role == 'admin'
+          get :show, id: account_user
+        end
         it 'renders show account view' do
           expect(response).to render_template :show
         end
@@ -173,13 +191,15 @@ RSpec.describe AccountsController, type: :controller do
     # invisible, unlocked user account (default)
     # someone else\'s account page
     context 'user' do
-      before { account_admin.update_attribute(:visible, true) }
-      before { invisible_product_admin }
-      before { invisible_article_admin }
-      before { products_admin }
-      before { articles_admin }
-      before { sign_in user }
-      before { get :show, id: account_admin }
+      before do
+        account_admin.update_attribute(:visible, true)
+        invisible_product_admin
+        invisible_article_admin
+        products_admin
+        articles_admin
+        sign_in user
+        get :show, id: account_admin
+      end
       it 'renders show account view' do
         expect(response).to render_template :show
       end
@@ -379,18 +399,19 @@ RSpec.describe AccountsController, type: :controller do
     end # roles: visitor, user
 
     context 'admin' do
-      before { account_user }
-      before { images }
-      before { products }
-      before { orders }
-      before { articles }
-      before { sign_in user_admin }
+      before do
+        account_user
+        images
+        products
+        orders
+        articles
+        sign_in user_admin
+      end
       it 'deletes user account' do
         expect { delete :destroy, id: account_user }
-          .to change(User, :count).by(-1)
-          .and change(Account, :count).by(-1)
+          .to change(Account, :count).by(-1)
           .and change(Image, :count).by(-2)
-          .and change(Product, :count).by(-2)
+          .and change(Product, :count).by(-3)
           .and change(Order, :count).by(-2)
           .and change(Article, :count).by(-2)
       end
@@ -408,19 +429,20 @@ RSpec.describe AccountsController, type: :controller do
     end # when user
 
     context 'admin' do
-      before { account_user }
-      before { account_user.update_attribute(:locked, true) }
-      before { images }
-      before { products }
-      before { orders }
-      before { articles }
-      before { sign_in user_admin }
+      before do
+        account_user
+        account_user.update_attribute(:locked, true)
+        images
+        products
+        orders
+        articles
+        sign_in user_admin
+      end
       it 'deletes user account' do
         expect { delete :destroy, id: account_user }
-          .to change(User, :count).by(-1)
-          .and change(Account, :count).by(-1)
+          .to change(Account, :count).by(-1)
           .and change(Image, :count).by(-2)
-          .and change(Product, :count).by(-2)
+          .and change(Product, :count).by(-3)
           .and change(Order, :count).by(-2)
           .and change(Article, :count).by(-2)
       end
@@ -445,7 +467,7 @@ RSpec.describe AccountsController, type: :controller do
       before { sign_in user_admin }
       it 'checked user account' do
         expect { get :checked, id: account_user }
-          .to change { Account.find(account_user.id).prev_updated_at }
+          .to change { Account.find(account_user.id).was_changed }
       end
       it 'redirects to accounts page' do
         get :checked, id: account_user

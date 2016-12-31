@@ -1,6 +1,6 @@
 - avatar_url = @account.avatar_url.nil? ? 'empty_avatar.jpg' : @account.avatar_url
 
-- if request.path.include? 'edit'
+- if request.path.include?('edit')
   = link_to image_tag(avatar_url, alt: 'avatar', class: 'img-rounded'), account_images_path(@account), class: 'avatar'
 - else
   = link_to image_tag(avatar_url, alt: 'avatar', class: 'img-rounded'), account_path(@account), class: 'avatar'

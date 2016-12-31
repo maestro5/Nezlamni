@@ -11,11 +11,11 @@ module ApplicationHelper
 
   def accounts_tr_class(account)
     return if account.nil?
-    if account.collected > 0 && account.collected >= account.budget
+    if account.collected > 0 && account.collected >= account.budget # compleated
       'success'
-    elsif account.prev_updated_at == '0001-01-01'
+    elsif account.created_at == account.updated_at # new
       'warning'
-    elsif account.updated_at > account.prev_updated_at
+    elsif account.was_changed? # changed
       'info'
     elsif account.locked? || !account.visible?
       'danger'
@@ -25,9 +25,9 @@ module ApplicationHelper
   def products_tr_class(product)
     return if product.nil?
 
-    if product.prev_updated_at == '0001-01-01'
+    if product.created_at == product.updated_at # new
       'warning'
-    elsif product.updated_at > product.prev_updated_at
+    elsif product.was_changed? # changed
       'info'
     elsif !product.visible?
       'danger'
@@ -36,6 +36,6 @@ module ApplicationHelper
 
   def owner?(account)
     return true if current_user.admin?
-    current_user.account == account
+    current_user.accounts.include? account
   end
 end

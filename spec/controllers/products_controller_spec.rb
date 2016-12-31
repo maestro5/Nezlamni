@@ -22,8 +22,8 @@ RSpec.describe ProductsController, type: :controller do
 
   let(:user) { create(:user) }
   let(:user_admin) { create(:user_admin) }
-  let(:account_user) { user.account }
-  let(:account_admin) { user_admin.account }
+  let(:account_user) { create(:account, user: user) }
+  let(:account_admin) { create(:account, user: user_admin) }
   let(:product_user) { create(:product, account: account_user) }
   let(:products_user) { create_list(:product, 2, account: account_user) }
   let(:product_admin) { create(:product, account: account_admin) }
@@ -41,17 +41,19 @@ RSpec.describe ProductsController, type: :controller do
 
     %w(user admin).each do |role|
       context role do
-        before { product_user }
-        before { product_admin }
-        before { sign_in user } if role == 'user'
-        before { sign_in user_admin } if role == 'admin'
-        before { get :index, account_id: account_user }
+        before do
+          product_user
+          product_admin
+          sign_in user if role == 'user'
+          sign_in user_admin if role == 'admin'
+          get :index, account_id: account_user
+        end
         it 'renders index view' do
           expect(response).to render_template :index
         end
         it 'populates an array of all products' do
           expect(assigns(:products)).not_to be_empty
-          expect(assigns(:products)).to match_array [product_user]
+          expect(assigns(:products)).to match_array account_user.products
         end
       end # default
     end # roles: user, admin
@@ -73,16 +75,18 @@ RSpec.describe ProductsController, type: :controller do
     end # role: user. default, someone else\'s account page
 
     context 'visitor visible user account, invisible product' do
-      before { account_user.update_attribute(:visible, true) }
-      before { product_user.update_attribute(:visible, false) }
-      before { product_admin }
-      before { get :index, account_id: account_user }
+      before do
+        account_user.update_attribute(:visible, true)
+        product_user.update_attribute(:visible, false)
+        product_admin
+        get :index, account_id: account_user
+      end
       it 'renders index view' do
         expect(response).to render_template :index
       end
       it 'populates an array of all products' do
-        expect(assigns(:products)).to be_empty
-        expect(assigns(:products)).not_to match_array [product_user]
+        expect(assigns(:products)).not_to be_empty
+        expect(assigns(:products)).not_to match_array account_user.products
       end
     end # role: visitor. visible user account; invisible product
 
@@ -98,63 +102,63 @@ RSpec.describe ProductsController, type: :controller do
         end
         it 'populates an array of all products' do
           expect(assigns(:products)).not_to be_empty
-          expect(assigns(:products)).to match_array [product_user]
+          expect(assigns(:products)).to match_array account_user.products
         end
       end # invisible product
     end # roles: user, admin
 
     context 'visitor available products for locked account' do
-      before { account_user.update_attributes(
-        visible: true,
-        locked: true
-      ) }
-      before { product_user }
-      before { product_admin }
-      before { get :index, account_id: account_user }
+      before do
+        account_user.update_attributes(visible: true, locked: true)
+        product_user
+        product_admin
+        get :index, account_id: account_user
+      end
       it 'renders index view' do
         expect(response).to render_template :index
       end
       it 'populates an array of only visible products' do
         expect(assigns(:products)).not_to be_empty
-        expect(assigns(:products)).to match_array [product_user]
+        expect(assigns(:products)).to match_array account_user.products
       end      
     end # role: visitor. visible, locked account
 
     %w(user admin).each do |role|
       context role do
-        before { account_user.update_attributes(
-          visible: true,
-          locked: true
-        ) }
-        before { product_user }
-        before { product_admin }
-        before { sign_in user } if role == 'user'
-        before { sign_in user_admin } if role == 'admin'
-        before { get :index, account_id: account_user }
+        before do
+          account_user.update_attributes(visible: true, locked: true)
+          product_user
+          product_admin
+          sign_in user if role == 'user'
+          sign_in user_admin if role == 'admin'
+          get :index, account_id: account_user
+        end
         it 'renders index view' do
           expect(response).to render_template :index
         end
         it 'populates an array of all products' do
           expect(assigns(:products)).not_to be_empty
-          expect(assigns(:products)).to match_array [product_user]
+          expect(assigns(:products)).to match_array account_user.products
         end
       end # visible, locked account
     end # roles: user, admin
 
     %w(visitor user admin).each do |role|
       context role do
-        before { account_user.update_attribute(:visible, true) }
-        before { product_user.update_attribute(:visible, false) }
-        before { products_user }
-        before { sign_in user } if role == 'user'
-        before { sign_in user_admin } if role == 'admin'
-        before { get :index, account_id: account_user }
+        before do
+          account_user.update_attribute(:visible, true)
+          product_user.update_attribute(:visible, false)
+          products_user
+          sign_in user if role == 'user'
+          sign_in user_admin if role == 'admin'
+          get :index, account_id: account_user
+        end
         it 'renders index view' do
           expect(response).to render_template :index
         end
         it 'populates an array of all or only visible products' do
           expect(assigns(:products)).not_to be_empty
-          expect(assigns(:products)).to match_array products_user if role == 'visitor'
+          expect(assigns(:products)).to match_array account_user.products.where(visible: true) if role == 'visitor'
           expect(assigns(:products)).to match_array account_user.products unless role == 'visitor'
         end
       end # visible user account
@@ -243,8 +247,11 @@ RSpec.describe ProductsController, type: :controller do
 
     %w(user admin).each do |role|
       context role do
-        before { sign_in user } if role == 'user'
-        before { sign_in user_admin } if role == 'admin'
+        before do
+          account_user
+          sign_in user if role == 'user'
+          sign_in user_admin if role == 'admin'
+        end
         it 'saves the new product in the database' do
           expect { post :create, account_id: account_user, product: attributes_for(:product) }
             .to change(Product, :count).by(1)
@@ -497,12 +504,14 @@ RSpec.describe ProductsController, type: :controller do
     end # role: user. visible user account
 
     context 'admin when locked user account' do
-      before { account_user.update_attribute(:locked, true) }
-      before { @request.env['HTTP_REFERER'] = account_path(account_user) }
-      before { sign_in user_admin }
+      before do
+        account_user.update_attribute(:locked, true)
+        @request.env['HTTP_REFERER'] = account_path(account_user)
+        sign_in user_admin
+      end
       it 'checked user product' do
         expect { get :checked, id: product_user }
-          .to change { Product.find(product_user.id).prev_updated_at }
+          .to change { Product.find(product_user.id).was_changed }
       end
       it 'redirects to products page' do
         get :checked, id: product_user
@@ -511,12 +520,14 @@ RSpec.describe ProductsController, type: :controller do
     end # role: admin. locked user account
 
     context 'admin when invisible product' do
-      before { product_user.update_attribute(:visible, false) }
-      before { @request.env['HTTP_REFERER'] = account_path(account_user) }
-      before { sign_in user_admin }
+      before do
+        product_user.update_attribute(:visible, false)
+        @request.env['HTTP_REFERER'] = account_path(account_user)
+        sign_in user_admin
+      end
       it 'checked user product' do
         expect { get :checked, id: product_user }
-          .to change { Product.find(product_user.id).prev_updated_at }
+          .to change { Product.find(product_user.id).was_changed }
       end
       it 'redirects to products page' do
         get :checked, id: product_user
@@ -525,11 +536,13 @@ RSpec.describe ProductsController, type: :controller do
     end # role: admin. invisible product
 
     context 'admin' do
-      before { @request.env['HTTP_REFERER'] = account_path(account_user) }
-      before { sign_in user_admin }
+      before do
+        @request.env['HTTP_REFERER'] = account_path(account_user)
+        sign_in user_admin
+      end
       it 'checked user product' do
         expect { get :checked, id: product_user }
-          .to change { Product.find(product_user.id).prev_updated_at }
+          .to change { Product.find(product_user.id).was_changed }
       end
       it 'redirects to products page' do
         get :checked, id: product_user

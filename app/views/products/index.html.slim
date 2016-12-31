@@ -1,9 +1,11 @@
 .row
   .col-lg-3
     h3 Підтримати цю дитину
+
     br
     - if user_signed_in? && owner?(@account) && (current_user.admin? || !@account.locked?)
       .thumbnail
         .caption
           = link_to 'Додати товар', new_account_product_path(@account), class: 'btn btn-primary'
+    
     = render @products

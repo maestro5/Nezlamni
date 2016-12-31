@@ -1,23 +1,26 @@
 require_relative '../acceptance_helper'
 
+# =====================================
+# role: visitor
+# =====================================
 feature 'Visitor buy', %q{
   As a visitor
   I want to be able to buy a product
 } do
   
-  let(:user) { create :user }
-  let(:account) { user.account }
+  let(:user)     { create :user }
+  let(:account)  { create :account, user: user, visible: true }
   let!(:product) { create :product, account: account }
 
-  before { account.toggle!(:visible) }
-
-  scenario 'when a visitor click button [Підтримати цю дитину]' do
+  before do
     visit root_path
     find('a.avatar').click
-    click_on 'Підтримати цю дитину'
+  end
 
+  scenario 'when a visitor click button [Підтримати цю дитину]' do
+    click_on 'Підтримати цю дитину'
     expect(current_path).to eq account_products_path(account)
-    within '.product' do
+    within all('.product').last do
       expect(page).to have_content product.title
       expect(page).to have_content product.description
       expect(page).to have_content product.backers
@@ -26,11 +29,9 @@ feature 'Visitor buy', %q{
   end # when a visitor click button [Підтримати цю дитину]
 
   scenario 'when visitor supports a child with a reward' do
-    # order
-    visit root_path
-    find('a.avatar').click   
-    click_on 'Обрати'
-    
+    within all('.product').last do
+      click_on 'Обрати'
+    end
     expect(current_path).to eq new_product_order_path(product)
 
     fill_in 'order[contribution]', with: 777
@@ -38,201 +39,155 @@ feature 'Visitor buy', %q{
     fill_in 'order[address]', with: 'test address'
     fill_in 'order[recipient]', with: 'Visitor Boldt'
     fill_in 'order[phone]', with: '+38(067)781-91-15'
-    
     expect { click_on 'Оформити' }.to change(account.orders, :count).by(1)
 
-    order = product.orders.first
-    expect(current_path).to eq order_path(order)
+    expect(current_path).to eq order_path(Order.last)
     expect(page).to have_content 'Дякуємо, за підтримку!'
-
-    # delivered
-    sign_in user
-    click_on 'Замовлення'
-    expect(page).to have_selector 'tr.danger'
-    expect(page).to have_link product.title
-    expect(page).to have_content order.contribution
-    expect(page).to have_content order.recipient
-    expect(page).to have_content order.email
-    expect(page).to have_content order.phone
-    expect(page).to have_content order.address
-
-    click_on 'Так'
-    expect(page).to have_selector 'tr.success'
-    expect(page).not_to have_selector 'tr.danger'
-
-    visit account_path(account)
-    expect(page).to have_content 1
-    expect(page).to have_content 777
-    within '.product' do
-      expect(page).to have_content '12 людей, залишилось 8 з 20'
-    end
-
-    # canceled delivery
-    click_on 'Замовлення'
-    click_on 'Ні'
-    expect(page).to have_selector 'tr.danger'
-    expect(page).not_to have_selector 'tr.success'
-
-    visit account_path(account)
-    expect(page).to have_content 0
-    within '.product' do
-      expect(page).to have_content '11 людей, залишилось 9 з 20'
-    end
   end # when visitor supports a child with a reward
 end # Visitor buy
 
+# =====================================
+# role: user
+# =====================================
 feature 'User delivered', %q{
   As an user
   I want to be able to switch order status in delivered
 } do
 
-  let(:user) { create :user }
-  let(:user_admin) { create(:user_admin) }
-  let (:account_user) { user.account }
-  let (:account_admin) { user_admin.account }
-  let!(:product_user) { create :product, account: account_user, title: 'user product' }
-  let!(:product_admin) { create :product, account: account_admin, title: 'admin product' }
+  let(:user_one)    { create :user }
+  let(:user_two)    { create :user }
+  let(:account_one) { create :account, user: user_one }
+  let(:account_two) { create :account, user: user_two }
+  let(:product_one) { create :product, account: account_one, title: 'user one product' }
+  let(:product_two) { create :product, account: account_two, title: 'user two product' }
+
+  before { sign_in user_one }
 
   scenario 'show only user orders' do
-    create_list :order, 5, product: product_user, account: account_user
-    create_list :order, 5, product: product_admin, account: account_admin
+    create_list :order, 5, product: product_one, account: account_one
+    create_list :order, 5, product: product_two, account: account_two
 
-    sign_in user
     visit orders_path
-    expect(page).to have_link 'user product', count: 5
-    expect(page).not_to have_link 'admin product'
+    expect(page).to have_link 'user one product', count: 5
+    expect(page).not_to have_link 'user two product'
   end
 
-  scenario 'when switches order status in delivered' do
-    order = create :order, product: product_user, account: account_user
+  context 'when order exist' do
+    let!(:order) { create :order, product: product_one, account: account_one }
 
-    sign_in user
+    scenario 'when switches order status in delivered' do
+      visit orders_path
+      expect(page).to have_link order.product.title
+      expect(page).to have_content order.address
+      expect(page).to have_content order.recipient
+      expect(page).to have_content order.phone
+
+      expect { click_on 'Так' }
+        .to change { Account.find(account_one.id).backers }.by(1)
+        .and change { Account.find(account_one.id).collected }.by(+777)
+        .and change { Product.find(product_one.id).backers }.by(1)
+      expect(page).not_to have_link 'Так'
+      expect(page).to have_link 'Ні'
+    end # when switches order status in delivered
+
+    scenario 'when switches order status in undelivered' do
+      order.update_attribute(:delivered, true)
+
+      visit orders_path
+      expect(page).to have_link order.product.title
+      expect(page).to have_content order.address
+      expect(page).to have_content order.recipient
+      expect(page).to have_content order.phone
+
+      expect { click_on 'Ні' }
+        .to change { Account.find(account_one.id).backers }.by(-1)
+        .and change { Account.find(account_one.id).collected }.by(-777)
+        .and change { Product.find(product_one.id).backers }.by(-1)
+      expect(page).to have_link 'Так'
+      expect(page).not_to have_link 'Ні'
+    end # when switches order status in undelivered
+  end # when order exist
+
+  scenario 'when select another page in pagination' do
     visit orders_path
-    expect(page).to have_link order.product.title
-    expect(page).to have_content order.address
-    expect(page).to have_content order.recipient
-    expect(page).to have_content order.phone
-
-    expect { click_on 'Так' }
-      .to change { Account.find(account_user.id).backers }.by(1)
-      .and change { Account.find(account_user.id).collected }.by(+777)
-      .and change { Product.find(product_user.id).backers }.by(1)
-
-    expect(page).not_to have_link 'Так'
-    expect(page).to have_link 'Ні'
-
-    expect { click_on 'Ні' }
-      .to change { Account.find(account_user.id).backers }.by(-1)
-      .and change { Account.find(account_user.id).collected }.by(-777)
-      .and change { Product.find(product_user.id).backers }.by(-1)
-    expect(page).not_to have_link 'Ні'
-    expect(page).to have_link 'Так'
-  end # when switches order status in delivered
-
-  scenario 'pagination' do
-    order = create :order, product: product_user, account: account_user
-
-    sign_in user
-    visit orders_path
-    expect(page).to have_link order.product.title
     expect(page).not_to have_selector '.pagination'
 
-    create_list :order, 13, product: product_user, account: account_user
-    create_list :order, 5, product: product_admin, account: account_admin
+    create_list :order, 13, product: product_one, account: account_one
+    create_list :order, 5,  product: product_two, account: account_two
     
     visit orders_path
-    expect(page).to have_link order.product.title, count: 10
+    expect(page).to have_link product_one.title, count: 10
     
     within '.pagination' do
       click_on '2'
     end
-    expect(page).to have_link order.product.title, count: 4
+    expect(page).to have_link product_one.title, count: 3
 
     within '.pagination' do
       click_on '1'
     end
-    expect(page).to have_link order.product.title, count: 10
+    expect(page).to have_link product_one.title, count: 10
   end # pagination
 end # User delivered
 
+# =====================================
+# role: admin
+# =====================================
 feature 'Admin delivered', %q{
   As an admin
   I want to be able to switch order status in delivered
 } do
 
-  let(:user_admin) { create(:user_admin) }
-  let(:user) { create :user }
-  let(:account_user) { user.account }
-  let(:account_admin) { user_admin.account }
-  let!(:product_user) { create :product, account: account_user }
-  let!(:product_admin) { create :product, account: account_admin }
-  let!(:order_user) { create :order, product: product_user, account: account_user }
+  let(:user_admin) { create :user_admin }
+  let(:user)       { create :user }
+  let(:account)    { create :account, user: user, visible: true }
+  let(:product)    { create :product, account: account }
+  let!(:order)     { create :order, product: product, account: account }
+
+  before { sign_in user_admin }
 
   scenario 'when admin switches order status in delivered' do
-    visit account_path(account_user)
-    expect(page).to have_content '0'
+    visit account_path(account)
+    within '.backers' do
+      expect(page).to have_content '0'
+    end
 
-    sign_in user_admin
-    click_on 'Замовлення'
-    
+    click_on 'Замовлення'    
     expect(current_path).to eq orders_path
-    expect(page).to have_link product_user.title
-    expect(page).to have_content order_user.address
-    expect(page).to have_content order_user.recipient
-    expect(page).to have_content order_user.phone
-
+    expect(page).to have_link product.title
+    expect(page).to have_content order.address
+    expect(page).to have_content order.recipient
+    expect(page).to have_content order.phone
     expect { click_on 'Так' }
-      .to change { Account.find(account_user.id).backers }.by(1)
-      .and change { Account.find(account_user.id).collected }.by(+777)
-      .and change { Product.find(product_user.id).backers }.by(1)
+      .to change { Account.find(account.id).backers }.by(1)
+      .and change { Account.find(account.id).collected }.by(+777)
+      .and change { Product.find(product.id).backers }.by(1)
     expect(page).not_to have_link 'Так'
     expect(page).to have_link 'Ні'
 
-    visit account_path(account_user)
-    expect(page).to have_content '1'
+    visit account_path(account)
+    within '.backers' do
+      expect(page).to have_content '1'
+    end
+  end # when admin switches order status in delivered
+
+  scenario 'when admin switches order status in undelivered' do
+    order.update_attribute(:delivered, true)
+
+    visit account_path(account)
+    within '.backers' do
+      expect(page).to have_content '1'
+    end
     
     click_on 'Замовлення'
     expect { click_on 'Ні' }
-      .to change { Account.find(account_user.id).backers }.by(-1)
-      .and change { Account.find(account_user.id).collected }.by(-777)
-      .and change { Product.find(product_user.id).backers }.by(-1)
+      .to change { Account.find(account.id).backers }.by(-1)
+      .and change { Account.find(account.id).collected }.by(-777)
+      .and change { Product.find(product.id).backers }.by(-1)
     expect(page).not_to have_link 'Ні'
     expect(page).to have_link 'Так'
 
-    visit account_path(account_user)
+    visit account_path(account)
     expect(page).to have_content '0'
   end # when admin switches order status in delivered
-
-  scenario 'pagination' do
-    create :order, product: product_admin, account: account_admin
-
-    sign_in user_admin
-
-    # show all orders
-    visit orders_path
-    expect(page).to have_link product_user.title, count: 2
-    expect(page).not_to have_selector '.pagination'
-
-    # pagination
-    create_list :order, 13, product: product_user, account: account_user
-    create_list :order, 7, product: product_admin, account: account_admin
-    
-    visit orders_path
-    expect(page).to have_link product_user.title, count: 10
-    
-    within '.pagination' do
-      click_on '2'
-    end
-    expect(page).to have_link product_user.title, count: 10
-
-    within '.pagination' do
-      click_on '3'
-    end
-    expect(page).to have_link product_user.title, count: 2
-
-    within '.pagination' do
-      click_on '1'
-    end
-    expect(page).to have_link product_user.title, count: 10
-  end # pagination
 end # Admin delivered

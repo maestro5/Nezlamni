@@ -5,7 +5,7 @@ class Product < ActiveRecord::Base
 
   validates :title, presence: true
 
-  before_create :set_timestamps
+  before_update :set_changed
 
   def contributions_stat
     return if backers.nil? || backers == 0
@@ -14,9 +14,9 @@ class Product < ActiveRecord::Base
     "#{self.backers} людей" + msg
   end
 
-  private
-    def set_timestamps
-      self.created_at = Time.now
-      self.updated_at = Time.now
-    end
+private
+  def set_changed
+    return if (changed & %w(title description avatar_url contribution backers remainder)).empty?
+    self.was_changed = true
+  end
 end

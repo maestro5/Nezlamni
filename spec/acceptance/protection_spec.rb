@@ -1,33 +1,36 @@
 require_relative '../acceptance_helper'
 
-# ---------------------------------
-# Visitor
-# ---------------------------------
+# =====================================
+# role: visitor
+# =====================================
 feature 'Visitor close routes and links', %q{
   As a visitor
   I want to not be available to User and Admin links
 } do
 
-  let(:user) { create :user }
-  let(:account) { user.account }
-  let!(:product) { create :product, account: account }
+  let(:user)     { create :user }
+  let(:account)  { create :account, user: user }
+  let(:product) { create :product, account: account }
   let!(:article) { create :article, account: account }
-  let(:order) { create :order, product: product }
+  let(:order)    { create :order,   product: product }
 
   scenario 'menu items' do
     visit root_path
+    expect(page).to have_link 'Зібрати кошти'
     expect(page).to have_link 'Реєстрація'
     expect(page).to have_link 'Увійти'
-    expect(page).not_to have_link 'Моя сторінка'
+    expect(page).not_to have_link 'Збори'
     expect(page).not_to have_link 'Замовлення'
-    expect(page).not_to have_link 'Користувачі'
     expect(page).not_to have_link 'Товари'
+    expect(page).not_to have_link 'Користувачі'
     expect(page).not_to have_link 'Новини'
     expect(page).not_to have_link 'Вийти'
   end # menu items
 
   context 'home page, accounts and articles' do
     scenario 'when default user account' do
+      article.update_attribute(:visible, false)
+
       visit root_path
       expect(page).not_to have_css '.article'
       expect(page).not_to have_css 'a.avatar'
@@ -39,9 +42,13 @@ feature 'Visitor close routes and links', %q{
       visit root_path
       expect(page).to have_css '.article'
       expect(page).to have_css 'a.avatar'
+    end 
 
+    scenario 'when invisible user account' do
       # invisible user article
+      account.update_attribute(:visible, true)
       article.update_attribute(:visible, false)
+
       visit root_path
       expect(page).not_to have_css '.article'
       expect(page).to have_css 'a.avatar'
@@ -92,16 +99,16 @@ feature 'Visitor close routes and links', %q{
       end
     end # when product default
 
-    scenario 'product invisible' do
+    scenario 'when product invisible' do
       product.update_attribute(:visible, false)
       visit account_path(account)
       expect(page).not_to have_link 'Додати товар'
-      expect(page).not_to have_css '.product'
+      expect(page).not_to have_content product.title
 
       # account support child
       click_on 'Підтримати цю дитину'
       expect(page).not_to have_link 'Додати товар'
-      expect(page).not_to have_css '.product'
+      expect(page).not_to have_content product.title
     end # when product invisible
   
     scenario 'when article default' do
@@ -135,30 +142,31 @@ feature 'Visitor close routes and links', %q{
   end # account page when user account visible
 end # Visitor close routes and links
 
-# ---------------------------------
-# User
-# ---------------------------------
+# =====================================
+# role: user
+# =====================================
 feature 'User close routes and links', %q{
   As a user
   I want to not be available to close User and Admin links
 } do
 
-  let(:user) { create :user }
-  let(:user_admin) { create :user_admin }
-  let(:account_admin) { user_admin.account }
-  let(:account_user) { user.account }
-  let(:product_user) { create :product, account: account_user }
-  let(:product_admin) { create :product, account: account_admin }
-  let!(:article_user) { create :article, account: account_user }
-  let(:article_admin) { create :article, account: account_admin }
-  let!(:order_user) { create :order, product: product_user, account: account_user }
+  let(:user)              { create :user }
+  let(:user_two)          { create :user }
+  let(:account)           { create :account, user: user }
+  let(:account_two)       { create :account, user: user_two }
+  let(:product_user)      { account.products.first }
+  let!(:product_user_two) { account_two.products.first }
+  let!(:article_user)     { create :article, account: account }
+  let(:article_user_two)  { create :article, account: account_two }
+  let!(:order_user)       { create :order, product: product_user, account: account }
 
   scenario 'menu items' do
     sign_in user
-    expect(page).to have_link 'Моя сторінка'
+    expect(page).to have_link 'Зібрати кошти'
+    expect(page).to have_link 'Збори'
     expect(page).to have_link 'Замовлення'
-    expect(page).not_to have_link 'Користувачі'
     expect(page).not_to have_link 'Товари'
+    expect(page).not_to have_link 'Користувачі'
     expect(page).not_to have_link 'Новини'
     expect(page).to have_link 'Вийти'
   end # menu items
@@ -167,12 +175,12 @@ feature 'User close routes and links', %q{
     # generate user account parameters (visible, locked)
     [false, true].repeated_permutation(2).each do |e|
       context "when user account visible = #{e[0]}, locked = #{e[1]}" do
-        before { account_user.update_attributes(visible: e[0], locked: e[1]) }
+        before { account.update_attributes(visible: e[0], locked: e[1]) }
         before { sign_in user }
 
         scenario 'when article visible (default)' do
           visit root_path
-          if account_user.visible?
+          if account.visible?
             expect(page).to have_css 'a.avatar'
             expect(page).to have_css '.article'            
           else
@@ -184,7 +192,7 @@ feature 'User close routes and links', %q{
         scenario 'when article invisible' do
           article_user.update_attribute(:visible, false)
           visit root_path
-          if account_user.visible?
+          if account.visible?
             expect(page).to have_css 'a.avatar'
           else
             expect(page).not_to have_css 'a.avatar'
@@ -199,7 +207,7 @@ feature 'User close routes and links', %q{
     # generate user account parameters (visible, locked)
     [false, true].repeated_permutation(2).each do |e|
       context "when user account visible = #{e[0]}, locked = #{e[1]}" do
-        before { account_user.update_attributes(visible: e[0], locked: e[1]) }
+        before { account.update_attributes(visible: e[0], locked: e[1]) }
         before { sign_in user }
         before { click_on 'Замовлення' }
 
@@ -208,7 +216,7 @@ feature 'User close routes and links', %q{
           expect(page).to have_link 'Так'
           expect(page).not_to have_link 'Ні'
           
-          unless account_user.locked?
+          unless account.locked?
             click_on 'Так'
             expect(page).to have_selector 'tr.success'
             expect(page).to have_link 'Ні'
@@ -221,7 +229,7 @@ feature 'User close routes and links', %q{
           expect(page).to have_selector 'tr.danger'
           expect(page).to have_link 'Так'
           expect(page).not_to have_link 'Ні'
-          unless account_user.locked?
+          unless account.locked?
             click_on 'Так'
             expect(page).to have_selector 'tr.success'
             expect(page).to have_link 'Ні'
@@ -236,13 +244,13 @@ feature 'User close routes and links', %q{
     # generate user account parameters (visible, locked)
     [false, true].repeated_permutation(2).each do |e|
       context "when user account visible = #{e[0]}, locked = #{e[1]}" do
-        before { account_user.update_attributes(visible: e[0], locked: e[1]) }
+        before { account.update_attributes(visible: e[0], locked: e[1]) }
         before { sign_in user }
 
         scenario 'available links' do
-          visit account_path(account_user)
-          expect(current_path).to eq account_path(account_user)
-          if account_user.locked?
+          visit account_path(account)
+          expect(current_path).to eq account_path(account)
+          if account.locked?
             expect(page).not_to have_selector '#edit_account'
             expect(page).not_to have_link 'Видалити'
           else
@@ -250,15 +258,15 @@ feature 'User close routes and links', %q{
             expect(page).to have_link 'Видалити'
 
             find('#edit_account').click
-            expect(current_path).to eq edit_account_path(account_user)
+            expect(current_path).to eq edit_account_path(account)
             expect(page).to have_button 'Зберегти'
-          end # account_user.locked?
+          end # account.locked?
         end # available links
 
         scenario 'when user on someone else\'s account page' do
-          account_admin.update_attribute(:visible, true)
-          visit account_path(account_admin)
-          expect(current_path).to eq account_path(account_admin)
+          account_two.update_attribute(:visible, true)
+          visit account_path(account_two)
+          expect(current_path).to eq account_path(account_two)
           expect(page).not_to have_selector '#edit_account'
           expect(page).not_to have_link 'Видалити'
         end # when user on someone else\'s account page
@@ -270,99 +278,98 @@ feature 'User close routes and links', %q{
     # generate user account parameters (visible, locked)
     [false, true].repeated_permutation(2).each do |e|
       context "when user account visible = #{e[0]}, locked = #{e[1]}" do
-        before { account_user.update_attributes(visible: e[0], locked: e[1]) }
+        before { account.update_attributes(visible: e[0], locked: e[1]) }
         before { sign_in user }
 
         context 'when product visible (default)' do
           scenario 'actions' do
-            visit account_path(account_user)
-            if account_user.locked?
+            visit account_path(account)
+            if account.locked?
               expect(page).not_to have_link 'Додати товар'
-              within '.product' do
+              within all('.product').last do
                 expect(page).not_to have_link 'Редагувати'
                 expect(page).not_to have_link 'Видалити'
                 expect(page).not_to have_link 'Перевірено'
-                expect(page).not_to have_link 'Обрати' unless account_user.visible?
-                click_on 'Обрати' if account_user.visible?
+                expect(page).not_to have_link 'Обрати' unless account.visible?
+                click_on 'Обрати' if account.visible?
               end
-              if account_user.visible?
+              if account.visible?
                 expect(current_path).to eq new_product_order_path(product_user)
                 expect(page).to have_button 'Оформити'
               end
 
-              visit account_path(account_user)
+              visit account_path(account)
               click_on 'Підтримати цю дитину'
-              expect(current_path).to eq account_products_path(account_user)
+              expect(current_path).to eq account_products_path(account)
               expect(page).not_to have_link 'Додати товар'
-              within '.product' do
+              within all('.product').last do
                 expect(page).not_to have_link 'Редагувати'
                 expect(page).not_to have_link 'Видалити'
                 expect(page).not_to have_link 'Перевірено'
-                expect(page).not_to have_link 'Обрати' unless account_user.visible?
-                click_on 'Обрати' if account_user.visible?
+                expect(page).not_to have_link 'Обрати' unless account.visible?
+                click_on 'Обрати' if account.visible?
               end
-              if account_user.visible?
+              if account.visible?
                 expect(current_path).to eq new_product_order_path(product_user)
                 expect(page).to have_button 'Оформити'
               end
             else
               expect(page).to have_link 'Додати товар'
-              within '.product' do
+              within all('.product').last do
                 expect(page).to have_link 'Редагувати'
                 expect(page).to have_link 'Видалити'
                 expect(page).not_to have_link 'Перевірено'
-                expect(page).not_to have_link 'Обрати' unless account_user.visible?
-                click_on 'Обрати' if account_user.visible?
+                expect(page).not_to have_link 'Обрати' unless account.visible?
+                click_on 'Обрати' if account.visible?
               end
-              if account_user.visible?
+              if account.visible?
                 expect(current_path).to eq new_product_order_path(product_user)
                 expect(page).to have_button 'Оформити'
               end
 
-              visit account_path(account_user)
+              visit account_path(account)
               click_on 'Підтримати цю дитину'
               expect(page).to have_link 'Додати товар'
-              within '.product' do
+              within all('.product').last do
                 expect(page).to have_link 'Редагувати'
                 expect(page).to have_link 'Видалити'
                 expect(page).not_to have_link 'Перевірено'
-                expect(page).not_to have_link 'Обрати' unless account_user.visible?
-                click_on 'Обрати' if account_user.visible?                  
+                expect(page).not_to have_link 'Обрати' unless account.visible?
+                click_on 'Обрати' if account.visible?                  
               end
-              if account_user.visible?
+              if account.visible?
                 expect(current_path).to eq new_product_order_path(product_user)
                 expect(page).to have_button 'Оформити'
               end
-            end # account_user.locked?
+            end # account.locked?
           end # product actions
 
           scenario 'when user on someone else\'s account page' do
-            product_admin
-            account_admin.update_attribute(:visible, true)
-            visit account_path(account_admin)
+            account_two.update_attribute(:visible, true)
+            visit account_path(account_two)
 
-            expect(current_path).to eq account_path(account_admin)
+            expect(current_path).to eq account_path(account_two)
             expect(page).not_to have_link 'Додати товар'
-            within '.product' do
+            within all('.product').last do
               expect(page).not_to have_link 'Редагувати'
               expect(page).not_to have_link 'Видалити'
               expect(page).not_to have_link 'Перевірено'
               click_on 'Обрати'
             end
-            expect(current_path).to eq new_product_order_path(product_admin)
+            expect(current_path).to eq new_product_order_path(product_user_two)
             expect(page).to have_button 'Оформити'
 
-            visit account_path(account_admin)
+            visit account_path(account_two)
             click_on 'Підтримати цю дитину'
-            expect(current_path).to eq account_products_path(account_admin)
+            expect(current_path).to eq account_products_path(account_two)
             expect(page).not_to have_link 'Додати товар'
-            within '.product' do
+            within all('.product').last do
               expect(page).not_to have_link 'Редагувати'
               expect(page).not_to have_link 'Видалити'
               expect(page).not_to have_link 'Перевірено'
               click_on 'Обрати'
             end
-            expect(current_path).to eq new_product_order_path(product_admin)
+            expect(current_path).to eq new_product_order_path(product_user_two)
             expect(page).to have_button 'Оформити'
           end # when user on someone else\'s account page
         end # when product visible (default)
@@ -370,55 +377,59 @@ feature 'User close routes and links', %q{
         context 'when product invisible' do
           scenario 'actions' do
             product_user.update_attribute(:visible, false)
-            visit account_path(account_user)
+            visit account_path(account)
             
-            if account_user.locked?
+            if account.locked?
               expect(page).not_to have_link 'Додати товар'
-              within '.product' do
-                expect(page).not_to have_link 'Редагувати'
-                expect(page).not_to have_link 'Видалити'
-                expect(page).not_to have_link 'Перевірено'
-                expect(page).not_to have_link 'Обрати'
-              end
+              expect(page).not_to have_css '.product'
+              # within all('.product').last do
+              #   expect(page).not_to have_link 'Редагувати'
+              #   expect(page).not_to have_link 'Видалити'
+              #   expect(page).not_to have_link 'Перевірено'
+              #   expect(page).not_to have_link 'Обрати'
+              # end
               click_on 'Підтримати цю дитину'
               expect(page).not_to have_link 'Додати товар'
-              within '.product' do
-                expect(page).not_to have_link 'Редагувати'
-                expect(page).not_to have_link 'Видалити'
-                expect(page).not_to have_link 'Перевірено'
-                expect(page).not_to have_link 'Обрати'
-              end
+              expect(page).not_to have_css '.product'
+              # within '.product' do
+              #   expect(page).not_to have_link 'Редагувати'
+              #   expect(page).not_to have_link 'Видалити'
+              #   expect(page).not_to have_link 'Перевірено'
+              #   expect(page).not_to have_link 'Обрати'
+              # end
             else
               expect(page).to have_link 'Додати товар'
-              within '.product' do
-                expect(page).to have_link 'Редагувати'
-                expect(page).to have_link 'Видалити'
-                expect(page).not_to have_link 'Перевірено'
-                expect(page).not_to have_link 'Обрати'
-              end
+              expect(page).not_to have_css '.product'
+              # within '.product' do
+              #   expect(page).to have_link 'Редагувати'
+              #   expect(page).to have_link 'Видалити'
+              #   expect(page).not_to have_link 'Перевірено'
+              #   expect(page).not_to have_link 'Обрати'
+              # end
               click_on 'Підтримати цю дитину'
               expect(page).to have_link 'Додати товар'
-              within '.product' do
-                expect(page).to have_link 'Редагувати'
-                expect(page).to have_link 'Видалити'
-                expect(page).not_to have_link 'Перевірено'
-                expect(page).not_to have_link 'Обрати'
-              end
-            end # account_user.locked?
+              expect(page).not_to have_css '.product'
+              # within '.product' do
+              #   expect(page).to have_link 'Редагувати'
+              #   expect(page).to have_link 'Видалити'
+              #   expect(page).not_to have_link 'Перевірено'
+              #   expect(page).not_to have_link 'Обрати'
+              # end
+            end # account.locked?
           end # product actions
 
           scenario 'when user visit someone else\'s account page' do
-            account_admin.update_attribute(:visible, true)
-            product_admin.update_attribute(:visible, false)
-            visit account_path(account_admin)
+            account_two.update_attribute(:visible, true)
+            product_user_two.update_attribute(:visible, false)
+            visit account_path(account_two)
 
-            expect(current_path).to eq account_path(account_admin)
+            expect(current_path).to eq account_path(account_two)
             expect(page).not_to have_link 'Додати товар'
-            expect(page).not_to have_selector '.product'
-          
+            expect(page).not_to have_selector product_user_two.title
+
             click_on 'Підтримати цю дитину'
             expect(page).not_to have_link 'Додати товар'
-            expect(page).not_to have_selector '.product'
+            expect(page).not_to have_selector product_user_two.title
           end # when user on someone else\'s account page
         end # when product invisible
       end # when user account visible? locked?  
@@ -429,15 +440,15 @@ feature 'User close routes and links', %q{
     # generate user account parameters (visible, locked)
     [false, true].repeated_permutation(2).each do |e|
       context "when user account visible = #{e[0]}, locked = #{e[1]}" do
-        before { account_user.update_attributes(visible: e[0], locked: e[1]) }
+        before { account.update_attributes(visible: e[0], locked: e[1]) }
         before { sign_in user }
 
         context 'when article visible (default)' do
           scenario 'actions' do
-            visit account_path(account_user)
-            expect(current_path).to eq account_path(account_user)
+            visit account_path(account)
+            expect(current_path).to eq account_path(account)
 
-            if account_user.locked?
+            if account.locked?
               within '.section-tabs' do
                 click_on 'Новини'
                 expect(page).not_to have_link 'Додати'
@@ -475,24 +486,24 @@ feature 'User close routes and links', %q{
           end # actions
 
           scenario 'when user on someone else\'s account page' do
-            account_admin.update_attribute(:visible, true)
-            article_admin
-            visit account_path(account_admin)
-            expect(current_path).to eq account_path(account_admin)
+            account_two.update_attribute(:visible, true)
+            article_user_two
+            visit account_path(account_two)
+            expect(current_path).to eq account_path(account_two)
             within '.section-tabs' do
               click_on 'Новини'
               expect(page).not_to have_link 'Додати'
               within '.article' do
-                expect(page).to have_link article_admin.title
-                expect(page).to have_css('a[href=\'' + article_path(article_admin) + '\']')
-                expect(page).to have_link 'детальніше' if article_admin.description.length >= 300 
+                expect(page).to have_link article_user_two.title
+                expect(page).to have_css('a[href=\'' + article_path(article_user_two) + '\']')
+                expect(page).to have_link 'детальніше' if article_user_two.description.length >= 300 
                 expect(page).not_to have_link 'Редагувати'
                 expect(page).not_to have_link 'Видалити'
-                click_on article_admin.title
+                click_on article_user_two.title
               end
             end # .section-tabs
-            expect(current_path).to eq article_path(article_admin)
-            expect(page).to have_content article_admin.title
+            expect(current_path).to eq article_path(article_user_two)
+            expect(page).to have_content article_user_two.title
             expect(page).not_to have_link 'Редагувати'
             expect(page).not_to have_link 'Видалити'
           end # when user on someone else\'s account page
@@ -501,10 +512,10 @@ feature 'User close routes and links', %q{
         context 'when article invisible' do
           scenario 'actions' do
             article_user.update_attribute(:visible, false)
-            visit account_path(account_user)
-            expect(current_path).to eq account_path(account_user)
+            visit account_path(account)
+            expect(current_path).to eq account_path(account)
 
-            if account_user.locked?
+            if account.locked?
               within '.section-tabs' do
                 click_on 'Новини'
                 expect(page).not_to have_link 'Додати'
@@ -542,11 +553,11 @@ feature 'User close routes and links', %q{
           end # actions
 
           scenario 'when user visit someone else\'s account page' do
-            account_admin.update_attribute(:visible, true)
-            article_admin.update_attribute(:visible, false)
+            account_two.update_attribute(:visible, true)
+            article_user_two.update_attribute(:visible, false)
             
-            visit account_path(account_admin)
-            expect(current_path).to eq account_path(account_admin)
+            visit account_path(account_two)
+            expect(current_path).to eq account_path(account_two)
             within '.section-tabs' do
               click_on 'Новини'
               expect(page).not_to have_link 'Додати'
@@ -559,28 +570,37 @@ feature 'User close routes and links', %q{
   end # account page, article actions
 end # User close routes and links
 
+# =====================================
+# role: admin
+# =====================================
 feature 'Admin routes and links', %q{
   As an admin
   I want to be available to all routes and links
 } do
 
-  let(:user) { create :user }
   let(:user_admin) { create :user_admin }
-  let(:account_admin) { user_admin.account }
-  let(:account_user) { user.account }
-  let!(:product_user) { create :product, account: account_user }
-  let!(:product_admin) { create :product, account: account_admin }
+  let(:user)       { create :user }
+  let(:user_two)   { create :user }
+  
+  # let(:account_admin) { user_admin.account }
+  let(:account_user)      { create(:account, user: user) }
+  let(:account_user_two)  { create(:account, user: user_two) }
+
+  let!(:product_user)     { create :product, account: account_user }
+  let!(:product_user_two) { create :product, account: account_user_two }
+  # let!(:product_admin) { create :product, account: account_admin }
   let!(:article_user) { create :article, account: account_user }
-  let(:article_admin) { create :article, account: account_admin }
-  let!(:order_user) { create :order, product: product_user, account: account_user }
-  let!(:order_admin) { create :order, product: product_admin, account: account_admin }
+  let(:article_admin) { create :article, link: 'youtube.com' }
+  let!(:order_user)   { create :order, product: product_user, account: account_user }
+  let!(:order_admin)  { create :order, product: product_user_two, account: account_user_two }
 
   scenario 'menu items' do
     sign_in user_admin
-    expect(page).to have_link 'Моя сторінка'
+    expect(page).to have_link 'Зібрати кошти'
+    expect(page).to have_link 'Збори'
     expect(page).to have_link 'Замовлення'
-    expect(page).to have_link 'Користувачі'
     expect(page).to have_link 'Товари'
+    expect(page).to have_link 'Користувачі'
     expect(page).to have_link 'Новини'
     expect(page).to have_link 'Вийти'
   end # menu items
@@ -685,16 +705,9 @@ feature 'Admin routes and links', %q{
     # generate user account parameters (visible, locked)
     [false, true].repeated_permutation(2).each do |e|
       context "when user account visible = #{e[0]}, locked = #{e[1]}" do
-        before { account_admin.update_attribute(:name, 'admin') }
         before { account_user.update_attributes(visible: e[0], locked: e[1], name: 'user') }
         before { sign_in user_admin }
-        before { click_on 'Користувачі' }
-        
-        scenario 'admin account hide' do
-          expect(current_path).to eq accounts_path
-          expect(page).not_to have_content account_admin.name
-          expect(page).not_to have_link account_admin.name
-        end # admin account hide
+        before { click_on 'Збори' }
 
         scenario 'user account available' do
           expect(current_path).to eq accounts_path
@@ -714,7 +727,6 @@ feature 'Admin routes and links', %q{
     # generate user account parameters (visible, locked)
     [false, true].repeated_permutation(2).each do |e|
       scenario "when user account visible = #{e[0]}, locked = #{e[1]}" do
-        account_admin.update_attribute(:name, 'admin')
         account_user.update_attributes(visible: e[0], locked: e[1], name: 'user')
         product_user.update_attribute(:visible, false)
         sign_in user_admin
@@ -722,7 +734,6 @@ feature 'Admin routes and links', %q{
 
         expect(current_path).to eq products_path
         expect(page).to have_link account_user.name
-        expect(page).to have_link account_admin.name
         expect(page).to have_link 'Перевірено'
         expect(page).to have_link 'Приховувати'
         expect(page).to have_link 'Показувати'
@@ -735,7 +746,7 @@ feature 'Admin routes and links', %q{
     # generate user account parameters (visible, locked)
     [false, true].repeated_permutation(2).each do |e|
       scenario "when user account visible = #{e[0]}, locked = #{e[1]}" do
-        account_admin.update_attribute(:name, 'admin')
+        # account_admin.update_attribute(:name, 'admin')
         account_user.update_attributes(visible: e[0], locked: e[1], name: 'user')
         article_admin.update_attribute(:visible, false)
         sign_in user_admin
@@ -743,7 +754,7 @@ feature 'Admin routes and links', %q{
 
         expect(current_path).to eq articles_path
         expect(page).to have_link account_user.name
-        expect(page).to have_link account_admin.name
+        expect(page).to have_link article_admin.link
         expect(page).to have_link 'Приховувати'
         expect(page).to have_link 'Показувати'
         expect(page).to have_link 'Редагувати'
@@ -773,7 +784,7 @@ feature 'Admin routes and links', %q{
         scenario 'when product visible (default)' do
           visit account_path(account_user)
           expect(page).to have_link 'Додати товар'
-          within '.product' do
+          within all('.product').last do
             expect(page).to have_link 'Редагувати'
             expect(page).to have_link 'Видалити'
             expect(page).to have_link 'Перевірено'
@@ -789,7 +800,7 @@ feature 'Admin routes and links', %q{
           click_on 'Підтримати цю дитину'
           expect(current_path).to eq account_products_path(account_user)
           expect(page).to have_link 'Додати товар'
-          within '.product' do
+          within all('.product').last do
             expect(page).to have_link 'Редагувати'
             expect(page).to have_link 'Видалити'
             expect(page).to have_link 'Перевірено'
@@ -806,7 +817,7 @@ feature 'Admin routes and links', %q{
           product_user.update_attribute(:visible, false)
           visit account_path(account_user)
           expect(page).to have_link 'Додати товар'
-          within '.product' do
+          within all('.product').last do
             expect(page).to have_link 'Редагувати'
             expect(page).to have_link 'Видалити'
             expect(page).to have_link 'Перевірено'
@@ -817,7 +828,7 @@ feature 'Admin routes and links', %q{
           click_on 'Підтримати цю дитину'
           expect(current_path).to eq account_products_path(account_user)
           expect(page).to have_link 'Додати товар'
-          within '.product' do
+          within all('.product').last do
             expect(page).to have_link 'Редагувати'
             expect(page).to have_link 'Видалити'
             expect(page).to have_link 'Перевірено'

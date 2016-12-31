@@ -3,42 +3,45 @@ Rails.application.routes.draw do
   root 'pages#home'
   devise_for :users
   
-  resources :accounts, only: [:index, :show, :edit, :update, :destroy]  do
+  resources :users, only: %i(index destroy)
+
+  resources :accounts do
     member do
       get 'checked'
       get 'visible'
       get 'locked'
     end
 
-    resources :images, only: [:index, :new, :create, :set_avatar] do
+    resources :images, only: %i(index new create set_avatar) do
       get 'set_avatar', on: :member
     end
 
-    resources :products, only: [:new, :create, :index]
-    resources :articles, only: [:new, :create]
+    resources :products, only: %i(new create index)
+    resources :articles, only: %i(new create)
   end # accounts
 
-  resources :orders, only: [:index, :show] do
-    get 'delivered', on: :member
-  end # orders
-
-  resources :articles, except: [:new, :create] do
-    get 'visible', on: :member
-  end
-
-  resources :products, except: [:new, :create, :index] do
+  resources :products, except: %i(new create index) do
     member do
       get 'checked'
       get 'visible'
     end
 
-    resources :images, only: [:index, :new, :create, :set_avatar] do
+    resources :images, only: %i(index new create set_avatar) do
       get 'set_avatar', on: :member
     end
 
-    resources :orders, only: [:new, :create]
+    resources :orders, only: %i(new create)
   end # products
   
   get '/products', to: 'pages#products'
+
   resources :images, only: :destroy
+
+  resources :articles do
+    get 'visible', on: :member
+  end # articles (news)
+
+  resources :orders, only: %i(index show) do
+    get 'delivered', on: :member
+  end # orders  
 end

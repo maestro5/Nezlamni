@@ -1,17 +1,14 @@
 class ProductsController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:show, :index]
-  before_action :find_account, only: [:new, :create, :index]
-  before_action :find_product, except: [:index, :new, :create]
-  before_action :admin!, only: [:checked, :visible]
-  before_action :admin_or_owner!, only: [:create, :edit, :update, :destroy]
-  before_action :visible_account_product!, only: [:index]
+  skip_before_action :authenticate_user!, only: %i(show index)
+  before_action :find_account, only: %i(new create index)
+  before_action :find_product, except: %i(index new create)
+  before_action :admin!, only: %i(checked visible)
+  before_action :admin_or_owner!, only: %i(create edit update destroy)
+  before_action :visible_account_product!, only: :index
 
   def index
-    if current_user.nil? #visitor
-      @products = @account.products.where(visible: true).order(contribution: :asc)
-    else
-      @products = @account.products.order(contribution: :asc)
-    end
+    @products = @account.products.order(contribution: :asc)
+    @products = @products.where(visible: true) if current_user.nil? #visitor
   end
 
   def new
@@ -48,7 +45,7 @@ class ProductsController < ApplicationController
   end
 
   def checked
-    @product.update_attributes(updated_at: Time.now, prev_updated_at: Time.now)
+    @product.update_attribute(:was_changed, false)
     redirect_to :back
   end
 
@@ -68,19 +65,21 @@ class ProductsController < ApplicationController
     end
 
     def product_params
-      params.require(:product).permit(:contribution, :title, :description, :backers, :remainder)
+      params
+        .require(:product)
+        .permit(:contribution, :title, :description, :backers, :remainder)
     end
 
     def visible_account_product!
       return if @account.visible?
       return if !current_user.nil? && 
-        (current_user.account.id == @account.id || current_user.admin?)
+        (current_user.accounts.include?(@account) || current_user.admin?)
       redirect_to root_path
     end
 
     def admin_or_owner!
       obj = @account || @product.account
-      return if current_user.account.id == obj.id && !obj.locked?
+      return if current_user.accounts.include?(obj) && !obj.locked?
       return if current_user.admin?
       redirect_to root_path
     end

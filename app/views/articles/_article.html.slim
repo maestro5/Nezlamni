@@ -1,4 +1,4 @@
-- if article.visible? || current_user.account.id == article.account.id || current_user.admin?
+- if article.visible? || current_user.accounts.include?(article.account) || current_user.admin?
   .article
     h3 = date_time_format article.created_at
     h3

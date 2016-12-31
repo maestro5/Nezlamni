@@ -1,6 +1,6 @@
 class ImagesController < ApplicationController
-  before_action :find_image, only: [:destroy, :set_avatar]
-  before_action :find_imageable, except: [:destroy]
+  before_action :find_image, only: %i(destroy set_avatar)
+  before_action :find_imageable, except: :destroy
   before_action :admin_or_owner!
 
   def index
@@ -27,7 +27,6 @@ class ImagesController < ApplicationController
 
   def set_avatar
     @imageable.update_attribute(:avatar_url, @image.image_url)
-
     redirect_to edit_account_path(@imageable) if @imageable.is_a? Account
     redirect_to edit_product_path(@imageable) if @imageable.is_a? Product
   end
@@ -54,7 +53,7 @@ class ImagesController < ApplicationController
       @imageable ||= @image.nil? ? nil : @image.imageable
       obj = @imageable.is_a?(Account) ? @imageable : @imageable.account
 
-      return if current_user.account.id == obj.id && !obj.locked?
+      return if current_user.accounts.include?(obj) && !obj.locked?
       return if current_user.admin?
       redirect_to root_path
     end

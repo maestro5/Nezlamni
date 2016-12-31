@@ -18,8 +18,8 @@ RSpec.describe OrdersController, type: :controller do
 
   let(:user) { create(:user) }
   let(:user_admin) { create(:user_admin) }
-  let(:account_user) { user.account }
-  let(:account_admin) { user_admin.account }
+  let(:account_user) { create(:account, user: user) }
+  let(:account_admin) { create(:account, user: user_admin) }
   let(:product_user) { create(:product, account: account_user) }
   let(:product_admin) { create(:product, account: account_admin) }
   let(:order_product_user) { create(:order, product: product_user, account: account_user) }

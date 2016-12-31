@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160921085732) do
+ActiveRecord::Schema.define(version: 20161210115736) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,11 +27,11 @@ ActiveRecord::Schema.define(version: 20160921085732) do
     t.date     "deadline_on"
     t.string   "payment_details", default: ""
     t.text     "overview",        default: ""
-    t.datetime "prev_updated_at", default: '0001-01-01 00:00:00'
     t.boolean  "visible",         default: false
     t.boolean  "locked",          default: false
-    t.datetime "created_at",      default: '0001-01-01 00:00:00'
-    t.datetime "updated_at",      default: '0001-01-01 00:00:00'
+    t.boolean  "was_changed",     default: true
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
     t.string   "avatar_url"
     t.string   "phone_number"
     t.string   "contact_person"
@@ -95,16 +95,17 @@ ActiveRecord::Schema.define(version: 20160921085732) do
 
   create_table "products", force: :cascade do |t|
     t.integer  "account_id"
-    t.string   "title",           default: ""
-    t.text     "description",     default: ""
-    t.datetime "prev_updated_at", default: '0001-01-01 00:00:00'
-    t.boolean  "visible",         default: true
-    t.datetime "created_at",      default: '0001-01-01 00:00:00'
-    t.datetime "updated_at",      default: '0001-01-01 00:00:00'
+    t.string   "title",        default: ""
+    t.text     "description",  default: ""
+    t.boolean  "visible",      default: true
+    t.boolean  "was_changed",  default: true
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
     t.string   "avatar_url"
-    t.decimal  "contribution",    default: 0.0
-    t.integer  "backers",         default: 0
-    t.integer  "remainder",       default: 0
+    t.decimal  "contribution", default: 0.0
+    t.integer  "backers",      default: 0
+    t.integer  "remainder",    default: 0
+    t.boolean  "default",      default: false
   end
 
   add_index "products", ["account_id"], name: "index_products_on_account_id", using: :btree

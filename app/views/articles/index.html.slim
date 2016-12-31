@@ -3,6 +3,7 @@ table.table.table-hover
     tr
       th Дата створення
       th Заголовок
+      th Посилання
       th Користувач
       th Видимість
       th
@@ -16,6 +17,7 @@ table.table.table-hover
             = link_to article.title, article_path(article)
           - else
             = link_to article.title, article.link, target: '_blank'
+        td = link_to article.link, article.link
         td = link_to article.account.name, account_path(article.account) unless article.account.nil?
         td
           - if article.visible?
@@ -25,10 +27,12 @@ table.table.table-hover
         td = link_to 'Редагувати', edit_article_path(article), class: 'btn btn-primary'
         td = link_to 'Видалити', article_path(article), method: :delete, data: { confirm: 'Ви впевнені?' }, class: 'btn btn-danger'
     tr
-      td = link_to 'Додати', new_account_article_path(@account), class: 'btn btn-success'
+      td = link_to 'Додати', new_article_path, class: 'btn btn-success'
       td
       td
       td
       td
       td
-= paginate @articles
+
+.text-center
+  = paginate @articles

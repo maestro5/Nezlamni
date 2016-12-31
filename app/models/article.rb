@@ -10,6 +10,6 @@ class Article < ActiveRecord::Base
   def admin_owner_unlocked?(current_user)
     return false if current_user.nil?
     current_user.admin? ||
-    (current_user.account.id == self.account.id && !self.account.locked?)
+    (current_user.accounts.include?(self.account) && !self.account.locked?)
   end
 end

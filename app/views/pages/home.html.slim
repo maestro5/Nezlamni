@@ -1,20 +1,24 @@
 .row
   .col-lg-9
-    - @accounts.each_with_index do |account, index|
-      .col-sm-4.col-md-4 id="product_#{index}"
-        .thumbnail
-          - @account = account
-          = render 'accounts/avatar'
-          .caption
-            h3
-              = link_to account.title, account_path(account)
-            p = "#{account.budget}, до #{date_format account.deadline_on}"
-            - percent = account.collected_percent
-            .progress
-              .progress-bar.progress-bar-success role='progressbar' aria-valuenow="#{percent}" aria-valuemin="0" aria-valuemax="100" style="width: #{percent}%;"
-                span = "#{percent}%"
+    - @accounts.each_slice(3) do |accounts|
+      .row
+        .col-lg-12
+          - accounts.each_with_index do |account, index|
+            .col-sm-4.col-md-4 id="product_#{index}"
+              .thumbnail
+                - @account = account
+                = render 'accounts/avatar'
+                .caption
+                  h3
+                    = link_to account.title, account_path(account)
+                  p = "#{account.budget}, до #{date_format account.deadline_on}"
+                  - percent = account.collected_percent
+                  .progress
+                    .progress-bar.progress-bar-success role='progressbar' aria-valuenow="#{percent}" aria-valuemin="0" aria-valuemax="100" style="width: #{percent}%;"
+                      span = "#{percent}%"
   .col-lg-3
     h2 Новини
     = render @articles
 
-= paginate @accounts
+.text-center
+  = paginate @accounts

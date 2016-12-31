@@ -1,23 +1,23 @@
 class ArticlesController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:show]
-  before_action :find_account, only: [:new, :create]
-  before_action :find_article, only: [:edit, :update, :show, :visible, :destroy]
-  before_action :admin!, only: [:index, :visible]
+  skip_before_action :authenticate_user!, only: :show
+  before_action :find_account, only: %i(new create)
+  before_action :find_article, only: %i(edit update show visible destroy)
+  before_action :admin!, only: %i(index visible)
   before_action :visible_account_article!, only: :show
-  before_action :admin_or_owner!, only: [:create, :edit, :update, :destroy]
+  before_action :admin_or_owner!, only: %i(create edit update destroy)
   
   def index
     @articles = Article.all.order(created_at: :desc).page(params[:page]).per(10)
-    @account  = current_user.account
   end
 
   def new
-    @article = @account.articles.build
+    @article = @account.nil? ? Article.new : @account.articles.build
     admin_or_owner!
   end
 
   def create
-    @article = @account.articles.build(article_params)
+    @article =
+      @account.nil? ? Article.new(article_params) : @account.articles.build(article_params)
     if @article.save
       @article.check_link!
       redirect_to @article
@@ -66,20 +66,21 @@ class ArticlesController < ApplicationController
     end
 
     def find_account
-      @account = Account.find(params[:account_id])
+      @account = Account.find(params[:account_id]) if params[:account_id]
     end
 
     def visible_account_article!
+      return if @article.account.nil? # admin article
       return if (@article.account.visible? || @article.account.user.admin?) && @article.visible?
       return if !current_user.nil? && 
-        (current_user.account.id == @article.account.id || current_user.admin?)
+        (current_user.accounts.include?(@article.account) || current_user.admin?)
       redirect_to root_path
     end
 
     def admin_or_owner!
-      obj = @account || @article.account
-      return if current_user.account.id == obj.id && !obj.locked?
       return if current_user.admin?
+      obj = @account || @article.account
+      return if current_user.accounts.include?(obj) && !obj.locked?
       redirect_to root_path
     end
 end

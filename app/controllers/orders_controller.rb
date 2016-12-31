@@ -1,17 +1,14 @@
 class OrdersController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:new, :create, :show]
-  before_action :find_product, only: [:new, :create]
+  skip_before_action :authenticate_user!, only: %i(new create show)
+  before_action :find_product, only: %i(new create)
   before_action :find_order, only: :delivered
-  before_action :visible_account_product!, only: [:new, :create]
+  before_action :visible_account_product!, only: %i(new create)
   before_action :admin_or_owner!, only: :delivered
 
   def index
-    @orders = 
-      if current_user.admin?
-        Order.all.order(created_at: :desc).page(params[:page]).per(10)
-      else
-        current_user.account.orders.order(created_at: :desc).page(params[:page]).per(10)
-      end
+    @orders = Order.includes(:account, :product).order('accounts.name ASC, orders.created_at DESC')
+    @orders = @orders.where(account: current_user.accounts) unless current_user.admin?
+    @orders = @orders.page(params[:page]).per(10)
   end
 
   def new
@@ -56,7 +53,7 @@ class OrdersController < ApplicationController
     end
 
     def admin_or_owner!
-      return if current_user.account == @order.account && !@order.account.locked?
+      return if current_user.accounts.include?(@order.account) && !@order.account.locked?
       return if current_user.admin?
       redirect_to root_path
     end
