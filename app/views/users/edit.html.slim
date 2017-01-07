@@ -1,0 +1,19 @@
+- if @user.errors.any?
+  #errors
+    h2
+      = pluralize(@user.errors.count, "error")
+      |  prevented this user from saving
+    ul
+      - @user.errors.full_messages.each do |msg|
+        li
+          = msg
+.row
+  .col-md-4.col-md-offset-4
+    br
+    .form-group
+      = form_for @user, html: { multipart: true } do |f|
+        = f.text_field :name, class: 'form-control'
+        br
+        = f.file_field :avatar
+        br
+        = f.submit 'Зберегти', class: 'btn btn-primary'

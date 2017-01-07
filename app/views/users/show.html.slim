@@ -1,0 +1,11 @@
+.row
+  .col-md-6
+    - if @user.name.nil?
+      h2 Введіть своє ім"я
+    - else
+      h2= @user.name
+  .col-md-6.text-right
+    = link_to 'Редагувати', edit_user_path(@user), class: 'btn btn-primary'
+
+br
+= image_tag avatar(@user), class: 'img-rounded'

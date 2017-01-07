@@ -38,4 +38,8 @@ module ApplicationHelper
     return true if current_user.admin?
     current_user.accounts.include? account
   end
+
+  def avatar(obj)
+    obj.avatar_url || obj.try(:remote_avatar) || 'empty_avatar.jpg'
+  end
 end

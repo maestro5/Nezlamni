@@ -1,8 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
-  # users GET    users#index
-  # user  DELETE users#destroy
+  # users GET       users#index
+  # edit_user GET   users#edit
+  # user GET        users#show
+  #     PATCH       users#update
+  #     PUT         users#update
+  #     DELETE      users#destroy
 
   # roles: visitor, user, admin
 
@@ -19,7 +23,28 @@ RSpec.describe UsersController, type: :controller do
 
     describe 'DELETE #destroy' do
       it 'redirect to sign_in page' do
-        delete :destroy, id: user_admin.id
+        delete :destroy, id: user_admin
+        expect(response).to redirect_to new_user_session_path
+      end
+    end
+
+    describe 'GET #show' do
+      it 'redirect to sign_in page' do
+        get :show, id: user
+        expect(response).to redirect_to new_user_session_path
+      end
+    end
+
+    describe 'GET #edit' do
+      it 'redirect to sign_in page' do
+        get :edit, id: user
+        expect(response).to redirect_to new_user_session_path
+      end
+    end
+
+    describe 'PATCH #update' do
+      it 'redirect to sign_in page' do
+        patch :update, id: user
         expect(response).to redirect_to new_user_session_path
       end
     end
@@ -41,22 +66,68 @@ RSpec.describe UsersController, type: :controller do
         expect(response).to redirect_to root_path
       end
     end
+
+    describe 'GET #show' do
+      it 'renders show view' do
+        get :show, id: user
+        expect(response).to render_template :show
+      end
+      it 'populates the user' do
+        get :show, id: user
+        expect(assigns(:user)).to eq user
+      end
+      it 'redirect to home page' do
+        get :show, id: user_admin
+        expect(response).to redirect_to root_path
+      end
+    end
+
+    describe 'GET #edit' do
+      it 'renders edit view' do
+        get :edit, id: user
+        expect(response).to render_template :edit
+      end
+      it 'populates the user' do
+        get :edit, id: user
+        expect(assigns(:user)).to eq user
+      end
+      it 'redirect to home page' do
+        get :edit, id: user_admin
+        expect(response).to redirect_to root_path
+      end
+    end
+
+    describe 'PATCH #update' do
+      it 'changes user attributes' do
+        patch :update, id: user, user: { name: 'Lilu' }
+        user.reload
+        expect(user.name).to eq 'Lilu'
+      end
+      it 'redirects to the updated user' do
+        patch :update, id: user, user: { name: 'Bob' }
+        expect(response).to redirect_to user
+      end
+      it 'redirect to home page' do
+        patch :update, id: user_admin, user: { name: 'Bob' }
+        expect(response).to redirect_to root_path
+      end
+    end
   end # user
 
   context 'admin' do
-    let!(:account_1)   { create :account, user: user }
-    let!(:account_2)   { create :account, user: user }
-    let!(:images)   { create_list :image, 2, imageable: account_1 }
-    let!(:image)    { create :image, imageable: account_2 }
-    let!(:product)  { create :product, account: account_1 }
-    let!(:products) { create_list :product, 2, account: account_2 }
-    let!(:article)  { create :article, account: account_1 }
-    let!(:articles) { create_list :article, 2, account: account_2 }
-    let!(:orders)  { create_list :order, 2, account: account_1 }
-    let!(:order)   { create :order, account: account_2 }
-    let!(:order_p) { create :order, product: product }
-    let!(:image_p) { create :image, imageable: product }
-    let!(:users)      { create_list :user, 8 }
+    let!(:account_1) { create :account, user: user }
+    let!(:account_2) { create :account, user: user }
+    let!(:images)    { create_list :image, 2, imageable: account_1 }
+    let!(:image)     { create :image, imageable: account_2 }
+    let!(:product)   { create :product, account: account_1 }
+    let!(:products)  { create_list :product, 2, account: account_2 }
+    let!(:article)   { create :article, account: account_1 }
+    let!(:articles)  { create_list :article, 2, account: account_2 }
+    let!(:orders)    { create_list :order, 2, account: account_1 }
+    let!(:order)     { create :order, account: account_2 }
+    let!(:order_p)   { create :order, product: product }
+    let!(:image_p)   { create :image, imageable: product }
+    let!(:users)     { create_list :user, 8 }
 
     before { sign_in user_admin }
 

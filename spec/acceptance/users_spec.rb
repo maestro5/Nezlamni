@@ -17,7 +17,7 @@ feature 'Visitor unavailable users page', %q{
     visit users_path
     expect(current_path).to eq new_user_session_path
   end
-end
+end # Visitor unavailable users page
 
 # =====================================
 # role: user
@@ -39,18 +39,19 @@ feature 'User unavailable users page', %q{
     visit users_path
     expect(current_path).to eq root_path
   end
-end
+end # User unavailable users page
 
 # =====================================
 # role: admin
 # =====================================
 feature 'Admin available users page', %q{
   As an admin
-  I can to users page
+  I can go to users page
 } do
 
   let(:user_admin) { create(:user_admin) }
   let!(:user)       { create(:user) }
+
   before { sign_in user_admin }
 
   scenario 'admin has a link' do
@@ -61,8 +62,11 @@ feature 'Admin available users page', %q{
   scenario 'when user goes to the users page ' do  
     click_on 'Користувачі'
     expect(current_path).to eq users_path
-    expect(page).to have_content user_admin.email
-    expect(page).to have_content user.email
+    expect(page).to have_link user_admin.email
+    expect(page).to have_link user.email
+    expect(page).to have_content user_admin.name
+    expect(page).to have_content user.name
+    expect(page).to have_link 'Редагувати', count: 2
     expect(page).to have_link 'Видалити', count: 2
   end
-end
+end # Admin available users page

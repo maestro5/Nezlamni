@@ -3,18 +3,22 @@
     thead
       tr
         th Email
+        th Ім'я
         th Зареєстрований
         th Зборів
         th 
     tbody
       - @users.each do |user|
         tr
-          td= user.email
+          td= link_to user.email, user_path(user)
+          td= user.name
           td= user.created_at
           td= user.accounts.count
-          - if user.admin?
-            td= link_to 'Видалити', user_path(user), method: :delete, data: { confirm: 'Ви впевнені?' }, class: 'btn btn-danger', disabled: true
-          - else
-            td= link_to 'Видалити', user_path(user), method: :delete, data: { confirm: 'Ви впевнені?' }, class: 'btn btn-danger'
+          td.btn-group
+            = link_to 'Редагувати', edit_user_path(user), class: 'btn btn-primary'
+            - if user.admin?
+              = link_to 'Видалити', user_path(user), method: :delete, data: { confirm: 'Ви впевнені?' }, class: 'btn btn-danger', disabled: true
+            - else
+              = link_to 'Видалити', user_path(user), method: :delete, data: { confirm: 'Ви впевнені?' }, class: 'btn btn-danger'
 
   = paginate @users

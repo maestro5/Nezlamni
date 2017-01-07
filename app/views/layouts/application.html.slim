@@ -30,14 +30,13 @@ html lang="en"
           .navbar-collapse.collapse.navbar-responsive-collapse
             ul.nav.navbar-nav.navbar-right
               - if user_signed_in?
-                / li= link_to 'Моя сторінка', account_path(current_user.account) if current_user.account
-                / li= link_to 'Мої збори', accounts_path
                 li= link_to 'Збори', accounts_path
                 li= link_to 'Замовлення', orders_path
                 -if current_user.admin?
                   li= link_to 'Товари', products_path
                   li= link_to 'Користувачі', users_path
                   li= link_to 'Новини', articles_path
+                li= link_to (image_tag avatar(current_user)), user_path(current_user), id: 'profile'
                 li= link_to 'Вийти', destroy_user_session_path, method: :delete                
               - else
                 li= link_to 'Реєстрація', new_user_registration_path

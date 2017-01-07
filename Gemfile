@@ -5,9 +5,15 @@ ruby '2.3.1'
 gem 'rails', '4.2.6'
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 0.15'
+
 gem 'devise', '~> 3.5', '>= 3.5.1'
+gem 'omniauth-facebook', '~> 3.0'
+gem 'omniauth-twitter', '~> 1.2', '>= 1.2.1'
+gem 'omniauth-google-oauth2', '~> 0.4.1'
+
 gem 'twitter-bootstrap-rails', '~> 3.2', '>= 3.2.2'
 gem 'devise-bootstrap-views', '~> 0.0.8'
+gem 'font-awesome-rails', '~> 4.7', '>= 4.7.0.1'
 gem 'carrierwave', '~> 0.11.2'
 gem 'rmagick', '~> 2.15', '>= 2.15.4'
 gem 'mini_magick', '~> 4.5', '>= 4.5.1'

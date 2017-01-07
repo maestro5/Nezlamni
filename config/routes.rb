@@ -1,9 +1,9 @@
 Rails.application.routes.draw do
   mount Ckeditor::Engine => '/ckeditor'
   root 'pages#home'
-  devise_for :users
+  devise_for :users, controllers: {omniauth_callbacks: "omniauth_callbacks"}
   
-  resources :users, only: %i(index destroy)
+  resources :users, only: %i(index destroy show edit update)
 
   resources :accounts do
     member do
@@ -43,5 +43,5 @@ Rails.application.routes.draw do
 
   resources :orders, only: %i(index show) do
     get 'delivered', on: :member
-  end # orders  
+  end # orders
 end
