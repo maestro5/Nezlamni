@@ -100,7 +100,7 @@ feature 'User available comments', %q{
       within "#comment-#{comment_guest.id}-edit" do
         fill_in 'comment[body]', with: ''
         click_on 'Зберегти'
-        expect(page).to have_content 'Body can\'t be blank'
+        expect(page).to have_content 'Body не може бути пустим'
       end
       expect(comment_guest.reload.body).not_to be_empty
     end
@@ -157,7 +157,7 @@ feature 'User available comments', %q{
       within "#comment-#{comment_account_owner.id}-edit" do
         fill_in 'comment[body]', with: ''
         click_on 'Зберегти'
-        expect(page).to have_content 'Body can\'t be blank'
+        expect(page).to have_content 'Body не може бути пустим'
       end
       expect(comment_account_owner.reload.body).not_to be_empty
     end
@@ -271,7 +271,7 @@ feature 'Admin available comments', %q{
     within "#comment-#{comment_admin.id}-edit" do
       fill_in 'comment[body]', with: ''
       click_on 'Зберегти'
-      expect(page).to have_content 'Body can\'t be blank'
+      expect(page).to have_content 'Body не може бути пустим'
     end
     expect(comment_admin.reload.body).not_to be_empty
   end
