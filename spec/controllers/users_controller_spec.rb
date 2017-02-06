@@ -29,9 +29,13 @@ RSpec.describe UsersController, type: :controller do
     end
 
     describe 'GET #show' do
-      it 'redirect to sign_in page' do
+      it 'renders show view' do
         get :show, id: user
-        expect(response).to redirect_to new_user_session_path
+        expect(response).to render_template :show
+      end
+      it 'populates the user' do
+        get :show, id: user
+        expect(assigns(:user)).to eq user
       end
     end
 
@@ -78,7 +82,11 @@ RSpec.describe UsersController, type: :controller do
       end
       it 'redirect to home page' do
         get :show, id: user_admin
-        expect(response).to redirect_to root_path
+        expect(response).to render_template :show
+      end
+      it 'populates the user admin' do
+        get :show, id: user_admin
+        expect(assigns(:user)).to eq user_admin
       end
     end
 

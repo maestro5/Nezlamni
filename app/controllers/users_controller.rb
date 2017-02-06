@@ -1,7 +1,8 @@
 class UsersController < ApplicationController
+  skip_before_action :authenticate_user!, only: :show
   before_action :set_user, only: %i(destroy show edit update)
   before_action :admin!, only: %i(index destroy)
-  before_action :admin_or_owner!, only: %i(show edit update)
+  before_action :admin_or_owner!, only: %i(edit update)
 
   def index
     @users = 

@@ -1,0 +1,11 @@
+p.text-right
+  b= current_user.name.empty? ? current_user.email : current_user.name
+.row
+  .col-md-1
+    = image_tag avatar_mini(current_user), alt: 'user avatar', class: 'profile'
+  .col-md-11
+    = form_for [@account, Comment.new], remote: true do |f|
+      .form-group
+        = f.text_area :body, rows: 5, class: 'form-control'
+        br
+        = f.submit 'Додати коментар', class: 'btn btn-primary form-control'

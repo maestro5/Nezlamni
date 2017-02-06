@@ -39,7 +39,16 @@ module ApplicationHelper
     current_user.accounts.include? account
   end
 
+  def owner_profile?(user)
+    return unless current_user
+    current_user.admin? || current_user == user
+  end
+
   def avatar(obj)
     obj.avatar_url || obj.try(:remote_avatar) || 'empty_avatar.jpg'
+  end
+
+  def avatar_mini(obj)
+    obj.avatar_url(:mini) || obj.try(:remote_avatar) || 'empty_avatar_mini.jpg'
   end
 end

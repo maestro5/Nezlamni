@@ -55,8 +55,11 @@ group :development, :test do
   gem 'pry', '~> 0.10.4'
   gem 'rails-erd', '~> 1.4', '>= 1.4.7'
   gem 'rspec-rails', '~> 3.5', '>= 3.5.1'
-  gem 'shoulda-matchers', '~> 3.1', '>= 3.1.1'
   gem 'factory_girl_rails', '~> 4.7'
+  gem 'capybara', '~> 2.11'
+  gem 'launchy', '~> 2.4', '>= 2.4.3'  
+  gem 'selenium-webdriver', '~> 2.53'
+  gem 'database_cleaner', '~> 1.5', '>= 1.5.1'  
 end
 
 group :development do
@@ -67,8 +70,7 @@ group :development do
 end
 
 group :test do
-  gem 'capybara', '~> 2.6', '>= 2.6.2'
-  gem 'launchy', '~> 2.4', '>= 2.4.3'
+  gem 'shoulda-matchers', '~> 3.1', '>= 3.1.1'
 end
 
 gem 'rails_12factor', group: :production

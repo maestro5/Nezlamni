@@ -14,6 +14,7 @@ class AccountsController < ApplicationController
   def show
     @products = @account.products.order(contribution: :asc)
     @articles = @account.articles.order(created_at: :desc)
+    @comments = @account.comments
 
     if current_user.nil? # visitor
       @products = @products.where(visible: true)

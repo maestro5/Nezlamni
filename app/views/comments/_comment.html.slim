@@ -1,0 +1,39 @@
+- user = comment.user
+br
+
+.row *{id: "comment_#{comment.id}"}
+  .col-md-1
+    = link_to (image_tag avatar_mini(user), alt: 'user avatar', class: 'profile'), user.url || user_path(user)
+  .col-md-11
+    .row
+      .col-md-10
+        ul.list-inline
+          li
+            b= link_to (user.name.empty? ? user.email : user.name), user.url || user_path(user)
+          li
+            b= comment.updated_at
+      .col-md-2
+          ul.list-inline.text-right
+            - if comment.owner?(current_user)
+              li= link_to fa_icon('pencil-square-o'), '#', data: { comment_id: comment.id }, class: 'comment-edit-link'
+            - if comment.admin_or_owner?(current_user)
+              li= link_to fa_icon('close'), account_comment_path(@account, comment), method: :delete, data: { confirm: 'Ви впевнені?' }, remote: true, class: 'comment-delete-link'
+    .row
+      .col-md-12
+        == comment.body
+
+- if comment.owner?(current_user)
+  *{id: "comment-#{comment.id}-edit", class: 'comment-edit-form'}
+    .row
+      .col-md-12
+        p.text-right
+          b= current_user.name.empty? ? current_user.email : current_user.name
+    .row
+      .col-md-1
+        = image_tag avatar_mini(current_user), alt: 'user avatar', class: 'profile'
+      .col-md-11
+        = form_for [@account, comment], remote: true do |f|
+          .form-group
+            = f.text_area :body, rows: 5, class: 'form-control'
+            br
+            = f.submit 'Зберегти', class: 'btn btn-primary form-control'

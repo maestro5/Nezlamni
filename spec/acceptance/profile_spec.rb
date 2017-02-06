@@ -15,9 +15,10 @@ feature 'Visitor unavailable profile page', %q{
     expect(page).not_to have_link user_path(user)
   end
 
-  scenario 'when visitor goes to the profile page' do
+  scenario 'when visitor visit the profile page' do
     visit user_path(user)
-    expect(current_path).to eq new_user_session_path
+    expect(current_path).to eq user_path(user)
+    expect(page).not_to have_link 'Редагувати'
   end
 end
 
@@ -50,7 +51,8 @@ feature 'User available profile page', %q{
 
   scenario 'when user try view the profile of another user' do
     visit user_path(user_two)
-    expect(current_path).to eq root_path
+    expect(current_path).to eq user_path(user_two)
+    expect(page).not_to have_link 'Редагувати'
   end
 
   context 'when user edits profile' do
@@ -128,7 +130,10 @@ feature 'Admin available profile page', %q{
   end # when admin edits own profile
 
   context 'when admin edits the profile of another user' do
-    before { visit edit_user_path(user) }
+    before do
+      visit user_path(user)
+      click_on 'Редагувати'
+    end
 
     scenario 'show edit profile page' do
       expect(current_path).to eq edit_user_path(user)

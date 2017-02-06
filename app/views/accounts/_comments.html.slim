@@ -1,0 +1,6 @@
+- if @account.comments.any?
+  = render @account.comments
+  br
+  hr
+
+= render 'comments/form' if user_signed_in?

@@ -18,7 +18,7 @@ feature 'Visitor buy', %q{
   end
 
   scenario 'when a visitor click button [Підтримати цю дитину]' do
-    click_on 'Підтримати цю дитину'
+    click_on 'Підтримати цю людину'
     expect(current_path).to eq account_products_path(account)
     within all('.product').last do
       expect(page).to have_content product.title

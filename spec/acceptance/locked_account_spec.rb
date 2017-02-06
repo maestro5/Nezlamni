@@ -37,7 +37,7 @@ feature 'Admin locks an account', %q{
       sign_in admin_user
       visit account_path account
 
-      within all('.product').last do
+      within '.product-default' do
         click_on 'Редагувати'
       end
       fill_in 'product[title]', with: 'admin edited product'
@@ -65,8 +65,8 @@ feature 'User locked account', %q{
 
     expect(page).not_to have_link 'Редагувати'
     expect(page).not_to have_link 'Додати товар'
-    
-    within all('.product').last do
+
+    within '.product-default' do
       expect(page).not_to have_link 'Редагувати'
       expect(page).not_to have_link 'Видалити'
     end

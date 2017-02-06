@@ -4,6 +4,7 @@ class Account < ActiveRecord::Base
   has_many :products, dependent: :destroy
   has_many :orders, dependent: :delete_all
   has_many :articles, dependent: :delete_all
+  has_many :comments, dependent: :delete_all
 
   validates :name, :birthday_on, :goal, :deadline_on, :payment_details, presence: true
   validates :budget, numericality: { other_than: 0 }

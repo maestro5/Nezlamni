@@ -4,12 +4,14 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable
 
   has_many :accounts, dependent: :destroy
+  has_many :comments, dependent: :destroy
 
   validate :image_size_validation
   validates_integrity_of :avatar
 
   class << self
     def from_omniauth(auth)
+      binding.pry
       user = User.where(provider: auth.provider, uid: auth.uid).first ||
              User.find_by_email(auth.info.email)
       return user if user.present?
@@ -22,7 +24,9 @@ class User < ActiveRecord::Base
         u.remote_avatar = auth.info.image
         u.password      = Devise.friendly_token[0, 20]
         u.email         = auth.provider == 'twitter' ? auth.uid + '@tw.com' : auth.info.email
-        u.url           = auth.info.urls.send "#{auth.provider.capitalize}"
+        provider        = auth.provider.capitalize 
+        provider        = 'Google' if provider.include? 'Google'
+        u.url           = auth.info.urls.send "#{provider}"
       end
     end # from_omniauth
   end # self

@@ -18,6 +18,7 @@ Rails.application.routes.draw do
 
     resources :products, only: %i(new create index)
     resources :articles, only: %i(new create)
+    resources :comments, only: %i(create edit update destroy)
   end # accounts
 
   resources :products, except: %i(new create index) do
@@ -44,4 +45,5 @@ Rails.application.routes.draw do
   resources :orders, only: %i(index show) do
     get 'delivered', on: :member
   end # orders
+
 end
