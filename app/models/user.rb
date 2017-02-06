@@ -11,7 +11,6 @@ class User < ActiveRecord::Base
 
   class << self
     def from_omniauth(auth)
-      binding.pry
       user = User.where(provider: auth.provider, uid: auth.uid).first ||
              User.find_by_email(auth.info.email)
       return user if user.present?
@@ -23,7 +22,7 @@ class User < ActiveRecord::Base
         u.name          = auth.extra.raw_info.name
         u.remote_avatar = auth.info.image
         u.password      = Devise.friendly_token[0, 20]
-        u.email         = auth.provider == 'twitter' ? auth.uid + '@tw.com' : auth.info.email
+        u.email         = auth.info.email || auth.uid + "@#{auth.provider}.com"
         provider        = auth.provider.capitalize 
         provider        = 'Google' if provider.include? 'Google'
         u.url           = auth.info.urls.send "#{provider}"
