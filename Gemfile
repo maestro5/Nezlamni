@@ -67,10 +67,21 @@ group :development do
   gem 'web-console', '~> 2.0'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
+  gem 'foreman', '~> 0.83.0'
+  gem 'capistrano', '~> 3.4'
+  gem 'capistrano-rails', '~> 1.2', '>= 1.2.3'
+  gem 'capistrano-bundler', '~> 1.2'
+  gem 'capistrano-rvm', '~> 0.1.2'
 end
 
 group :test do
   gem 'shoulda-matchers', '~> 3.1', '>= 3.1.1'
 end
 
-gem 'rails_12factor', group: :production
+group :production do
+  gem 'rails_12factor'
+  gem 'unicorn', '~> 5.1'
+  
+
+end
+
