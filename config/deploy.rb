@@ -5,7 +5,7 @@ set :repo_url, 'https://github.com/maestro5/Nezlamni.git'
 set :application, 'nezlamni'
 application = 'nezlamni'
 set :rvm_type, :user
-set :rvm_ruby_version, '2.0.0-p353'
+set :rvm_ruby_version, 'ruby 2.3.1p112'
 set :deploy_to, '/var/www/apps/nezlamni'
 
 namespace :foreman do

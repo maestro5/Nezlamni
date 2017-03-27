@@ -81,7 +81,5 @@ end
 group :production do
   gem 'rails_12factor'
   gem 'unicorn', '~> 5.1'
-  
-
 end
 
