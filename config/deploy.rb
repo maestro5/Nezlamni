@@ -5,7 +5,7 @@ set :repo_url, 'https://github.com/maestro5/Nezlamni.git'
 set :application, 'nezlamni'
 application = 'nezlamni'
 set :rvm_type, :user
-set :rvm_ruby_version, 'ruby 2.3.1p112'
+set :rvm_ruby_version, '2.3.1'
 set :deploy_to, '/var/www/apps/nezlamni'
 
 namespace :foreman do
@@ -66,10 +66,10 @@ namespace :deploy do
       upload!('shared/Procfile', "#{shared_path}/Procfile")
 
       upload!('shared/nginx.conf', "#{shared_path}/nginx.conf")
-      sudo 'stop nginx'
+      sudo 'systemctl stop nginx'
       sudo "rm -f /usr/local/nginx/conf/nginx.conf"
       sudo "ln -s #{shared_path}/nginx.conf /usr/local/nginx/conf/nginx.conf"
-      sudo 'start nginx'
+      sudo 'systemctl start nginx'
 
       within release_path do
         with rails_env: fetch(:rails_env) do

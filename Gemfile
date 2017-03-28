@@ -40,17 +40,9 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 gem 'slim-rails', '~> 3.1'
 
-# Use ActiveModel has_secure_password
-# gem 'bcrypt', '~> 3.1.7'
-
-# Use Unicorn as the app server
-# gem 'unicorn'
-
-# Use Capistrano for deployment
-# gem 'capistrano-rails', group: :development
+gem 'foreman', '~> 0.83.0'
 
 group :development, :test do
-  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
   gem 'pry', '~> 0.10.4'
   gem 'rails-erd', '~> 1.4', '>= 1.4.7'
@@ -63,11 +55,8 @@ group :development, :test do
 end
 
 group :development do
-  # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console', '~> 2.0'
-  # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
-  gem 'foreman', '~> 0.83.0'
   gem 'capistrano', '~> 3.4'
   gem 'capistrano-rails', '~> 1.2', '>= 1.2.3'
   gem 'capistrano-bundler', '~> 1.2'
