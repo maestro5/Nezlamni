@@ -7,6 +7,14 @@ class Product < ActiveRecord::Base
 
   before_update :set_changed
 
+  DEFAULT_ATTRIBUTES = {
+    title: 'Без винагороди',
+    description: 'Зробити внесок без винагороди',
+    visible: true,
+    default: true,
+    was_changed: false
+  }
+
   def contributions_stat
     return if backers.nil? || backers == 0
     self.remainder ||= 0

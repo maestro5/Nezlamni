@@ -1,60 +1,53 @@
 class ImagesController < ApplicationController
-  before_action :find_image, only: %i(destroy set_avatar)
-  before_action :find_imageable, except: :destroy
-  before_action :admin_or_owner!
+  # before_action :find_image, only: %i(destroy set_avatar)
+  # before_action :admin_or_owner!
+  respond_to :json
 
   def index
-    @images = @imageable.images
+    @images = imageable.images
   end
 
   def new
-    @image = @imageable.images.new
+    @image = imageable.images.new
   end
 
   def create
-    @image = @imageable.images.build(image_params)
-    if @image.save
-      redirect_to :back
-    else
-      redirect_to :back
-    end
+    @image = imageable.images.create(image_params)   
+    respond_with @image
   end
 
   def destroy
-    @image.destroy
-    redirect_to :back
+    image.destroy
+    respond_with image
+    # redirect_to :back
   end
 
   def set_avatar
-    @imageable.update_attribute(:avatar_url, @image.image_url)
-    redirect_to edit_account_path(@imageable) if @imageable.is_a? Account
-    redirect_to edit_product_path(@imageable) if @imageable.is_a? Product
+    imageable.update_attribute(:avatar_url, image.image_url)
+    redirect_to edit_account_path(imageable) if imageable.is_a? Account
+    redirect_to edit_product_path(imageable) if imageable.is_a? Product
   end
 
-  private
+private
+  def imageable
+    return @imageable ||= Account.find(params[:account_id]) if params.include?('account_id')
+    @imageable ||= Product.find(params[:product_id])
+  end
 
-    def find_imageable
-      @imageable = if params.include? 'account_id'
-        Account.find(params[:account_id])
-      else
-        Product.find(params[:product_id])
-      end
-    end
+  def image
+    @image ||= Image.find(params[:id])
+  end
 
-    def find_image
-      @image = Image.find(params[:id])
-    end
+  def image_params
+    params.require(:imageable).permit(:image)
+  end
 
-    def image_params
-      params.require(:image).permit(:image)
-    end
+  # def admin_or_owner!
+  #   @imageable ||= @image.nil? ? nil : @image.imageable
+  #   obj = @imageable.is_a?(Account) ? @imageable : @imageable.account
 
-    def admin_or_owner!
-      @imageable ||= @image.nil? ? nil : @image.imageable
-      obj = @imageable.is_a?(Account) ? @imageable : @imageable.account
-
-      return if current_user.accounts.include?(obj) && !obj.locked?
-      return if current_user.admin?
-      redirect_to root_path
-    end
+  #   return if current_user.accounts.include?(obj) && !obj.locked?
+  #   return if current_user.admin?
+  #   redirect_to root_path
+  # end
 end

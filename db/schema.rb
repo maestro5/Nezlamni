@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170107123711) do
+ActiveRecord::Schema.define(version: 20180121094941) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,14 +27,15 @@ ActiveRecord::Schema.define(version: 20170107123711) do
     t.date     "deadline_on"
     t.string   "payment_details", default: ""
     t.text     "overview",        default: ""
-    t.boolean  "visible",         default: false
-    t.boolean  "locked",          default: false
-    t.boolean  "was_changed",     default: true
     t.datetime "created_at",                      null: false
     t.datetime "updated_at",                      null: false
     t.string   "avatar_url"
     t.string   "phone_number"
     t.string   "contact_person"
+    t.boolean  "visible",         default: false
+    t.boolean  "locked",          default: false
+    t.boolean  "was_changed",     default: false
+    t.boolean  "deleted",         default: false
   end
 
   add_index "accounts", ["user_id"], name: "index_accounts_on_user_id", using: :btree
@@ -108,14 +109,14 @@ ActiveRecord::Schema.define(version: 20170107123711) do
     t.integer  "account_id"
     t.string   "title",        default: ""
     t.text     "description",  default: ""
-    t.boolean  "visible",      default: true
-    t.boolean  "was_changed",  default: true
     t.datetime "created_at",                   null: false
     t.datetime "updated_at",                   null: false
     t.string   "avatar_url"
     t.decimal  "contribution", default: 0.0
     t.integer  "backers",      default: 0
     t.integer  "remainder",    default: 0
+    t.boolean  "visible",      default: true
+    t.boolean  "was_changed",  default: true
     t.boolean  "default",      default: false
   end
 

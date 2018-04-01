@@ -11,6 +11,7 @@
  * file per style scope.
  *
  *= require devise_bootstrap_views
+ *= require dropzone/dropzone
  *= require_tree .
  *= require_self
  */

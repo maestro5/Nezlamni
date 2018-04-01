@@ -5,14 +5,14 @@ Rails.application.routes.draw do
   
   resources :users, only: %i(index destroy show edit update)
 
-  resources :accounts do
+  resources :accounts, except: :create do
     member do
       get 'checked'
       get 'visible'
       get 'locked'
     end
 
-    resources :images, only: %i(index new create set_avatar) do
+    resources :images, only: %i(index new create destroy set_avatar) do
       get 'set_avatar', on: :member
     end
 
@@ -36,7 +36,8 @@ Rails.application.routes.draw do
   
   get '/products', to: 'pages#products'
 
-  resources :images, only: :destroy
+  # resources :images, only: :destroy
+  resources :images
 
   resources :articles do
     get 'visible', on: :member

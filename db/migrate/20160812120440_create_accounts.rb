@@ -12,9 +12,6 @@ class CreateAccounts < ActiveRecord::Migration
       t.date :deadline_on
       t.string :payment_details, default: ''
       t.text :overview, default: ''
-      t.boolean :visible, default: false
-      t.boolean :locked, default: false
-      t.boolean :was_changed, default: true
 
       t.timestamps null: false
     end

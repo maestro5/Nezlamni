@@ -1,0 +1,6 @@
+- return unless @service
+- unless @service.errors.empty?
+  #errors
+    ul
+    - @service.errors.full_messages.each do |msg|
+      li= msg
