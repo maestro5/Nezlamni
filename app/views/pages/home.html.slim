@@ -7,15 +7,15 @@
             .col-sm-4.col-md-4 id="product_#{index}"
               .thumbnail
                 - @account = account
-                = render 'accounts/avatar'
+                / = render 'accounts/avatar'
                 .caption
                   h3
-                    = link_to account.title, account_path(account)
+                    / = link_to account.title, account_path(account)
                   p = "#{account.budget}, до #{date_format account.deadline_on}"
-                  - percent = account.collected_percent
-                  .progress
-                    .progress-bar.progress-bar-success role='progressbar' aria-valuenow="#{percent}" aria-valuemin="0" aria-valuemax="100" style="width: #{percent}%;"
-                      span = "#{percent}%"
+                  / - percent = account.collected_percent
+                  / .progress
+                  /   .progress-bar.progress-bar-success role='progressbar' aria-valuenow="#{percent}" aria-valuemin="0" aria-valuemax="100" style="width: #{percent}%;"
+                  /     span = "#{percent}%"
   .col-lg-3
     h2 Новини
     = render @articles

@@ -6,7 +6,7 @@
     .col-lg-6
       h2.text-right
         / - if owner?(account_decorator)
-        = link_to 'Редагувати', edit_account_path(account_decorator), class: 'btn btn-primary', id: 'edit_account'
+        = link_to t('.edit'), edit_account_path(account_decorator), class: 'btn btn-primary', id: 'edit_account'
         = link_to t('.delete'), account_path, method: :delete, class: 'btn btn-primary', id: 'delete_account'
         = render 'check_btn', obj: account_decorator
   - else
@@ -38,7 +38,7 @@
     br
     br
     br
-    = link_to 'Підтримати цю людину', account_products_path(account_decorator), class: 'btn btn-success btn-lg'
+    = link_to t('.support_person'), account_products_path(account_decorator), class: 'btn btn-success btn-lg'
 
 .row
   .col-lg-8

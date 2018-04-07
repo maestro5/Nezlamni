@@ -263,7 +263,7 @@ feature 'User creates an account', %q{
     end
 
     scenario "it's creates new account in db", skip_before: true do
-      expect{ new_account_form.visit_page(new_account_path) }.to change(Account, :count).by(+1) 
+      expect{ new_account_form.visit_page(new_account_path) }.to change(Account, :count).by(+1)
     end
 
     scenario "it's doesn't creates a default product", skip_before: true do
@@ -280,7 +280,7 @@ feature 'User creates an account', %q{
     # context "when cancels the creating" do
     #   scenario "it's redirects on accounts page" do
     #     new_account_form.cancel
-    #     expect(current_path).to eq accounts_path      
+    #     expect(current_path).to eq accounts_path
     #   end
 
     #   scenario "it's deletes an account from db" do
@@ -342,7 +342,7 @@ feature 'User destroy an account', %q{
   context "on accounts page" do
     let(:route) { accounts_path }
     let(:delete_btn) { all('.account').last.find('a', text: delete_btn_text) }
-    
+
     it_behaves_like 'destroy account'
   end
 end
@@ -363,11 +363,11 @@ feature 'Admin creates an account', %q{
 } do
 
   let(:user_admin) { create(:user_admin) }
-  
+
   xscenario 'when admin creates an account' do
     # sign_in user_admin
     # click_on 'Зібрати кошти'
-    
+
     # fill_in 'account[name]', with: 'Bob Stark'
     # fill_in 'account[goal]', with: 'Treatment'
     # fill_in 'account[budget]', with: 37500
@@ -384,21 +384,64 @@ end # Admin creates an account
 # ============================================================
 # move to permissions test
 # ============================================================
-# # =====================================
-# # role: visitor
-# # =====================================
-# feature 'Visitor creates an account', %q{
-#   As a visitor
-#   I can't create an account
-# } do
+# =====================================
+# role: visitor
+# =====================================
+feature 'Visitor creates an account', %q{
+  As a visitor
+  I can't create an account
+} do
 
-#   scenario 'when visitor creates an account' do
-#     visit root_path
-#     click_on 'Зібрати кошти'
+  let(:rais_funds_button) { I18n.t('shared.navbar.raise_funds') }
+  let(:support_person_button) { I18n.t('accounts.show.support_person') }
+  let(:edit_button) { I18n.t('accounts.show.edit') }
+  let(:delete_buttn) { I18n.t('accounts.show.delete') }
+  let(:visitor_actions) { [support_person_button] }
+  let(:owner_actions) { [edit_button, delete_buttn] }
+  # let(:admin_actions) { [] }
+  let(:account) { create(:account) }
 
-#     expect(current_path).to eq new_user_session_path
-#   end
-# end # Guest creates an account
+  scenario 'when visitor creates an account' do
+    visit root_path
+    click_on rais_funds_button
+
+    expect(current_path).to eq new_user_session_path
+  end
+
+  scenario 'when visitor edits an account' do
+    visit edit_account_path(account)
+
+    expect(current_path).to eq new_user_session_path
+  end
+
+  scenario 'when visitor visits accounts page' do
+    visit accounts_path
+
+    expect(current_path).to eq new_user_session_path
+  end
+
+  context 'when visitor visits account page' do
+    before { visit account_path(account) }
+
+    scenario "it's account show page" do
+      expect(current_path).to eq account_path(account)
+    end
+
+    scenario "it doesn't contain not available actions" do
+      owner_actions.each { |owner_action| expect(page).not_to have_content owner_action }
+      # admin_actions
+    end
+
+    scenario "it contains available actions" do
+      visitor_actions.each { |visitor_action| expect(page).to have_content visitor_action }
+    end
+
+    scenario "it contains account"
+    scenario "it contains products"
+    scenario "it contains articles"
+    scenario "it contains comments"
+  end
+end # Guest creates an account
 
 # ============================================================
 # pages tests
@@ -422,7 +465,7 @@ end # Admin creates an account
 #     expect(page).to have_content subject.phone_number
 #     expect(page).to have_content subject.contact_person
 #   end
-  
+
 #   within "#overview" do
 #     expect(page).to have_content subject.overview
 #   end
@@ -452,7 +495,7 @@ end # Admin creates an account
 
 #   let(:user) { create(:user) }
 #   xscenario "sets account's avatar" do
-    
+
 #   end
 # end
 # ============================================================

@@ -266,9 +266,14 @@ uk:
   activemodel:
     errors:
       models:
+  shared:
+    navbar:
+      raise_funds: Зібрати кошти
   accounts:
     show:
       delete: Видалити
+      edit: Редагувати
+      support_person: Підтримати цю людину
   flash:
     account:
       deleted: Сторінка була успішно видалена

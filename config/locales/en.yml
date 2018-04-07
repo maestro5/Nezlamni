@@ -21,3 +21,9 @@
 
 en:
   hello: "Hello world"
+  shared:
+    navbar:
+      raise_funds: Raise Funds
+  accounts:
+    show:
+      support_person: Support This Person

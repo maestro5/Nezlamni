@@ -69,7 +69,7 @@ class AccountsController < ApplicationController
   # alias_method :new, :edit
 
   private
-  
+
   def updater
     @updater ||= AccountUpdaterService.new(account: account, account_form: account_form)
   end
