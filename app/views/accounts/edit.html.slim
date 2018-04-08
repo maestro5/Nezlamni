@@ -45,7 +45,7 @@
           .form-group
             = f.label :contact_person, 'Контактна особа', class: 'col-sm-4 control-label'
             .col-sm-8
-              = f.text_field :contact_person, class: 'form-control'            
+              = f.text_field :contact_person, class: 'form-control'
           .form-group
             = f.label :backers, 'Людей підтримало', class: 'col-sm-4 control-label'
             .col-sm-8
@@ -68,8 +68,8 @@
       .form-group
         .row
           .col-md-6
-            = link_to I18n.t('.cancel'), account_path(account_decorator), method: :delete, class: 'btn-block btn btn-primary'
+            = link_to I18n.t('.cancel'), account_path(account_decorator, cancel: true), method: :delete, class: 'btn-block btn btn-primary'
           .col-md-6
             = f.submit I18n.t('.save'), class: 'btn-block btn btn-primary'
-            
+
 = render 'images/gallery_scripts'

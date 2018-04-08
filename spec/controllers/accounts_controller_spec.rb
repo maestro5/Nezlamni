@@ -531,44 +531,85 @@ RSpec.describe AccountsController, type: :controller do
   let(:account) { create(:account) }
 
   describe 'GET #index' do
-    it 'visitor redirects to sign_in page' do
+    it 'redirects to sign_in page' do
       get :index
       expect(response).to redirect_to new_user_session_path
     end # role: visitor
   end
 
   describe 'GET #new' do
-    it 'visitor redirects to sign_in page' do
+    it 'redirects to sign_in page' do
       get :new
       expect(response).to redirect_to new_user_session_path
     end # role: visitor
   end
 
   describe 'POST #create' do
-    xit 'visitor redirects to 404 page' do
+    xit 'redirects to 404 page' do
       post :create, attributes_for(:account)
       expect(response).to redirect_to new_user_session_path
     end # role: visitor
   end
 
   describe 'GET #edit' do
-    it 'visitor redirects to sign_in page' do
+    it 'redirects to sign_in page' do
       get :edit, id: 1
       expect(response).to redirect_to new_user_session_path
     end # role: visitor
   end
 
   describe 'PATCH #update' do
-    it 'visitor redirects to sign_in page' do
+    it 'redirects to sign_in page' do
       patch :update, id: 1, account: { name: 'Edited Name' }
       expect(response).to redirect_to new_user_session_path
     end # role: visitor
+
+    it "doesn't change db record"
   end
 
   describe 'DELETE #destroy' do
-    it 'visitor redirects to sign_in page' do
+    it 'redirects to sign_in page' do
       delete :destroy, id: 1
       expect(response).to redirect_to new_user_session_path
     end # role: visitor
   end
+
+  # ======================
+  # not owner
+  # ======================
+  context 'when not owner' do
+    let(:user) { create(:user) }
+    let(:account) { create(:account, user: create(:user)) }
+
+    before { sign_in user }
+
+    describe 'GET #edit' do
+      it 'redirects to root page' do
+        get :edit, id: account.id
+        expect(response).to redirect_to root_path
+      end # role: not owner
+    end
+
+    describe 'PATCH #update' do
+      it 'redirects to root page' do
+        patch :update, id: account.id, account: { name: 'Edited Name' }
+        expect(response).to redirect_to root_path
+      end # role: not owner
+
+      it "doesn't change db record"
+    end
+
+    describe 'DELETE #destroy' do
+      it 'redirects to root page' do
+        delete :destroy, id: account.id
+        expect(response).to redirect_to root_path
+      end # role: not owner
+
+      it "doesn't change db record"
+    end
+  end # when not owner
+
+
+
+
 end # AccountsController

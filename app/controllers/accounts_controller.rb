@@ -1,5 +1,6 @@
 class AccountsController < ApplicationController
   skip_before_action :authenticate_user!, only: :show
+  before_action :verify_authorization!, only: %i(edit update destroy)
   # before_action :find_account, except: %i(index update)
   # before_action :admin!, only: %i(destroy checked visible locked)
   # before_action :admin_or_owner!, only: %i(edit update)
@@ -47,7 +48,10 @@ class AccountsController < ApplicationController
   end
 
   def destroy
-    flash[:success] = I18n.t('.flash.account.deleted') if account.update_attribute(:deleted, true)
+    if account.update_attribute(:deleted, true)
+      flash[:success] = I18n.t('.flash.account.deleted') unless params[:cancel].present?
+    end
+
     redirect_to accounts_path
   end
 
@@ -69,6 +73,10 @@ class AccountsController < ApplicationController
   # alias_method :new, :edit
 
   private
+
+  def authorized?
+    account.authorized?(current_user)
+  end
 
   def updater
     @updater ||= AccountUpdaterService.new(account: account, account_form: account_form)

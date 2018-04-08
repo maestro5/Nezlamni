@@ -5,10 +5,8 @@
         h2 = account_decorator.title
     .col-lg-6
       h2.text-right
-        / - if owner?(account_decorator)
-        = link_to t('.edit'), edit_account_path(account_decorator), class: 'btn btn-primary', id: 'edit_account'
-        = link_to t('.delete'), account_path, method: :delete, class: 'btn btn-primary', id: 'delete_account'
-        = render 'check_btn', obj: account_decorator
+        = render 'owner_buttons'
+        = render 'check_btn'
   - else
     .col-lg-12
       h2.text-center = account_decorator.title
@@ -60,21 +58,12 @@ br
           br
           == account_decorator.overview
         .tab-pane role="tabpanel" id="news"
-          - if user_signed_in? && owner?(account_decorator) && (current_user.admin? || !account_decorator.locked?)
-            = link_to 'Додати', new_account_article_path(account_decorator), class: 'btn btn-success'
-          = render @articles
+          / = render 'articles'
         .tab-pane role="tabpanel" id="comments"
           = render 'comments'
 
   .col-lg-1
   .col-lg-3
-    h3 Підтримати цю людину
-    br
-    - if user_signed_in? && owner?(account_decorator) && (current_user.admin? || !account_decorator.locked?)
-      .thumbnail
-        .caption
-          = link_to 'Додати товар', new_account_product_path(account_decorator), class: 'btn btn-primary'
-    #products
-      = render @products
+    / = render 'products'
 
 = render 'images/gallery_scripts'

@@ -27,3 +27,7 @@ en:
   accounts:
     show:
       support_person: Support This Person
+  flash:
+    access_denied: Access Denied
+    account:
+      deleted: Page was successfully deleted

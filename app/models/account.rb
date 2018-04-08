@@ -8,11 +8,15 @@ class Account < ActiveRecord::Base
 
   # before_update :set_changed
 
-private
+  def authorized?(current_user)
+    return true if current_user && current_user.admin?
+    user.id == current_user.id
+  end
+
+  private
   # def set_changed
   #   return if (changed & %w(name birthday_on goal budget backers collected deadline_on
   #     payment_details overview avatar_url phone_number contact_person)).empty?
   #   self.was_changed = true
   # end
-
 end

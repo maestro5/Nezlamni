@@ -34,10 +34,10 @@ module ApplicationHelper
     end
   end
 
-  def owner?(account)
-    return true if current_user.admin?
-    current_user.accounts.include? account
-  end
+  # def owner?(account)
+  #   return true if current_user.admin?
+  #   current_user.accounts.include? account
+  # end
 
   def owner_profile?(user)
     return unless current_user

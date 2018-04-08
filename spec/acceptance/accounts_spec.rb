@@ -184,7 +184,11 @@ shared_examples_for 'edit account' do
   end
 end
 
-shared_examples_for 'destroy account' do
+shared_examples_for 'destroy account' do |option = :contains_flash_message|
+  let(:flash_success_msg) { I18n.t('.flash.account.deleted') }
+
+  before { destroy_action }
+
   scenario "doesn't delete in db" do
     expect(account.destroyed?).to be false
   end
@@ -197,12 +201,41 @@ shared_examples_for 'destroy account' do
     expect(current_path).to eq accounts_path
   end
 
-  # scenario "page contains deleting success message" do
-  #   expect(page).to have_content flash_success_msg
-  # end
+  scenario "page contains deleting success message", js: true do
+    if option == :contains_flash_message
+      expect(page).to have_content flash_success_msg
+    else
+      expect(page).not_to have_content flash_success_msg
+    end
+  end
 
   scenario "delete all association objects"
 end
+
+shared_examples_for "doesn't contain owner actions" do
+  let(:edit_button) { I18n.t('accounts.show.edit') }
+  let(:delete_buttn) { I18n.t('accounts.show.delete') }
+  let(:owner_actions) { [edit_button, delete_buttn] }
+
+  scenario "it doesn't contain owner's actions" do
+    owner_actions.each { |owner_action| expect(page).not_to have_content owner_action }
+  end
+end
+
+shared_examples_for 'access denied' do
+  before { visit path }
+
+  let(:error_access_denied) { I18n.t('flash.access_denied') }
+
+  scenario 'it redirects to home page' do
+    expect(current_path).to eq root_path
+  end
+
+  scenario 'it shows access denied message', js: true do
+    expect(page).to have_content error_access_denied
+  end
+end
+
 
 # =====================================
 # role:   user
@@ -271,22 +304,17 @@ feature 'User creates an account', %q{
     end
 
     context "when cancels the creating" do
+      let(:destroy_action) { new_account_form.cancel }
       let(:account) { Account.last }
-      before { new_account_form.cancel }
 
-      it_behaves_like 'destroy account'
+      scenario "it's redirects on accounts page" do
+        new_account_form.cancel
+
+        expect(current_path).to eq accounts_path
+      end
+
+      it_behaves_like 'destroy account', :not_contains_flash_message
     end
-
-    # context "when cancels the creating" do
-    #   scenario "it's redirects on accounts page" do
-    #     new_account_form.cancel
-    #     expect(current_path).to eq accounts_path
-    #   end
-
-    #   scenario "it's deletes an account from db" do
-    #     expect { new_account_form.cancel }.to change(Account, :count).by(-1)
-    #   end
-    # end
   end
 
   context "when creates an account" do
@@ -309,6 +337,22 @@ feature 'User edit an account', %q{
 
   it_behaves_like 'edit account'
 
+  context 'when edits not own account' do
+    let(:account) { create(:account, user: create(:user)) }
+
+    context 'on account page' do
+      before { visit account_path(account) }
+
+      it_behaves_like "doesn't contain owner actions"
+    end
+
+    context 'when tries to get edit page' do
+      let(:path) { edit_account_path(account) }
+
+      it_behaves_like 'access denied'
+    end
+  end
+
   scenario 'on accounts page'
 end
 
@@ -323,27 +367,33 @@ feature 'User destroy an account', %q{
 
   let(:user) { create(:user) }
   let!(:account) { create(:account, user: user) }
-  let(:flash_success_msg) { I18n.t('.flash.account.deleted') }
-  let(:delete_btn_text) { I18n.t('accounts.show.delete') }
+  let(:delete_btn_text) { I18n.t('accounts.owner_buttons.delete') }
+  let(:destroy_action) { delete_btn.click }
 
   before do
     sign_in user
-    visit route
-    delete_btn.click
+    visit path
   end
 
   context "on the account page" do
-    let(:route) { account_path(account) }
+    let(:path) { account_path(account) }
     let(:delete_btn) { find('a', text: delete_btn_text) }
 
     it_behaves_like 'destroy account'
   end
 
   context "on accounts page" do
-    let(:route) { accounts_path }
+    let(:path) { accounts_path }
     let(:delete_btn) { all('.account').last.find('a', text: delete_btn_text) }
 
     it_behaves_like 'destroy account'
+  end
+
+  context 'when deletes not own account' do
+    let(:not_owner_account) { create(:account, user: create(:user)) }
+    let(:path) { account_path(not_owner_account) }
+
+    it_behaves_like "doesn't contain owner actions"
   end
 end
 
@@ -381,6 +431,9 @@ end # Admin creates an account
 
 
 
+
+
+
 # ============================================================
 # move to permissions test
 # ============================================================
@@ -394,10 +447,7 @@ feature 'Visitor creates an account', %q{
 
   let(:rais_funds_button) { I18n.t('shared.navbar.raise_funds') }
   let(:support_person_button) { I18n.t('accounts.show.support_person') }
-  let(:edit_button) { I18n.t('accounts.show.edit') }
-  let(:delete_buttn) { I18n.t('accounts.show.delete') }
   let(:visitor_actions) { [support_person_button] }
-  let(:owner_actions) { [edit_button, delete_buttn] }
   # let(:admin_actions) { [] }
   let(:account) { create(:account) }
 
@@ -427,10 +477,7 @@ feature 'Visitor creates an account', %q{
       expect(current_path).to eq account_path(account)
     end
 
-    scenario "it doesn't contain not available actions" do
-      owner_actions.each { |owner_action| expect(page).not_to have_content owner_action }
-      # admin_actions
-    end
+    it_behaves_like "doesn't contain owner actions"
 
     scenario "it contains available actions" do
       visitor_actions.each { |visitor_action| expect(page).to have_content visitor_action }

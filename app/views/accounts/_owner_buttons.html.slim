@@ -1,0 +1,4 @@
+- return unless account_decorator.authorized?(current_user)
+
+= link_to t('.edit'), edit_account_path(account_decorator), class: 'btn btn-primary', id: 'edit_account'
+= link_to t('.delete'), account_path, method: :delete, class: 'btn btn-primary', id: 'delete_account'

@@ -271,9 +271,11 @@ uk:
       raise_funds: Зібрати кошти
   accounts:
     show:
+      support_person: Підтримати цю людину
+    owner_buttons:
       delete: Видалити
       edit: Редагувати
-      support_person: Підтримати цю людину
   flash:
+    access_denied: Доступ заборонено!
     account:
       deleted: Сторінка була успішно видалена

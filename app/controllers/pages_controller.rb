@@ -4,7 +4,7 @@ class PagesController < ApplicationController
 
   def home
     @accounts = Account.where(visible: true).order(deadline_on: :asc).page(params[:page]).per(9)
-    @articles = 
+    @articles =
       Article
         .joins("LEFT OUTER JOIN accounts ON accounts.id = articles.account_id")
         .where('(accounts.visible=? OR articles.account_id IS ?) AND articles.visible=?', true, nil, true)
@@ -20,5 +20,11 @@ class PagesController < ApplicationController
         .order(account_id: :asc, created_at: :desc)
         .page(params[:page])
         .per(10)
+  end
+
+  private
+
+  def authorized?
+    true
   end
 end # PagesController
