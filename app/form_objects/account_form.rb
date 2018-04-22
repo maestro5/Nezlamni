@@ -31,9 +31,9 @@ class AccountForm
   MAX_AGE = 120
   MIN_DEADLINE_PERIOD = 7
 
-  def initialize(params = {})
+  def initialize(account, params = {})
     @params = params
-    super(account_params)
+    super(account.attributes.merge(account_params))
     improve_input
   end
 
@@ -52,7 +52,7 @@ class AccountForm
     return if deadline_on.blank?
 
     errors.add(:deadline_on, :not_a_date) and return unless deadline_on.is_a?(Date)
-    
+
     msg = I18n.t('.errors.account_form.deadline_on_in_the_future', count: MIN_DEADLINE_PERIOD)
     errors.add(:deadline_on, msg) if deadline_on.blank? || deadline_on < Date.today.days_since(MIN_DEADLINE_PERIOD)
   end

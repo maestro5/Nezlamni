@@ -236,20 +236,8 @@ shared_examples_for 'access denied' do
   end
 end
 
-
-# =====================================
-# role:   user
-# action: create
-# =====================================
-feature 'User creates an account', %q{
-  As a user
-  I want to be able to create an account
-} do
-
-  let(:user) { create(:user) }
+shared_examples_for 'initial a new, default account' do
   let(:new_account_form) { EditAccountForm.new }
-
-  before { sign_in user }
 
   subject { Account.last }
 
@@ -299,7 +287,7 @@ feature 'User creates an account', %q{
       expect{ new_account_form.visit_page(new_account_path) }.to change(Account, :count).by(+1)
     end
 
-    scenario "it's doesn't creates a default product", skip_before: true do
+    scenario "it's doesn't create a default product", skip_before: true do
       expect{ new_account_form.visit_page(new_account_path) }.not_to change(Product, :count)
     end
 
@@ -316,26 +304,43 @@ feature 'User creates an account', %q{
       it_behaves_like 'destroy account', :not_contains_flash_message
     end
   end
-
-  context "when creates an account" do
-    it_behaves_like 'edit account'
-  end
 end
+
+
 
 # =====================================
 # role:   user
-# action: update
+# action: create
 # =====================================
-feature 'User edit an account', %q{
+feature 'User creates an account', %q{
   As a user
-  I want to be able to edit my own account
+  I want to be able to create an account
 } do
 
   let(:user) { create(:user) }
 
   before { sign_in user }
 
+  it_behaves_like 'initial a new, default account'
   it_behaves_like 'edit account'
+end
+
+# =====================================
+# role:   user
+# action: edit / update
+# =====================================
+feature 'User edit an account', %q{
+  As a user
+  I want to be able to edit an account
+} do
+
+  let(:user) { create(:user) }
+
+  before { sign_in user }
+
+  context 'when edits own account' do
+    it_behaves_like 'edit account'
+  end
 
   context 'when edits not own account' do
     let(:account) { create(:account, user: create(:user)) }
@@ -397,13 +402,6 @@ feature 'User destroy an account', %q{
   end
 end
 
-
-
-
-
-
-
-
 # =====================================
 # role: admin
 # =====================================
@@ -412,24 +410,88 @@ feature 'Admin creates an account', %q{
   I want to be able to create an account
 } do
 
-  let(:user_admin) { create(:user_admin) }
+  let(:user) { create(:user, :admin) }
 
-  xscenario 'when admin creates an account' do
-    # sign_in user_admin
-    # click_on 'Зібрати кошти'
+  before { sign_in user }
 
-    # fill_in 'account[name]', with: 'Bob Stark'
-    # fill_in 'account[goal]', with: 'Treatment'
-    # fill_in 'account[budget]', with: 37500
-    # fill_in 'account[deadline_on]', with: Time.now + 2.month
-    # fill_in 'account[birthday_on]', with: '21/05/2007'
-    # fill_in 'account[payment_details]', with: 'Delaware National Bank, account: 8190419'
-
-    # expect{click_on 'Зберегти'}.to change(Account, :count).by(+1)
-  end # when admin creates an account
+  it_behaves_like 'initial a new, default account'
+  it_behaves_like 'edit account'
 end # Admin creates an account
 
+feature 'Admin edits an account', %q{
+  As an admin
+  I want to be able to edit an account
+} do
 
+  context 'when edits own account' do
+    let(:user) { create(:user, :admin) }
+
+    before { sign_in user }
+
+    it_behaves_like 'edit account'
+  end
+
+  context 'when edits not own account' do
+    let(:user_admin) { create(:user, :admin) }
+    let(:user) { create(:user) }
+
+    before { sign_in user_admin }
+
+    it_behaves_like 'edit account'
+  end
+end # Admin edits an account
+
+feature 'Admin destroys an account', %q{
+  As an admin
+  I want to be able to destroy account
+} do
+
+  let(:user_admin) { create(:user, :admin) }
+  let(:delete_btn_text) { I18n.t('accounts.owner_buttons.delete') }
+  let(:destroy_action) { delete_btn.click }
+  let!(:account) { create(:account, user: account_user) }
+
+  before do
+    sign_in user_admin
+    visit path
+  end
+
+  context 'when deletes own account' do
+    let(:account_user) { user_admin }
+
+    context "on the account page" do
+      let(:path) { account_path(account) }
+      let(:delete_btn) { find('a', text: delete_btn_text) }
+
+      it_behaves_like 'destroy account'
+    end
+
+    context "on accounts page" do
+      let(:path) { accounts_path }
+      let(:delete_btn) { all('.account').last.find('a', text: delete_btn_text) }
+
+      it_behaves_like 'destroy account'
+    end
+  end
+
+  context 'when deletes not own account' do
+    let(:account_user) { create(:user) }
+
+    context "on the account page" do
+      let(:path) { account_path(account) }
+      let(:delete_btn) { find('a', text: delete_btn_text) }
+
+      it_behaves_like 'destroy account'
+    end
+
+    context "on accounts page" do
+      let(:path) { accounts_path }
+      let(:delete_btn) { all('.account').last.find('a', text: delete_btn_text) }
+
+      it_behaves_like 'destroy account'
+    end
+  end
+end
 
 
 

@@ -41,9 +41,9 @@ class AccountsController < ApplicationController
     # use here respond_with
     if updater.update
       flash[:success] = 'Сторінка збору успішно створена і відправлена на модерацію адміністратору.'
-      redirect_to updater.account
+      redirect_to account
     else
-      render json: updater.account.errors.as_json, status: 403
+      render json: account.errors.as_json, status: 403
     end
   end
 
@@ -83,7 +83,7 @@ class AccountsController < ApplicationController
   end
 
   def account_form
-    @account_form ||= AccountForm.new(params)
+    @account_form ||= AccountForm.new(account, params)
   end
 
   def account
@@ -94,16 +94,16 @@ class AccountsController < ApplicationController
     @account_decorator ||= AccountDecorator.new(account)
   end
 
-  def visible_account!
-    return if account.visible?
-    return if !current_user.nil? &&
-      (current_user.accounts.include?(account) || current_user.admin?)
-    redirect_to root_path
-  end
+  # def visible_account!
+  #   return if account.visible?
+  #   return if !current_user.nil? &&
+  #     (current_user.accounts.include?(account) || current_user.admin?)
+  #   redirect_to root_path
+  # end
 
-  def admin_or_owner!
-    return if current_user.admin?
-    return if current_user.accounts.include?(account) && !account.locked?
-    redirect_to root_path
-  end
+  # def admin_or_owner!
+  #   return if current_user.admin?
+  #   return if current_user.accounts.include?(account) && !account.locked?
+  #   redirect_to root_path
+  # end
 end # AccountsController

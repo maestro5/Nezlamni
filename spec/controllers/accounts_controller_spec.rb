@@ -587,14 +587,14 @@ RSpec.describe AccountsController, type: :controller do
       it 'redirects to root page' do
         get :edit, id: account.id
         expect(response).to redirect_to root_path
-      end # role: not owner
+      end
     end
 
     describe 'PATCH #update' do
       it 'redirects to root page' do
         patch :update, id: account.id, account: { name: 'Edited Name' }
         expect(response).to redirect_to root_path
-      end # role: not owner
+      end
 
       it "doesn't change db record"
     end
@@ -603,12 +603,172 @@ RSpec.describe AccountsController, type: :controller do
       it 'redirects to root page' do
         delete :destroy, id: account.id
         expect(response).to redirect_to root_path
-      end # role: not owner
+      end
 
       it "doesn't change db record"
     end
   end # when not owner
 
+  # ======================
+  # owner
+  # ======================
+  context 'when user owner' do
+    let(:user) { create(:user) }
+    let!(:account) { create(:account, user: user) }
+    let(:edited_name) { 'Edited Name' }
+
+    before { sign_in user }
+
+    describe 'GET #edit' do
+      it 'renders edit view' do
+        get :edit, id: account.id
+        expect(response).to render_template :edit
+      end
+    end
+
+    describe 'PATCH #update' do
+      before { patch :update, id: account.id, account: { name: edited_name } }
+
+      it 'changes account in db' do
+        expect(account.reload.name).to eq edited_name
+      end
+
+      it 'redirects to account page' do
+        expect(response).to redirect_to account_path(account)
+      end
+    end
+
+    describe 'DELETE #destroy' do
+      it "doesn't change db record" do
+        expect { delete :destroy, id: account.id }.not_to change(Account, :count)
+      end
+
+      it "changes record in db" do
+        expect { delete :destroy, id: account.id }.to change { account.reload.deleted }
+      end
+
+      it "marks all association objects"
+
+      it 'redirects to accounts page' do
+        delete :destroy, id: account.id
+        expect(response).to redirect_to accounts_path
+      end
+    end
+  end
+
+
+  # =======================
+  # register user
+  # =======================
+  context 'when user' do
+    let(:user) { create(:user) }
+
+    before { sign_in user }
+
+    describe 'GET #new' do
+      it 'creates new default account' do
+        expect { get :new }.to change(Account, :count).by(1)
+      end
+
+      it 'redirects to edit account page' do
+        get :new
+
+        expect(response).to redirect_to edit_account_path(Account.last)
+      end
+    end
+
+    describe 'POST #create' do
+      xit 'redirects to 404 page' do
+        post :create, attributes_for(:account)
+        expect(response).to redirect_to new_user_session_path
+      end
+    end
+  end
+
+
+
+  # =======================
+  # admin
+  # =======================
+  context 'when admin' do
+    let(:user_admin) { create(:user, :admin) }
+
+    before { sign_in user_admin }
+
+    describe 'GET #new' do
+      it 'creates new default account' do
+        expect { get :new }.to change(Account, :count).by(1)
+      end
+
+      it 'redirects to edit account page' do
+        get :new
+
+        expect(response).to redirect_to edit_account_path(Account.last)
+      end
+    end
+
+    describe 'POST #create' do
+      xit 'redirects to 404 page' do
+        post :create, attributes_for(:account)
+        expect(response).to redirect_to new_user_session_path
+      end
+    end
+  end
+
+  context 'when admin edits own account' do
+    # behaives like user owner
+  end
+
+  context 'when admin edits not own account' do
+    let(:user_admin) { create(:user, :admin) }
+    let!(:account) { create(:account, user: create(:user)) }
+    let(:edited_name) { 'Edited Name' }
+
+    before { sign_in user_admin }
+
+    describe 'GET #edit' do
+      it 'renders edit view' do
+        get :edit, id: account.id
+        expect(response).to render_template :edit
+      end
+    end
+
+    describe 'PATCH #update' do
+      before { patch :update, id: account.id, account: { name: edited_name } }
+
+      it 'changes account in db' do
+        expect(account.reload.name).to eq edited_name
+      end
+
+      it 'redirects to account page' do
+        expect(response).to redirect_to account_path(account)
+      end
+    end
+  end
+
+  context 'when admin deletes not own account' do
+    let(:user_admin) { create(:user, :admin) }
+    let!(:account) { create(:account, user: create(:user)) }
+
+    before { sign_in user_admin }
+
+    describe 'DELETE #destroy' do
+      it "doesn't change db record" do
+        expect { delete :destroy, id: account.id }.not_to change(Account, :count)
+      end
+
+      it "changes record in db" do
+        expect { delete :destroy, id: account.id }.to change { account.reload.deleted }
+      end
+
+      it "marks all association objects"
+
+      it 'redirects to accounts page' do
+        delete :destroy, id: account.id
+        expect(response).to redirect_to accounts_path
+      end
+    end
+  end
 
 
 
