@@ -524,90 +524,153 @@ RSpec.describe AccountsController, type: :controller do
 
 
 
+  shared_examples_for 'new and create ability' do |available = true|
+    describe 'GET #new' do
+      if available
+        it 'creates new default account' do
+          expect { get :new }.to change(Account, :count).by(1)
+        end
+
+        it 'redirects to edit account page' do
+          get :new
+
+          expect(response).to redirect_to edit_account_path(Account.last)
+        end
+      else
+        it 'redirects to sign_in page' do
+          get :new
+
+          expect(response).to redirect_to new_user_session_path
+        end
+      end
+    end
+
+    describe 'POST #create' do
+      xit 'redirects to 404 page' do
+        post :create, attributes_for(:account)
+
+        expect(response).to redirect_to new_user_session_path
+      end
+    end
+  end
+
+
+  shared_examples_for 'edit and update ability' do |available = true|
+    let(:edited_name) { 'Edited Name' }
+
+    if available
+      describe 'GET #edit' do
+        it 'renders edit view' do
+          get :edit, id: account.id
+          expect(response).to render_template :edit
+        end
+      end
+
+      describe 'PATCH #update' do
+        before { patch :update, id: account.id, account: { name: edited_name } }
+
+        it 'changes account in db' do
+          expect(account.reload.name).to eq edited_name
+        end
+
+        it 'redirects to account page' do
+          expect(response).to redirect_to account_path(account)
+        end
+      end
+    else
+      describe 'GET #edit' do
+        it 'redirects to sign_in page' do
+          get :edit, id: account.id
+
+          expect(response).to redirect_to redirect_path
+        end
+      end
+
+      describe 'PATCH #update' do
+        it 'redirects to sign_in page' do
+          patch :update, id: account.id, account: { name: edited_name }
+
+          expect(response).to redirect_to redirect_path
+        end
+
+        it "doesn't change db record"
+      end
+    end
+  end
+
+  shared_examples_for 'destroy ability' do |ability = true|
+    if ability
+      describe 'DELETE #destroy' do
+        it "doesn't delete db record" do
+          expect { delete :destroy, id: account.id }.not_to change(Account, :count)
+        end
+
+        it "marks a record in db as deleted" do
+          expect { delete :destroy, id: account.id }.to change { account.reload.deleted }
+        end
+
+        it "marks all association objects"
+
+        it 'redirects to accounts page' do
+          delete :destroy, id: account.id
+
+          expect(response).to redirect_to accounts_path
+        end
+      end
+    else
+      describe 'DELETE #destroy' do
+        it 'redirects to sign_in page' do
+          delete :destroy, id: account.id
+
+          expect(response).to redirect_to redirect_path
+        end
+
+        it "doesn't change db record"
+      end
+    end
+  end
+
+
+
+
   # ======================
   # visitor
   # ======================
+  context 'when visitor' do
+    let(:account) { create(:account) }
+    let(:redirect_path) { new_user_session_path }
 
-  let(:account) { create(:account) }
+    describe 'GET #index' do
+      it 'redirects to sign_in page' do
+        get :index
+        expect(response).to redirect_to new_user_session_path
+      end
+    end
 
-  describe 'GET #index' do
-    it 'redirects to sign_in page' do
-      get :index
-      expect(response).to redirect_to new_user_session_path
-    end # role: visitor
+    it_behaves_like 'new and create ability', false
+
+    it_behaves_like 'edit and update ability', false
+
+    it_behaves_like 'destroy ability', false
   end
 
-  describe 'GET #new' do
-    it 'redirects to sign_in page' do
-      get :new
-      expect(response).to redirect_to new_user_session_path
-    end # role: visitor
-  end
 
-  describe 'POST #create' do
-    xit 'redirects to 404 page' do
-      post :create, attributes_for(:account)
-      expect(response).to redirect_to new_user_session_path
-    end # role: visitor
-  end
-
-  describe 'GET #edit' do
-    it 'redirects to sign_in page' do
-      get :edit, id: 1
-      expect(response).to redirect_to new_user_session_path
-    end # role: visitor
-  end
-
-  describe 'PATCH #update' do
-    it 'redirects to sign_in page' do
-      patch :update, id: 1, account: { name: 'Edited Name' }
-      expect(response).to redirect_to new_user_session_path
-    end # role: visitor
-
-    it "doesn't change db record"
-  end
-
-  describe 'DELETE #destroy' do
-    it 'redirects to sign_in page' do
-      delete :destroy, id: 1
-      expect(response).to redirect_to new_user_session_path
-    end # role: visitor
-  end
-
-  # ======================
-  # not owner
-  # ======================
-  context 'when not owner' do
+  # =======================
+  # register user, not owner
+  # =======================
+  context 'when user' do
     let(:user) { create(:user) }
-    let(:account) { create(:account, user: create(:user)) }
+    let!(:account) { create(:account, user: create(:user)) }
+    let(:redirect_path) { root_path }
 
     before { sign_in user }
 
-    describe 'GET #edit' do
-      it 'redirects to root page' do
-        get :edit, id: account.id
-        expect(response).to redirect_to root_path
-      end
-    end
+    it_behaves_like 'new and create ability'
 
-    describe 'PATCH #update' do
-      it 'redirects to root page' do
-        patch :update, id: account.id, account: { name: 'Edited Name' }
-        expect(response).to redirect_to root_path
-      end
+    it_behaves_like 'edit and update ability', false
 
-      it "doesn't change db record"
-    end
-
-    describe 'DELETE #destroy' do
-      it 'redirects to root page' do
-        delete :destroy, id: account.id
-        expect(response).to redirect_to root_path
-      end
-
-      it "doesn't change db record"
-    end
-  end # when not owner
+    it_behaves_like 'destroy ability', false
+  end
 
   # ======================
   # owner
@@ -615,76 +678,13 @@ RSpec.describe AccountsController, type: :controller do
   context 'when user owner' do
     let(:user) { create(:user) }
     let!(:account) { create(:account, user: user) }
-    let(:edited_name) { 'Edited Name' }
 
     before { sign_in user }
 
-    describe 'GET #edit' do
-      it 'renders edit view' do
-        get :edit, id: account.id
-        expect(response).to render_template :edit
-      end
-    end
+    it_behaves_like 'edit and update ability'
 
-    describe 'PATCH #update' do
-      before { patch :update, id: account.id, account: { name: edited_name } }
-
-      it 'changes account in db' do
-        expect(account.reload.name).to eq edited_name
-      end
-
-      it 'redirects to account page' do
-        expect(response).to redirect_to account_path(account)
-      end
-    end
-
-    describe 'DELETE #destroy' do
-      it "doesn't change db record" do
-        expect { delete :destroy, id: account.id }.not_to change(Account, :count)
-      end
-
-      it "changes record in db" do
-        expect { delete :destroy, id: account.id }.to change { account.reload.deleted }
-      end
-
-      it "marks all association objects"
-
-      it 'redirects to accounts page' do
-        delete :destroy, id: account.id
-        expect(response).to redirect_to accounts_path
-      end
-    end
+    it_behaves_like 'destroy ability'
   end
-
-
-  # =======================
-  # register user
-  # =======================
-  context 'when user' do
-    let(:user) { create(:user) }
-
-    before { sign_in user }
-
-    describe 'GET #new' do
-      it 'creates new default account' do
-        expect { get :new }.to change(Account, :count).by(1)
-      end
-
-      it 'redirects to edit account page' do
-        get :new
-
-        expect(response).to redirect_to edit_account_path(Account.last)
-      end
-    end
-
-    describe 'POST #create' do
-      xit 'redirects to 404 page' do
-        post :create, attributes_for(:account)
-        expect(response).to redirect_to new_user_session_path
-      end
-    end
-  end
-
 
 
   # =======================
@@ -695,24 +695,7 @@ RSpec.describe AccountsController, type: :controller do
 
     before { sign_in user_admin }
 
-    describe 'GET #new' do
-      it 'creates new default account' do
-        expect { get :new }.to change(Account, :count).by(1)
-      end
-
-      it 'redirects to edit account page' do
-        get :new
-
-        expect(response).to redirect_to edit_account_path(Account.last)
-      end
-    end
-
-    describe 'POST #create' do
-      xit 'redirects to 404 page' do
-        post :create, attributes_for(:account)
-        expect(response).to redirect_to new_user_session_path
-      end
-    end
+    it_behaves_like 'new and create ability'
   end
 
   context 'when admin edits own account' do
@@ -722,28 +705,10 @@ RSpec.describe AccountsController, type: :controller do
   context 'when admin edits not own account' do
     let(:user_admin) { create(:user, :admin) }
     let!(:account) { create(:account, user: create(:user)) }
-    let(:edited_name) { 'Edited Name' }
 
     before { sign_in user_admin }
 
-    describe 'GET #edit' do
-      it 'renders edit view' do
-        get :edit, id: account.id
-        expect(response).to render_template :edit
-      end
-    end
-
-    describe 'PATCH #update' do
-      before { patch :update, id: account.id, account: { name: edited_name } }
-
-      it 'changes account in db' do
-        expect(account.reload.name).to eq edited_name
-      end
-
-      it 'redirects to account page' do
-        expect(response).to redirect_to account_path(account)
-      end
-    end
+    it_behaves_like 'edit and update ability'
   end
 
   context 'when admin deletes not own account' do
@@ -752,24 +717,23 @@ RSpec.describe AccountsController, type: :controller do
 
     before { sign_in user_admin }
 
-    describe 'DELETE #destroy' do
-      it "doesn't change db record" do
-        expect { delete :destroy, id: account.id }.not_to change(Account, :count)
-      end
-
-      it "changes record in db" do
-        expect { delete :destroy, id: account.id }.to change { account.reload.deleted }
-      end
-
-      it "marks all association objects"
-
-      it 'redirects to accounts page' do
-        delete :destroy, id: account.id
-        expect(response).to redirect_to accounts_path
-      end
-    end
+    it_behaves_like 'destroy ability'
   end
-
-
-
 end # AccountsController
+
+# CUD
+# - visitor
+#   - new/create availability, true/false
+# - register user (user or admin)
+# - user owner account
+# - user not owner account
+# - admin owner account
+# - admin not owner account
+
+# actions:
+# - Index
+# + New/Create
+# - Edit/Update
+# - Delete
+
+# *maybe better separate new and create tests?
