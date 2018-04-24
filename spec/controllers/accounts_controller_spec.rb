@@ -523,28 +523,53 @@ RSpec.describe AccountsController, type: :controller do
   # end # GET #locked
 
 
+  shared_examples_for 'not available index action' do
+    describe 'GET #index' do
+      it 'redirects to sign_in page' do
+        get :index
 
-  shared_examples_for 'new and create ability' do |available = true|
-    describe 'GET #new' do
-      if available
-        it 'creates new default account' do
-          expect { get :new }.to change(Account, :count).by(1)
-        end
-
-        it 'redirects to edit account page' do
-          get :new
-
-          expect(response).to redirect_to edit_account_path(Account.last)
-        end
-      else
-        it 'redirects to sign_in page' do
-          get :new
-
-          expect(response).to redirect_to new_user_session_path
-        end
+        expect(response).to redirect_to new_user_session_path
       end
     end
+  end
 
+  shared_examples_for 'available index action' do
+    describe 'GET #index' do
+      it 'renders index view' do
+        get :index
+
+        expect(response).to render_template :index
+      end
+
+      it 'assigns accounts'
+    end
+  end
+
+  shared_examples_for 'not available new action' do
+    describe 'GET #new' do
+      it 'redirects to sign_in page' do
+        get :new
+
+        expect(response).to redirect_to new_user_session_path
+      end
+    end
+  end
+
+  shared_examples_for 'available new action' do
+    describe 'GET #new' do
+      it 'creates new default account' do
+        expect { get :new }.to change(Account, :count).by(1)
+      end
+
+      it 'redirects to edit account page' do
+        get :new
+
+        expect(response).to redirect_to edit_account_path(Account.last)
+      end
+    end
+  end
+
+  shared_examples_for 'not available create action' do
     describe 'POST #create' do
       xit 'redirects to 404 page' do
         post :create, attributes_for(:account)
@@ -554,186 +579,153 @@ RSpec.describe AccountsController, type: :controller do
     end
   end
 
-
-  shared_examples_for 'edit and update ability' do |available = true|
+  shared_examples_for 'not available edit and update actions' do
     let(:edited_name) { 'Edited Name' }
 
-    if available
-      describe 'GET #edit' do
-        it 'renders edit view' do
-          get :edit, id: account.id
-          expect(response).to render_template :edit
-        end
+    describe 'GET #edit' do |description = ''|
+      it "redirects to #{description}" do
+        get :edit, id: account.id
+
+        expect(response).to redirect_to redirect_path
+      end
+    end
+
+    describe 'PATCH #update' do
+      it "redirects to #{description}" do
+        patch :update, id: account.id, account: { name: edited_name }
+
+        expect(response).to redirect_to redirect_path
       end
 
-      describe 'PATCH #update' do
-        before { patch :update, id: account.id, account: { name: edited_name } }
+      it "doesn't change db record"
+    end
+  end
 
-        it 'changes account in db' do
-          expect(account.reload.name).to eq edited_name
-        end
+  shared_examples_for 'available edit and update actions' do
+    let(:edited_name) { 'Edited Name' }
 
-        it 'redirects to account page' do
-          expect(response).to redirect_to account_path(account)
-        end
+    describe 'GET #edit' do
+      it 'renders edit view' do
+        get :edit, id: account.id
+
+        expect(response).to render_template :edit
       end
-    else
-      describe 'GET #edit' do
-        it 'redirects to sign_in page' do
-          get :edit, id: account.id
+    end
 
-          expect(response).to redirect_to redirect_path
-        end
+    describe 'PATCH #update' do
+      before { patch :update, id: account.id, account: { name: edited_name } }
+
+      it 'changes account in db' do
+        expect(account.reload.name).to eq edited_name
       end
 
-      describe 'PATCH #update' do
-        it 'redirects to sign_in page' do
-          patch :update, id: account.id, account: { name: edited_name }
-
-          expect(response).to redirect_to redirect_path
-        end
-
-        it "doesn't change db record"
+      it 'redirects to account page' do
+        expect(response).to redirect_to account_path(account)
       end
     end
   end
 
-  shared_examples_for 'destroy ability' do |ability = true|
-    if ability
-      describe 'DELETE #destroy' do
-        it "doesn't delete db record" do
-          expect { delete :destroy, id: account.id }.not_to change(Account, :count)
-        end
+  shared_examples_for 'not available destroy action' do |description = ''|
+    describe 'DELETE #destroy' do
+      it "redirects to #{description}" do
+        delete :destroy, id: account.id
 
-        it "marks a record in db as deleted" do
-          expect { delete :destroy, id: account.id }.to change { account.reload.deleted }
-        end
-
-        it "marks all association objects"
-
-        it 'redirects to accounts page' do
-          delete :destroy, id: account.id
-
-          expect(response).to redirect_to accounts_path
-        end
+        expect(response).to redirect_to redirect_path
       end
-    else
-      describe 'DELETE #destroy' do
-        it 'redirects to sign_in page' do
-          delete :destroy, id: account.id
 
-          expect(response).to redirect_to redirect_path
-        end
+      it "doesn't change db record"
+    end
+  end
 
-        it "doesn't change db record"
+  shared_examples_for 'available destroy action' do
+    describe 'DELETE #destroy' do
+      it "doesn't delete db record" do
+        expect { delete :destroy, id: account.id }.not_to change(Account, :count)
+      end
+
+      it "marks a record in db as deleted" do
+        expect { delete :destroy, id: account.id }.to change { account.reload.deleted }
+      end
+
+      it "marks all association objects"
+
+      it 'redirects to accounts page' do
+        delete :destroy, id: account.id
+
+        expect(response).to redirect_to accounts_path
       end
     end
   end
 
-
-
-
-  # ======================
-  # visitor
-  # ======================
   context 'when visitor' do
     let(:account) { create(:account) }
     let(:redirect_path) { new_user_session_path }
 
-    describe 'GET #index' do
-      it 'redirects to sign_in page' do
-        get :index
-        expect(response).to redirect_to new_user_session_path
-      end
-    end
+    it_behaves_like 'not available index action'
 
-    it_behaves_like 'new and create ability', false
+    it_behaves_like 'not available new action'
 
-    it_behaves_like 'edit and update ability', false
+    it_behaves_like 'not available create action'
 
-    it_behaves_like 'destroy ability', false
+    it_behaves_like 'not available edit and update actions', 'sign in page'
+
+    it_behaves_like 'not available destroy action', 'sign in page'
   end
 
-
-  # =======================
-  # register user, not owner
-  # =======================
   context 'when user' do
     let(:user) { create(:user) }
-    let!(:account) { create(:account, user: create(:user)) }
     let(:redirect_path) { root_path }
 
     before { sign_in user }
 
-    it_behaves_like 'new and create ability'
+    it_behaves_like 'available index action'
 
-    it_behaves_like 'edit and update ability', false
+    it_behaves_like 'available new action'
 
-    it_behaves_like 'destroy ability', false
+    it_behaves_like 'not available create action'
+
+    context 'when owner' do
+      let!(:account) { create(:account, user: user) }
+
+      it_behaves_like 'available edit and update actions'
+
+      it_behaves_like 'available destroy action'
+    end
+
+    context 'when not owner' do
+      let!(:account) { create(:account, user: create(:user)) }
+
+      it_behaves_like 'not available edit and update actions', 'home page'
+
+      it_behaves_like 'not available destroy action', 'home page'
+    end
   end
 
-  # ======================
-  # owner
-  # ======================
-  context 'when user owner' do
-    let(:user) { create(:user) }
-    let!(:account) { create(:account, user: user) }
-
-    before { sign_in user }
-
-    it_behaves_like 'edit and update ability'
-
-    it_behaves_like 'destroy ability'
-  end
-
-
-  # =======================
-  # admin
-  # =======================
   context 'when admin' do
     let(:user_admin) { create(:user, :admin) }
 
     before { sign_in user_admin }
 
-    it_behaves_like 'new and create ability'
-  end
+    it_behaves_like 'available index action'
 
-  context 'when admin edits own account' do
-    # behaives like user owner
-  end
+    it_behaves_like 'available new action'
 
-  context 'when admin edits not own account' do
-    let(:user_admin) { create(:user, :admin) }
-    let!(:account) { create(:account, user: create(:user)) }
+    it_behaves_like 'not available create action'
 
-    before { sign_in user_admin }
+    context 'when owner' do
+      let!(:account) { create(:account, user: user_admin) }
 
-    it_behaves_like 'edit and update ability'
-  end
+      it_behaves_like 'available edit and update actions'
 
-  context 'when admin deletes not own account' do
-    let(:user_admin) { create(:user, :admin) }
-    let!(:account) { create(:account, user: create(:user)) }
+      it_behaves_like 'available destroy action'
+    end
 
-    before { sign_in user_admin }
+    context 'when not owner' do
+      let!(:account) { create(:account, user: create(:user)) }
 
-    it_behaves_like 'destroy ability'
+      it_behaves_like 'available edit and update actions'
+
+      it_behaves_like 'available destroy action'
+    end
   end
 end # AccountsController
-
-# CUD
-# - visitor
-#   - new/create availability, true/false
-# - register user (user or admin)
-# - user owner account
-# - user not owner account
-# - admin owner account
-# - admin not owner account
-
-# actions:
-# - Index
-# + New/Create
-# - Edit/Update
-# - Delete
-
-# *maybe better separate new and create tests?
