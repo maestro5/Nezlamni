@@ -5,9 +5,6 @@ class CreateProducts < ActiveRecord::Migration
       t.string :title, default: ''
       t.text :description, default: ''
 
-      t.boolean :visible, default: true
-      t.boolean :was_changed, default: true
-      
       t.timestamps null: false
     end
   end

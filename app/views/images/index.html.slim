@@ -6,8 +6,3 @@
       - else
         = link_to image_tag(image.image_url, width: '200', alt: 'account image'), set_avatar_product_image_path(@imageable, image)
       = link_to 'x', image_path(image), method: :delete
-br
-.row
-  .col-lg-12
-    - @image = @imageable.images.build
-    = render 'images/form', obj: @imageable

@@ -1,0 +1,4 @@
+- if user_signed_in? && owner?(account_decorator) && (current_user.admin? || !account_decorator.locked?)
+  = link_to 'Додати', new_account_article_path(account_decorator), class: 'btn btn-success'
+
+= render @articles

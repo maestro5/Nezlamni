@@ -1,42 +1,46 @@
 .row
-  - if user_signed_in? && (current_user.admin? || !@account.locked?)
+  - if user_signed_in? && (current_user.admin? || !account_decorator.locked?)
     .col-lg-6
-      h2 = @account.title
+      #account_title
+        h2 = account_decorator.title
     .col-lg-6
       h2.text-right
-        - if owner?(@account)
-          = link_to 'Редагувати', edit_account_path(@account), class: 'btn btn-primary', id: 'edit_account'
-        = render 'check_btn', obj: @account
+        = render 'owner_buttons'
+        / = render 'check_btn'
   - else
     .col-lg-12
-      h2.text-center = @account.title
+      h2.text-center = account_decorator.title
 
 .row
   .col-lg-8
     = render 'avatar'
   .col-lg-1
   .col-lg-3
-    h2.backers = @account.backers
-    p людей підтримало
-    h2 = @account.collected
-    p = "зібрано, з необхідних #{@account.budget}"
-    h2 = time_ago_in_words(@account.deadline_on) unless @account.deadline_on.nil?
-    p залишилось щоб зібрати
+    #backers
+      h2.backers = account_decorator.backers
+      p людей підтримало
+    #collected
+      h2 = account_decorator.collected
+      p = "зібрано, з необхідних #{account_decorator.budget}"
+    #deadline
+      h2 = time_ago_in_words(account_decorator.deadline_on) unless account_decorator.deadline_on.nil?
+      p залишилось щоб зібрати
     br
     br
-    h3
-      = @account.phone_number
-      br
-      = @account.contact_person
-    p контактна особа
+    #contacts
+      h3
+        = account_decorator.phone_number
+        br
+        = account_decorator.contact_person
+      p контактна особа
     br
     br
     br
-    = link_to 'Підтримати цю людину', account_products_path(@account), class: 'btn btn-success btn-lg'
+    = link_to t('.support_person'), account_products_path(account_decorator), class: 'btn btn-success btn-lg'
 
 .row
   .col-lg-8
-    = render 'images/gallery_slides', obj: @account
+    = render 'images/gallery_slides', obj: account_decorator
 
 br
 .row
@@ -52,22 +56,14 @@ br
       .tab-content
         .tab-pane.active role="tabpanel" id="overview"
           br
-          == @account.overview
+          == account_decorator.overview
         .tab-pane role="tabpanel" id="news"
-          - if user_signed_in? && owner?(@account) && (current_user.admin? || !@account.locked?)
-            = link_to 'Додати', new_account_article_path(@account), class: 'btn btn-success'
-          = render @articles
+          / = render 'articles'
         .tab-pane role="tabpanel" id="comments"
           = render 'comments'
 
   .col-lg-1
   .col-lg-3
-    h3 Підтримати цю людину
-    br
-    - if user_signed_in? && owner?(@account) && (current_user.admin? || !@account.locked?)
-      .thumbnail
-        .caption
-          = link_to 'Додати товар', new_account_product_path(@account), class: 'btn btn-primary'
-    = render @products
+    / = render 'products'
 
 = render 'images/gallery_scripts'

@@ -1,3 +1,5 @@
+@import "toastr";
+
 #profile {
   padding: 0;
 }
@@ -15,4 +17,8 @@
 .profile {
   width: 50px;
   height: 50px;
+}
+
+.has-error .form-control-feedback {
+  top: 9px;
 }

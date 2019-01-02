@@ -5,7 +5,14 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
 
   private
-    def admin!
-      redirect_to root_path unless current_user.admin?
+    def authorized?
+      false
+    end
+
+    def verify_authorization!
+      unless authorized?
+        flash[:error] = I18n.t('.flash.access_denied')
+        redirect_to root_path
+      end
     end
 end

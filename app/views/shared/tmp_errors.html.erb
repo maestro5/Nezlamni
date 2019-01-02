@@ -1,0 +1,11 @@
+<% return unless @service %>
+<% unless @service.errors.empty? %>
+  <% binding.pry %>
+  <% @service.errors.keys.each do |model_name| %>
+
+  <% end %>
+  <script type='text/javascript'>
+    
+    console.log('hello I am from partial');
+  </script>
+<% end %>
